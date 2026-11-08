@@ -138,7 +138,7 @@ VID.playsInline = true; VID.autoplay = true;
 ['playsinline','webkit-playsinline'].forEach(function(a){ VID.setAttribute(a,'true'); });
 ['muted','autoplay'].forEach(function(a){ VID.setAttribute(a,''); });
 VID.setAttribute('preload','auto');
-VID.style.cssText='position:fixed;left:0;top:0;width:100%;height:100%;object-fit:cover;opacity:1;pointer-events:none;z-index:0;background:#e9dcbe';
+VID.style.cssText='position:fixed;left:0;top:0;width:100%;height:100%;object-fit:cover;opacity:1;pointer-events:none;z-index:0;background:transparent';
 document.body.appendChild(VID);
 function vidKick(){ try{ var p=VID.play(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
 ['loadeddata','canplay','canplaythrough','stalled','suspend'].forEach(function(ev){
@@ -410,7 +410,13 @@ function resize(){
   const s=Math.min(vw/W, vh/H);
   const dpr=Math.min(2.5, window.devicePixelRatio||1);
   cv.width=Math.round(W*s*dpr); cv.height=Math.round(H*s*dpr);
-  cv.style.width=Math.round(W*s)+'px'; cv.style.height=Math.round(H*s)+'px';
+  const cw=Math.round(W*s), chh=Math.round(H*s);
+  cv.style.width=cw+'px'; cv.style.height=chh+'px';
+  if(typeof VID!=='undefined' && VID){
+    VID.style.width=cw+'px'; VID.style.height=chh+'px';
+    VID.style.left=Math.round((vw-cw)/2)+'px';
+    VID.style.top=Math.round((vh-chh)/2)+'px';
+  }
   g.setTransform(s*dpr,0,0,s*dpr,0,0);
   g.imageSmoothingEnabled=true;
 }
