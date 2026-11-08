@@ -85,7 +85,7 @@ const Q=new URLSearchParams(location.search); if(Q.get('done')==='1') progress['
 const done1=!!progress['zhuxingchi'];
 
 const LEVELS=[
-  {n:1, name:'盒饭',      who:'朱星驰', ok:true,  href:'ch2.html?v=230', tag:'可以游玩'},
+  {n:1, name:'盒饭',      who:'朱星驰', ok:true,  href:'ch2.html?v=250', tag:'可以游玩'},
   {n:2, name:'待续',      who:'朱星驰', ok:done1, tag:done1?'已解锁 · 制作中':'通关第 1 关解锁'},
   {n:3, name:'待续',      who:'',      ok:false, tag:'通关第 2 关解锁'},
   {n:4, name:'未完成',    who:'',      ok:false, tag:'锁定'},
@@ -198,7 +198,7 @@ cv.addEventListener('pointerup',function(ev){
   const i=hitTest(pos(ev)); if(i===press) pick(i); press=-1;
 });
 function pick(i){
-  if(i===-2){ location.href='title.html'; return; }
+  if(i===-2){ location.href='title2.html'; return; }
   const lv=LEVELS[i]; if(!lv) return;
   if(!lv.ok){
     if(lv.n===2) toast('先通关第 1 关，才能玩第 2 关');
@@ -210,7 +210,7 @@ function pick(i){
   toast('第 '+lv.n+' 关还在制作中');
 }
 window.addEventListener('keydown',function(e){
-  if(e.key==='Escape'){ location.href='title.html'; }
+  if(e.key==='Escape'){ location.href='title2.html'; }
   if(e.key==='1'||e.key==='2'||e.key==='3'||e.key==='4'){ pick(+e.key-1); }
 });
 requestAnimationFrame(frame);
