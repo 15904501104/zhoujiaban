@@ -50,7 +50,7 @@
   .cast.on{display:block}
   .dlg{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);width:min(920px,94vw);
     border:1px solid #e3d6bd;border-radius:14px;background:#fffdf6;
-    padding:14px 18px 16px 24px;min-height:150px;opacity:0;pointer-events:none;transition:opacity .18s;z-index:8;
+    padding:16px 20px 18px 118px;min-height:150px;opacity:0;pointer-events:none;transition:opacity .18s;z-index:8;
     box-shadow:0 18px 48px rgba(70,48,20,.28)}
   .por{position:absolute;top:12px;width:80px;height:100px;object-fit:contain;object-position:center bottom;image-rendering:pixelated;
     border-radius:8px;border:1px solid #b7a98f;background:linear-gradient(180deg,#f6efe2,#e6dac6);opacity:.42;transition:opacity .15s,filter .15s}
@@ -64,6 +64,7 @@
   .choice:hover{border-color:#c0392b;background:#fff}
   .choice:active{transform:translateY(1px)}
   .dlg.on{opacity:1;pointer-events:auto}
+  @media (orientation:portrait){ .dlg{padding:12px 14px 14px 88px;min-height:0} }
   .dlg{color:#3a2a18}
   .who{font-size:12px;letter-spacing:.26em;color:#a8702a;margin-bottom:8px;font-weight:700}
   .line{font-size:15px;line-height:1.9;color:#3a2a18;min-height:56px;white-space:pre-wrap}
@@ -286,20 +287,22 @@ function say(who, lines, onDone){
   G.dlg = { who, lines:norm, i:0, typed:0, shownH:false, done:onDone||null };
   elWho.textContent = who; elLine.textContent='';
   elChoices.innerHTML=''; G.choosing=false;
-  // 只显示说话人，固定在对话框左边
+  // 只显示“说话人”的头像，固定在对话框左边（对话框内，不是屏幕悬浮层）
   const isZ = who==='朱星驰', isW = who==='王小强';
-  if(elCastL){
-    const img = elCastL.querySelector('img');
+  if(elCastL) elCastL.classList.remove('on');
+  if(elCastR) elCastR.classList.remove('on');
+  if(elPorR) elPorR.style.display='none';
+  if(elPorL){
     if(isZ || isW){
-      img.src = isZ ? 'sprites/por-zhuxingchi.png?v=9' : 'sprites/por-wang.png?v=9';
-      elCastL.classList.add('on');
+      elPorL.src = isZ ? 'sprites/por-zhuxingchi.png?v=9' : 'sprites/por-wang.png?v=9';
+      elPorL.alt = who;
+      elPorL.style.display='block';
+      elPorL.classList.add('on');
     }else{
-      elCastL.classList.remove('on');
+      elPorL.style.display='none';
+      elPorL.classList.remove('on');
     }
   }
-  if(elCastR) elCastR.classList.remove('on');
-  elPorL.style.display = 'none';
-  elPorR.style.display = 'none';
   elDlg.classList.add('on');
 }
 function choices(list){
