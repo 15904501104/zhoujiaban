@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>第二篇 · 朱星驰 | 盒饭店</title>
 <style>
   :root{--bg:#080b11;--line:#243044;--gold:#e8b455;--gold2:#f5d08a;--txt:#e6edf7;--dim:#8a9ab0}
@@ -10,7 +10,8 @@
   html,body{height:100%;margin:0;background:var(--bg);color:var(--txt);
     font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;overflow:hidden}
   #app{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
-  canvas{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  html,body{-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+  canvas{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none;-webkit-tap-highlight-color:transparent;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     width:min(100vw, calc(100vh * 16 / 9));height:auto;
     image-rendering:pixelated;display:block;background:#05070b}
 
@@ -27,6 +28,9 @@
          width:100%;box-sizing:border-box;display:none;justify-content:space-between;
          padding:0 20px;z-index:9;pointer-events:none}
   #touch button{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));
+    -webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;user-select:none;
+    -webkit-tap-highlight-color:transparent;-webkit-appearance:none;appearance:none;
+    outline:none;touch-action:none;
     pointer-events:auto;width:66px;height:66px;border-radius:50%;
     background:rgba(255,253,246,.92);border:2px solid #c9b28c;color:#8a5a22;
     font:700 22px/1 system-ui;box-shadow:0 6px 16px rgba(60,38,14,.25);touch-action:none}
@@ -589,6 +593,14 @@ addEventListener('keyup', e=>{ keys[e.key.toLowerCase()]=false; });
     el.addEventListener('pointerleave',up);
   };
   bind('tL','a'); bind('tR','d');
+  // iOS 长按按钮会弹放大镜/选择气泡：在按钮上直接吞掉触摸默认行为
+  ['tL','tR'].forEach(function(id){
+    var b=document.getElementById(id); if(!b) return;
+    b.addEventListener('touchstart', function(e){ e.preventDefault(); }, { passive:false });
+    b.addEventListener('touchmove',  function(e){ e.preventDefault(); }, { passive:false });
+    b.addEventListener('contextmenu',function(e){ e.preventDefault(); }, false);
+    b.addEventListener('selectstart',function(e){ e.preventDefault(); }, false);
+  });
 })();
 
 function hit(x,y,rx,ry,rw,rh){ return x>rx && x<rx+rw && y>ry && y<ry+rh; }
@@ -1478,6 +1490,9 @@ setTimeout(function(){
 requestAnimationFrame(loop);
 document.addEventListener('contextmenu',function(e){e.preventDefault();},false);
 document.addEventListener('selectstart',function(e){e.preventDefault();},false);
+document.addEventListener('dragstart',function(e){e.preventDefault();},false);
+document.addEventListener('gesturestart',function(e){e.preventDefault();},false);
+try{ document.onselectstart=function(){return false;}; document.ondragstart=function(){return false;}; }catch(e){}
 </script>
 </body>
 </html>
