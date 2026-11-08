@@ -128,7 +128,7 @@ let GY=520;   // 地面线
 
 /* ---------- 吕奥版蒙娜丽莎 ---------- */
 const IMG={};
-['sprites/lvao.png','sprites/mona-real.png','sprites/mona-blink.png'].forEach(function(src){
+['sprites/lvao.png','sprites/mona-poster.jpg?v=230'].forEach(function(src){
   const im=new Image(); im.src=src; IMG[src]=im;
 });
 const VID = document.createElement('video');
@@ -173,8 +173,7 @@ function drawMona(t){
 
   // 画作：写实版《蒙娜丽莎 × 吕奥》（含香烟与闭眼帧）
   const cx=ix+iw*0.5;
-  const mon=IMG['sprites/mona-real.png'];
-  const blink=IMG['sprites/mona-blink.png'];
+  const mon=IMG['sprites/mona-poster.jpg?v=230'];
   if(vidReady()){
     const sw0=VID.videoWidth, sh0=VID.videoHeight;
     const sAsp=sw0/sh0, tAsp=iw/ih;
@@ -191,20 +190,13 @@ function drawMona(t){
     if(sAsp > tAsp){ sw = sh0*tAsp; sx = (sw0-sw)/2; }
     else { sh = sw0/tAsp; sy = (sh0-sh)/2; }
 
-    // 眨眼：每 4.6 秒眨一次，闭眼约 130ms
-    const cyc=4600, ph=t%cyc;
-    const blinking = BOOT.has('blink') ? true : (ph<130);
-
     g.save();
     g.imageSmoothingEnabled=true;
     g.drawImage(mon, sx, sy, sw, sh, ix, iy, iw, ih);
-    if(blinking && blink && blink.complete && blink.naturalWidth){
-      g.drawImage(blink, sx, sy, sw, sh, ix, iy, iw, ih);
-    }
 
     // 烟从画面里的烟头（960x1428 的 618,444）飘出来
-    const tipX = ix + (618-sx)/sw*iw;
-    const tipY = iy + (444-sy)/sh*ih;
+    const tipX = ix + (410-sx)/sw*iw;
+    const tipY = iy + (320-sy)/sh*ih;
     const unit = (iw/620);
     g.save();
     for(let i=0;i<8;i++){
