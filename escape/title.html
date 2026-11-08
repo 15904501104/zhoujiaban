@@ -132,7 +132,7 @@ const IMG={};
   const im=new Image(); im.src=src; IMG[src]=im;
 });
 const VID = document.createElement('video');
-VID.src = 'sprites/mona-v8.mp4';
+VID.src = 'sprites/mona-v8.mp4?v=230';
 VID.muted = true; VID.defaultMuted = true; VID.loop = true;
 VID.playsInline = true; VID.autoplay = true;
 ['playsinline','webkit-playsinline','muted','autoplay','preload'].forEach(function(a){
@@ -414,9 +414,11 @@ function resize(){
   layout();
   const vw=window.innerWidth, vh=window.innerHeight;
   const s=Math.min(vw/W, vh/H);
-  cv.width=Math.round(W*s); cv.height=Math.round(H*s);
+  const dpr=Math.min(2.5, window.devicePixelRatio||1);
+  cv.width=Math.round(W*s*dpr); cv.height=Math.round(H*s*dpr);
   cv.style.width=Math.round(W*s)+'px'; cv.style.height=Math.round(H*s)+'px';
-  g.setTransform(s,0,0,s,0,0);
+  g.setTransform(s*dpr,0,0,s*dpr,0,0);
+  g.imageSmoothingEnabled=true;
 }
 let last=0;
 function frame(now){
@@ -462,10 +464,10 @@ function toast(msg){
 }
 function choose(i){
   const k=MENU[i]&&MENU[i].k; if(!k) return;
-  if(k==='start'){ location.href='levels.html'; return; }
+  if(k==='start'){ location.href='levels.html?v=230'; return; }
   if(k==='cont'){
     if(!progress['zhuxingchi']){ toast('还没有进度 —— 先去第一关'); return; }
-    location.href='levels.html'; return;
+    location.href='levels.html?v=230'; return;
   }
 }
 document.addEventListener('contextmenu',function(e){ e.preventDefault(); },false);
