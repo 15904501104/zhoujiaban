@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>肘家班水师 · 肘家班</title>
+<meta name="description" content="肘家班水师。">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="page.css">
+<style>
+  body {
+    background-color: #d3eaff;
+    background-image: url("navy-bg.webp");
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: cover;
+    background-attachment: fixed;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(226, 242, 255, 0.66), rgba(198, 228, 255, 0.68));
+    pointer-events: none;
+    z-index: 0;
+  }
+  header.top, main, footer { position: relative; z-index: 1; }
+  .navy-members { background: rgba(255, 255, 255, 0.9); }
+  .navy-line, .navy-note, .navy-cap {
+    background: rgba(255, 255, 255, 0.74);
+    border-radius: 12px;
+    padding: 10px 14px;
+    backdrop-filter: blur(3px);
+  }
+  .navy-sub { text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9); }
+  .navy-line {
+    margin: 22px 0 26px;
+    max-width: 640px;
+    color: #1a1a1a;
+    font-size: 1.02rem;
+    line-height: 1.95;
+  }
+  .navy-members {
+    margin: 8px 0 34px;
+    max-width: 640px;
+    padding: 22px 26px;
+    border-radius: 16px;
+    background: #f5f7fa;
+  }
+  .navy-member-row {
+    margin: 0 0 10px;
+    color: #1a1a1a;
+    font-size: 1rem;
+    line-height: 1.9;
+  }
+  .navy-member-row:last-child { margin-bottom: 0; }
+  .navy-member-label {
+    display: inline-block;
+    min-width: 96px;
+    margin-right: 14px;
+    color: #8b9099;
+    font-size: 0.86rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  .navy-member-row .member-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #0071e3;
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .navy-member-row .member-link:hover { color: #0058b0; }
+  .navy-figure { margin: 0 0 12px; max-width: 720px; }
+  .navy-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 18px 40px rgba(0, 20, 50, 0.14);
+  }
+  .navy-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0 0 34px;
+    max-width: 720px;
+  }
+  .navy-gallery figure { margin: 0; }
+  .navy-gallery img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+    box-shadow: 0 10px 24px rgba(0, 20, 50, 0.12);
+  }
+  .navy-video { margin: 0 0 12px; width: min(400px, 100%); }
+  .navy-video video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    background: #000;
+    box-shadow: 0 18px 40px rgba(0, 20, 50, 0.14);
+  }
+  .navy-cap {
+    margin: 0 0 34px;
+    max-width: 720px;
+    color: #6b7078;
+    font-size: 0.9rem;
+    line-height: 1.8;
+  }
+  .navy-sub--after { margin: 14px 0 34px; }
+  .navy-end {
+    margin: 56px 0 0;
+    padding-top: 28px;
+    border-top: 1px solid #e5e7eb;
+    color: #1a1a1a;
+    font-size: 1.3rem;
+    font-weight: 600;
+    line-height: 1.9;
+    text-align: center;
+    letter-spacing: 0.01em;
+  }
+  .navy-sub {
+    margin: 30px 0 14px;
+    color: #1a1a1a;
+    font-size: 1.55rem;
+    font-weight: 800;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+  }
+  .navy-note {
+    margin: 0;
+    max-width: 640px;
+    padding-left: 26px;
+    color: #6b7078;
+    font-size: 0.95rem;
+    line-height: 1.9;
+  }
+  .navy-note .member-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #0071e3;
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .navy-note .member-link:hover { color: #0058b0; }
+  .pig-zoom {
+    position: fixed; inset: 0; z-index: 70; display: grid; place-items: center;
+    padding: 20px; background: rgba(0, 0, 0, 0.86); cursor: zoom-out;
+  }
+  .pig-zoom[hidden] { display: none; }
+  .pig-zoom img {
+    max-width: 96vw; max-height: 92vh; width: auto; height: auto;
+    border-radius: 10px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  }
+  main img { cursor: zoom-in; }
+  .pig-avatar {
+    position: fixed; inset: 0; z-index: 80; display: grid; place-items: center;
+    padding: 24px; background: rgba(0, 0, 0, 0.72); cursor: zoom-out;
+  }
+  .pig-avatar[hidden] { display: none; }
+  .pig-avatar-box {
+    margin: 0; width: min(320px, 84vw); background: #fff; border-radius: 18px;
+    overflow: hidden; box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+  }
+  .pig-avatar-box img { display: block; width: 100%; height: auto; }
+  .pig-avatar-box figcaption {
+    padding: 12px 14px; text-align: center; font-size: 0.95rem; color: #1d1d1f;
+  }
+</style>
+<script>try{if(localStorage.getItem("zjban.lang")==="en"||/[?&]lang=en/.test(location.search))document.documentElement.classList.add("lang-en");}catch(e){}</script>
+<script>/* 打开页面时停在最上方（无 #锚点 时） */
+(function(){
+  try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }catch(e){}
+  function toTop(){
+    if (location.hash) return;
+    var de = document.documentElement;
+    var prev = de.style.scrollBehavior;
+    de.style.scrollBehavior = 'auto';
+    window.scrollTo(0, 0);
+    de.style.scrollBehavior = prev;
+  }
+  document.addEventListener('DOMContentLoaded', function(){ toTop(); });
+  window.addEventListener('pageshow', function(){ toTop(); });
+  window.addEventListener('load', function(){ toTop(); setTimeout(toTop, 60); });
+})();</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner shell">
+    <a class="mark" href="index.html">肘家班</a>
+    <nav class="nav">
+      <a href="index.html#story">我们的故事</a>
+      <a href="index.html#people">成员</a>
+      <a href="index.html#map">成员分布</a>
+    </nav>
+  </div>
+</header>
+
+<main class="shell" style="padding: 40px 0 80px;">
+  <a class="back" href="index.html#story">← 返回我们的故事</a>
+  <h1>肘家班水师</h1>
+  <p class="navy-line">肘家班的成员都有一个共同的爱好，对洗浴中心、温泉、游泳情有独钟。于是 2026 年 6 月 12 日，在大连付家庄公园，肘家班水师正式成立。</p>
+  <div class="navy-members">
+    <p class="navy-member-row"><span class="navy-member-label">元老级成员</span><button class="member-link" type="button" data-photo="member-lvao.webp?v=3" data-name="吕奥">吕奥</button>、<button class="member-link" type="button" data-photo="member-zhu.webp?v=1" data-name="朱星驰">朱星驰</button>、<button class="member-link" type="button" data-photo="member-zhanghuan.webp?v=1" data-name="张桓">张桓</button>、<button class="member-link" type="button" data-photo="member-zhoujc.webp?v=1" data-name="周佳聪">周佳聪</button>、<button class="member-link" type="button" data-photo="member-wangzy.webp?v=1" data-name="王者禹">王者禹</button></p>
+    <p class="navy-member-row"><span class="navy-member-label">其余成员</span><button class="member-link" type="button" data-photo="member-zhanghao.webp?v=1" data-name="张昊">张昊</button>、<button class="member-link" type="button" data-photo="member-caoyh.webp?v=1" data-name="曹宇桓">曹宇桓</button>、<button class="member-link" type="button" data-photo="member-wang.webp?v=1" data-name="王源泉">王源泉</button></p>
+  </div>
+  <p class="navy-note">注：水师创始人<button class="member-link" type="button" data-photo="member-lvao.webp?v=3" data-name="吕奥">吕奥</button>学过游泳，水性最好，负责教其余成员学会游泳。</p>
+  <h2 class="navy-sub">📍哈尔滨枫叶小镇</h2>
+  <figure class="navy-figure">
+    <img src="navy-hrb.webp" alt="在哈尔滨枫叶小镇的室内温泉池里合影" decoding="async" loading="lazy">
+  </figure>
+  <p class="navy-cap">洗浴中心没办法拍照，能留下的素材太少了。</p>
+  <div class="navy-gallery">
+    <figure><img src="navy-pool1.webp" alt="在泳池里背着人" decoding="async" loading="lazy"></figure>
+    <figure><img src="navy-pool2.webp" alt="在水里张开双手" decoding="async" loading="lazy"></figure>
+    <figure><img src="navy-pool.gif.webp" alt="动图：泳池里的一段" decoding="async" loading="lazy"></figure>
+  </div>
+  <h2 class="navy-sub">是水师不是溺尸</h2>
+  <figure class="navy-video">
+    <video controls playsinline preload="none" poster="navy-shuishu.webp">
+      <source src="navy-shuishu.mp4" type="video/mp4">
+    </video>
+  </figure>
+  <p class="navy-end">期待着肘家班水师下一次扬帆起航。</p>
+    <a class="back back-bottom" href="index.html#story">← 返回我们的故事</a>
+</main>
+
+<footer class="shell">
+  <p>肘家班</p>
+</footer>
+
+<div class="pig-zoom" id="pig-zoom" hidden><img alt="" decoding="async" loading="lazy"></div>
+<div class="pig-avatar" id="pig-avatar" hidden>
+  <figure class="pig-avatar-box">
+    <img alt="" decoding="async" loading="lazy">
+    <figcaption></figcaption>
+  </figure>
+</div>
+<script>
+(function () {
+  var modal = document.getElementById("pig-avatar");
+  if (!modal) return;
+  var img = modal.querySelector("img");
+  var cap = modal.querySelector("figcaption");
+  document.addEventListener("click", function (event) {
+    var link = event.target.closest(".member-link");
+    if (link) {
+      img.src = link.getAttribute("data-photo");
+      img.alt = link.getAttribute("data-name");
+      cap.textContent = link.getAttribute("data-name");
+      modal.hidden = false;
+      return;
+    }
+    if (!modal.hidden) modal.hidden = true;
+  });
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") modal.hidden = true;
+  });
+})();
+</script>
+<script src="zoom.js" defer></script>
+<script src="media-mobile.js" defer></script>
+<script src="exit-intent.js" defer></script>
+  <script src="lang.js" defer></script>
+</body>
+</html>

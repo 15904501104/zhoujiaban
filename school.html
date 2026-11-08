@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>肘家班的校园生活 · 肘家班</title>
+<meta name="description" content="肘家班在哈尔滨市剑桥第三中学的校园生活。">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="page.css">
+<style>
+  .school-line {
+    margin: 22px 0 26px;
+    max-width: 640px;
+    color: #1a1a1a;
+    font-size: 1.02rem;
+    line-height: 1.95;
+  }
+  .school-video--portrait { width: min(360px, 100%); }
+  .school-laugh-note { margin: 14px 0 34px; }
+  .school-video { margin: 6px 0 30px; width: min(620px, 100%); }
+  .school-video video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    background: #000;
+    box-shadow: 0 18px 40px rgba(0, 20, 50, 0.14);
+  }
+  .school-note {
+    margin: -6px 0 34px;
+    max-width: 620px;
+  }
+  .school-item { margin: 0; }
+  .school-item figcaption {
+    margin-top: 8px;
+    color: #4a4a4a;
+    font-size: 0.86rem;
+    line-height: 1.6;
+    text-align: center;
+  }
+  .school-gallery.school-gallery--fit { align-items: start; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .school-gallery--fit .school-item img {
+    aspect-ratio: auto;
+    height: auto;
+    object-fit: contain;
+    background: #eef2f7;
+  }
+  .school-end-line { white-space: normal; }
+  .school-final {
+    display: grid;
+    grid-template-columns: minmax(0, 46%) minmax(0, 1fr);
+    gap: 30px;
+    align-items: start;
+    width: 100%;
+    max-width: 1000px;
+    margin: 64px 0 10px;
+    overflow: hidden;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+  }
+  .school-final-fig { margin: 0; min-width: 0; }
+  .school-final-fig img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+    box-shadow: 0 16px 34px rgba(0, 20, 50, 0.16);
+  }
+  .school-end {
+    min-width: 0;
+    margin: 0;
+    padding: 4px 2px 0 0;
+    overflow-wrap: anywhere;
+    font-size: 1.34rem;
+    font-weight: 600;
+    line-height: 2.05;
+    letter-spacing: 0.01em;
+    text-align: left;
+  }
+  @media (max-width: 560px) {
+    .school-final { grid-template-columns: minmax(0, 42%) minmax(0, 1fr); gap: 18px; }
+    .school-end { font-size: 1rem; line-height: 1.95; }
+    .school-end-brand { font-size: 1.4rem; }
+  }
+  .school-end-brand {
+    font-size: 2.05rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    vertical-align: -0.06em;
+    white-space: nowrap;
+  }
+  .school-sub.school-sub--big {
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    margin-bottom: 18px;
+  }
+  .school-sub {
+    margin: 34px 0 14px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #1a1a1a;
+  }
+  .school-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 6px 0 30px;
+    width: min(620px, 100%);
+  }
+  .school-gallery img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: 14px;
+    box-shadow: 0 14px 30px rgba(0, 20, 50, 0.12);
+  }
+  @media (max-width: 620px) {
+    .school-gallery { gap: 6px; width: 100%; }
+    .school-gallery img { border-radius: 10px; }
+    .school-item figcaption { font-size: 0.8rem; }
+  }
+  .school-shot { margin: 0 0 30px; width: min(720px, 100%); }
+  .school-shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 18px 40px rgba(0, 20, 50, 0.14);
+  }
+</style>
+<style>
+  .member-link {
+    padding: 0; border: 0;
+    border-bottom: 1px solid rgba(0, 113, 227, 0.4);
+    background: none; color: var(--accent); font: inherit; cursor: pointer;
+  }
+  .member-link:hover { border-bottom-color: var(--accent); }
+  .pig-zoom {
+    position: fixed; inset: 0; z-index: 70; display: grid; place-items: center;
+    padding: 20px; background: rgba(0, 0, 0, 0.86); cursor: zoom-out;
+  }
+  .pig-zoom[hidden] { display: none; }
+  .pig-zoom img {
+    max-width: 96vw; max-height: 92vh; width: auto; height: auto;
+    border-radius: 10px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  }
+  .pig-avatar {
+    position: fixed; inset: 0; z-index: 80; display: grid; place-items: center;
+    padding: 24px; background: rgba(0, 0, 0, 0.72); cursor: zoom-out;
+  }
+  .pig-avatar[hidden] { display: none; }
+  .pig-avatar-box {
+    margin: 0; width: min(320px, 84vw); background: #fff; border-radius: 18px;
+    overflow: hidden; box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+  }
+  .pig-avatar-box img { display: block; width: 100%; height: auto; }
+  .pig-avatar-box figcaption {
+    padding: 12px 14px; text-align: center; font-size: 0.95rem; color: #1d1d1f;
+  }
+  main img { cursor: zoom-in; }
+</style>
+<script>try{if(localStorage.getItem("zjban.lang")==="en"||/[?&]lang=en/.test(location.search))document.documentElement.classList.add("lang-en");}catch(e){}</script>
+<script>/* 打开页面时停在最上方（无 #锚点 时） */
+(function(){
+  try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }catch(e){}
+  function toTop(){
+    if (location.hash) return;
+    var de = document.documentElement;
+    var prev = de.style.scrollBehavior;
+    de.style.scrollBehavior = 'auto';
+    window.scrollTo(0, 0);
+    de.style.scrollBehavior = prev;
+  }
+  document.addEventListener('DOMContentLoaded', function(){ toTop(); });
+  window.addEventListener('pageshow', function(){ toTop(); });
+  window.addEventListener('load', function(){ toTop(); setTimeout(toTop, 60); });
+})();</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner shell">
+    <a class="mark" href="index.html">肘家班</a>
+    <nav class="nav">
+      <a href="index.html#story">我们的故事</a>
+      <a href="index.html#people">成员</a>
+      <a href="index.html#map">成员分布</a>
+    </nav>
+  </div>
+</header>
+
+<main class="shell" style="padding: 40px 0 80px;">
+  <a class="back" href="index.html#story">← 返回我们的故事</a>
+  <h1>肘家班的校园生活</h1>
+  <p class="school-line">校园生活很长，可是能留下的图片却屈指可数，<button class="member-link" type="button" data-photo="member-zhoujc.webp?v=1" data-name="周佳聪">肘家班校内记录员</button>提供了近 80% 的素材。</p>
+  <figure class="school-shot">
+    <img src="school-group.webp" alt="在操场上看台前的肘家班合影" decoding="async" loading="lazy">
+  </figure>
+  <h2 class="school-sub">被罚站也是一种奖励</h2>
+  <div class="school-gallery">
+    <img src="school-1.webp" alt="课间：弯腰递东西的瞬间" decoding="async" loading="lazy">
+    <img src="school-2.webp" alt="教室里笑得最开的一张" decoding="async" loading="lazy">
+    <img src="school-3.webp" alt="盘腿坐在柜子上" decoding="async" loading="lazy">
+  </div>
+  <div class="school-gallery">
+    <img src="school-4.webp" alt="晚自习：从身后按住两个同学的头" decoding="async" loading="lazy">
+    <img src="school-5.webp" alt="橙色教室门口挤在一张椅子上" decoding="async" loading="lazy">
+    <img src="school-6.webp" alt="课桌前的比耶合影" decoding="async" loading="lazy">
+  </div>
+  <p class="school-line school-note">老师叫我们去罚站，不是惩罚我们，而是惩罚曲战银同学。</p>
+  <h2 class="school-sub">碎片</h2>
+  <div class="school-gallery">
+    <figure class="school-item">
+      <img src="school-7.webp" alt="在绿色柜子前比手势" decoding="async" loading="lazy">
+      <figcaption>艺术家</figcaption>
+    </figure>
+    <figure class="school-item">
+      <img src="school-8.webp" alt="举起手机对着同学拍" decoding="async" loading="lazy">
+      <figcaption>帅哥在睡觉</figcaption>
+    </figure>
+    <figure class="school-item">
+      <img src="school-9.webp" alt="车窗外的笑脸" decoding="async" loading="lazy">
+      <figcaption>老猪一回笼就开心</figcaption>
+    </figure>
+  </div>
+  <div class="school-gallery">
+    <figure class="school-item">
+      <img src="school-10.webp" alt="坐在课桌前看向镜头" decoding="async" loading="lazy">
+      <figcaption>凝视者</figcaption>
+    </figure>
+    <figure class="school-item">
+      <img src="school-11.webp" alt="教室里比耶的瞬间" decoding="async" loading="lazy">
+      <figcaption>元旦联欢会</figcaption>
+    </figure>
+    <figure class="school-item">
+      <img src="school-12.webp" alt="仰头大笑的课间" decoding="async" loading="lazy">
+      <figcaption>挑战用舌头吃光星球杯</figcaption>
+    </figure>
+  </div>
+  <div class="school-gallery">
+    <figure class="school-item">
+      <img src="school-13.webp" alt="三个人把同学架着抬起来" decoding="async" loading="lazy">
+      <figcaption>执行【任务】中</figcaption>
+    </figure>
+    <figure class="school-item">
+      <img src="school-14.webp" alt="靠在墙边发呆的侧脸" decoding="async" loading="lazy">
+      <figcaption>颓废者</figcaption>
+    </figure>
+    <figure class="school-item">
+      <img src="school-15.webp" alt="动图：教室里的几秒钟" decoding="async" loading="lazy">
+      <figcaption>元旦联欢会</figcaption>
+    </figure>
+  </div>
+  <figure class="school-video school-video--portrait">
+    <video controls playsinline preload="none" poster="school-laugh.webp">
+      <source src="school-laugh.mp4" type="video/mp4">
+    </video>
+  </figure>
+  <p class="school-line school-laugh-note">这个视频能把我笑死。</p>
+  <h2 class="school-sub">肘家班的成人礼</h2>
+  <figure class="school-shot">
+    <img src="school-16.webp" alt="穿西装打领带的合照" decoding="async" loading="lazy">
+  </figure>
+  <p class="school-line">2026 年 5 月 18 日，学校举行成人礼。</p>
+  <h2 class="school-sub">毕业前夕</h2>
+  <figure class="school-video">
+    <video controls playsinline preload="none" poster="school-graduation.webp">
+      <source src="school-graduation.mp4" type="video/mp4">
+    </video>
+  </figure>
+  <p class="school-line">大家似乎意识到了什么，于是开始疯狂记录。</p>
+  <div class="school-gallery school-gallery--fit">
+    <figure class="school-item"><img src="school-20.webp" alt="教学楼前骑在同学肩上" decoding="async" loading="lazy"></figure>
+    <figure class="school-item"><img src="school-21.webp" alt="操场上的六人自拍" decoding="async" loading="lazy"></figure>
+    <figure class="school-item"><img src="school-22.webp" alt="围成一圈俯拍的脸" decoding="async" loading="lazy"></figure>
+    <figure class="school-item"><img src="school-17.webp" alt="教室里和老师的自拍" decoding="async" loading="lazy"></figure>
+    <figure class="school-item"><img src="school-18.webp" alt="窗边与老师的合影" decoding="async" loading="lazy"></figure>
+    <figure class="school-item"><img src="school-19.webp" alt="高考倒计时板前的合影" decoding="async" loading="lazy"></figure>
+  </div>
+
+  <h2 class="school-sub">最后的晚餐</h2>
+  <figure class="school-shot">
+    <img src="school-23.webp" alt="披萨盒前的自拍" decoding="async" loading="lazy">
+  </figure>
+  <h2 class="school-sub school-sub--big">结语</h2>
+  <section class="school-final">
+    <figure class="school-final-fig">
+      <img src="school-24.webp" alt="课桌旁挤在一起比耶的自拍" decoding="async" loading="lazy">
+    </figure>
+    <p class="school-end">高中校园生活结束了，十二班解散了，班上的老师也换了新的搭档。<span class="school-end-line">唯一没有离散的，只有<strong class="school-end-brand">肘家班</strong></span></p>
+  </section>
+    <a class="back back-bottom" href="index.html#story">← 返回我们的故事</a>
+</main>
+
+<footer class="shell">
+  <p>肘家班</p>
+</footer>
+
+<div class="pig-zoom" id="pig-zoom" hidden><img alt="" decoding="async" loading="lazy"></div>
+<div class="pig-avatar" id="pig-avatar" hidden>
+  <figure class="pig-avatar-box">
+    <img alt="" decoding="async" loading="lazy">
+    <figcaption></figcaption>
+  </figure>
+</div>
+<script>
+(function () {
+  var modal = document.getElementById("pig-avatar");
+  if (!modal) return;
+  var img = modal.querySelector("img");
+  var cap = modal.querySelector("figcaption");
+  document.addEventListener("click", function (event) {
+    var link = event.target.closest(".member-link");
+    if (link) {
+      img.src = link.getAttribute("data-photo");
+      img.alt = link.getAttribute("data-name");
+      cap.textContent = link.getAttribute("data-name");
+      modal.hidden = false;
+      return;
+    }
+    if (!modal.hidden) modal.hidden = true;
+  });
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") modal.hidden = true;
+  });
+})();
+</script>
+<script src="zoom.js" defer></script>
+<script src="media-mobile.js" defer></script>
+<script src="exit-intent.js" defer></script>
+  <script src="lang.js" defer></script>
+</body>
+</html>

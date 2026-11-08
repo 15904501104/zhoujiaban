@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>给猪过生日 · 肘家班</title>
+<meta name="description" content="肘家班成员曹宇桓，代号“猪”。">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="page.css">
+<style>
+  .pig-zoom {
+    position: fixed; inset: 0; z-index: 70; display: grid; place-items: center;
+    padding: 20px; background: rgba(0, 0, 0, 0.86); cursor: zoom-out;
+  }
+  .pig-zoom[hidden] { display: none; }
+  .pig-zoom img {
+    max-width: 96vw; max-height: 92vh; width: auto; height: auto;
+    border-radius: 10px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  }
+  .pig-group img, .pig-gif img { cursor: zoom-in; }
+  .pig-photo-title {
+    margin: 40px 0 12px;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #1d1d1f;
+  }
+  .pig-photo-title .member-link {
+    padding: 0; border: 0; border-bottom: 1px solid rgba(255, 95, 151, 0.55);
+    background: none; color: #ff5f97; font: inherit; font-weight: 700; cursor: pointer;
+  }
+  .pig-photo-title .member-link:hover { border-bottom-color: #ff5f97; }
+  .pig-group { margin: 34px 0 8px; width: min(640px, 100%); }
+  .pig-group img {
+    display: block; width: 100%; height: auto;
+    border-radius: 16px; box-shadow: 0 18px 40px rgba(0, 20, 50, 0.14);
+  }
+  .pig-people {
+    margin: 12px 0 0; color: var(--muted);
+    font-size: 13.5px; line-height: 2.1; letter-spacing: 0.02em;
+  }
+  .pig-people .member-link {
+    padding: 0; margin-right: 12px; border: 0;
+    border-bottom: 1px solid rgba(0, 113, 227, 0.35);
+    background: none; color: var(--accent); font: inherit; cursor: pointer;
+  }
+  .pig-people .member-link:hover { border-bottom-color: var(--accent); }
+  .pig-hero { margin-left: 10px; color: #ff5f97; font-weight: 600; }
+  .pig-hero .member-link { color: #ff5f97; border-bottom-color: rgba(255, 95, 151, 0.5); }
+  .pig-avatar {
+    position: fixed; inset: 0; z-index: 60; display: grid; place-items: center;
+    padding: 24px; background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(6px);
+  }
+  .pig-avatar[hidden] { display: none; }
+  .pig-avatar-box {
+    width: min(78vw, 320px); background: #fff; border-radius: 14px;
+    overflow: hidden; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  }
+  .pig-avatar-box img { display: block; width: 100%; height: auto; }
+  .pig-avatar-box p {
+    margin: 0; padding: 12px 14px; text-align: center;
+    font-size: 14px; font-weight: 600; color: #1d1d1f;
+  }
+  .pig-sub {
+    margin: 40px 0 14px;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .pig-video {
+    margin: 0 0 26px;
+    width: min(420px, 100%);
+  }
+  .pig-video video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    background: #000;
+    box-shadow: 0 18px 40px rgba(0, 20, 50, 0.14);
+  }
+  .pig-line, .pig-end {
+    background: rgba(255, 255, 255, 0.76);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border-radius: 14px;
+    padding: 12px 18px;
+    box-shadow: 0 8px 20px rgba(170, 120, 140, 0.10);
+  }
+  .pig-date, .pig-sub, .pig-photo-title, .pig-people {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.80);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border-radius: 10px;
+    padding: 3px 12px;
+  }
+  body {
+    background: #ffd7e4 url("pig-bg.webp") center top / cover no-repeat fixed;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 214, 231, 0.50);
+    pointer-events: none;
+    z-index: 0;
+  }
+  header.top, main, footer { position: relative; z-index: 1; }
+  @media (max-width: 620px) {
+    body { background-attachment: scroll; }
+  }
+  .pig-end {
+    margin: 56px auto 14px;
+    max-width: 640px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(0, 0, 0, 0.14);
+    color: #111111;
+    font-size: 1.24rem;
+    font-weight: 700;
+    line-height: 1.85;
+    letter-spacing: 0.02em;
+    text-align: center;
+  }
+  .pig-line {
+    margin: 22px 0 26px;
+    max-width: 640px;
+    color: #1a1a1a;
+    font-size: 1.02rem;
+    line-height: 1.95;
+  }
+  .pig-gif {
+    margin: 4px 0 26px;
+    width: min(640px, 100%);
+  }
+  .pig-gif img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 18px 40px rgba(0, 20, 50, 0.14);
+  }
+  .pig-date {
+    margin: 10px 0 22px;
+    color: var(--muted);
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+  }
+  .placeholder {
+    margin: 28px 0 60px;
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.02em;
+  }
+</style>
+<script>try{if(localStorage.getItem("zjban.lang")==="en"||/[?&]lang=en/.test(location.search))document.documentElement.classList.add("lang-en");}catch(e){}</script>
+<script>/* 打开页面时停在最上方（无 #锚点 时） */
+(function(){
+  try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }catch(e){}
+  function toTop(){
+    if (location.hash) return;
+    var de = document.documentElement;
+    var prev = de.style.scrollBehavior;
+    de.style.scrollBehavior = 'auto';
+    window.scrollTo(0, 0);
+    de.style.scrollBehavior = prev;
+  }
+  document.addEventListener('DOMContentLoaded', function(){ toTop(); });
+  window.addEventListener('pageshow', function(){ toTop(); });
+  window.addEventListener('load', function(){ toTop(); setTimeout(toTop, 60); });
+})();</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner shell">
+    <a class="mark" href="index.html">肘家班</a>
+    <nav class="nav">
+      <a href="index.html#story">我们的故事</a>
+      <a href="index.html#people">成员</a>
+      <a href="index.html#map">成员分布</a>
+    </nav>
+  </div>
+</header>
+
+<main class="shell" style="padding: 40px 0 80px;">
+  <a class="back" href="index.html#story">← 返回我们的故事</a>
+  <h1>给猪过生日</h1>
+  <p class="pig-date">2026.3.1</p>
+  <figure class="pig-gif">
+    <img src="pig-birthday.webp" alt="给猪过生日：戴皇冠许愿" loading="lazy" decoding="async">
+  </figure>
+  <p class="pig-line">从这一天起，曹宇桓失去了未成年人保护。</p>
+  <h2 class="pig-sub">猪肚展示</h2>
+  <figure class="pig-video">
+    <video controls playsinline preload="none" poster="pig-belly.webp">
+      <source src="pig-belly.mp4" type="video/mp4">
+    </video>
+  </figure>
+  <p class="pig-line">地点是曹宇桓在哈南之星租的房子。去超市随便买了点熟食，又给猪订了个蛋糕。虽然一切看起来很简陋，但那天喝得是真的高兴。</p>
+  <h2 class="pig-photo-title">主角 <button class="member-link" type="button" data-photo="member-caoyh.webp?v=1" data-name="曹宇桓">曹宇桓</button></h2>
+  <figure class="pig-group">
+    <img src="pig-group.webp" alt="给曹宇桓过生日的合影" loading="lazy" decoding="async">
+
+    <figcaption class="pig-people">
+      成员 <button class="member-link" type="button" data-photo="member-lvao.webp?v=3" data-name="吕奥">吕奥</button><button class="member-link" type="button" data-photo="member-zhanghuan.webp?v=1" data-name="张桓">张桓</button><button class="member-link" type="button" data-photo="member-wangzh.webp?v=1" data-name="王振蘅">王振蘅</button><button class="member-link" type="button" data-photo="member-zhanghao.webp?v=1" data-name="张昊">张昊</button><button class="member-link" type="button" data-photo="member-zhu.webp?v=1" data-name="朱星驰">朱星驰</button><button class="member-link" type="button" data-photo="member-langhz.webp?v=1" data-name="郎宏泽">郎宏泽</button><button class="member-link" type="button" data-photo="member-wangzy.webp?v=1" data-name="王者禹">王者禹</button>
+    </figcaption>
+  </figure>
+
+  <h2 class="pig-sub">仪式</h2>
+  <figure class="pig-video">
+    <video controls playsinline preload="none" poster="pig-ceremony.webp">
+      <source src="pig-ceremony.mp4" type="video/mp4">
+    </video>
+  </figure>
+  <p class="pig-line">捆起来　怕逃跑</p>
+  <p class="pig-end">猪的十八岁生日过完了，希望过年的时候不要被别人捆住。</p>
+
+  <div class="pig-zoom" id="pig-zoom" hidden><img alt="" decoding="async" loading="lazy"></div>
+
+  <div class="pig-avatar" id="pig-avatar" hidden>
+    <div class="pig-avatar-box" role="dialog" aria-modal="true" aria-label="成员头像">
+      <img alt="" decoding="async" loading="lazy">
+      <p></p>
+    </div>
+  </div>
+    <a class="back back-bottom" href="index.html#story">← 返回我们的故事</a>
+</main>
+
+<footer class="shell" style="padding: 36px 0 56px; color: var(--muted); font-size: 13px;">
+  <p>肘家班</p>
+</footer>
+
+<script>
+(function () {
+  var modal = document.getElementById("pig-avatar");
+  if (!modal) return;
+  var img = modal.querySelector("img");
+  var name = modal.querySelector("p");
+  document.addEventListener("click", function (event) {
+    var trigger = event.target.closest(".member-link");
+    if (trigger && trigger.dataset.photo) {
+      img.src = trigger.dataset.photo;
+      img.alt = (trigger.dataset.name || "") + " 的头像";
+      name.textContent = trigger.dataset.name || "";
+      modal.hidden = false;
+      return;
+    }
+    if (!event.target.closest(".pig-avatar-box")) modal.hidden = true;
+  });
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") modal.hidden = true;
+  });
+})();
+</script>
+<script src="zoom.js" defer></script>
+<script src="media-mobile.js" defer></script>
+<script src="exit-intent.js" defer></script>
+  <script src="lang.js" defer></script>
+</body>
+</html>

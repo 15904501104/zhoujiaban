@@ -1,0 +1,37 @@
+{
+  "idle": {
+    "file": "idle.png",
+    "frames": 2,
+    "fps": 12
+  },
+  "walk": {
+    "file": "walk.png",
+    "frames": 4,
+    "fps": 12
+  },
+  "jump": {
+    "file": "jump.png",
+    "frames": 2,
+    "fps": 12
+  },
+  "punch": {
+    "file": "punch.png",
+    "frames": 4,
+    "fps": 12
+  },
+  "kick": {
+    "file": "kick.png",
+    "frames": 4,
+    "fps": 12
+  },
+  "hurt": {
+    "file": "hurt.png",
+    "frames": 1,
+    "fps": 12
+  },
+  "block": {
+    "file": "block.png",
+    "frames": 1,
+    "fps": 12
+  }
+}

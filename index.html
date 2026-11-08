@@ -1,0 +1,2262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>肘家班</title>
+    <meta name="description" content="肘家班。诞生于哈尔滨市剑桥第三中学高三十二班。一群高中同学，关系很好，大约十二人。" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="肘家班" />
+    <meta property="og:description" content="诞生在哈尔滨市剑桥第三中学高三十二班。一群关系很好的高中同学，后来成了肘家班。" />
+    <meta property="og:image" content="og.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <style>
+      html, body { max-width: 100%; overflow-x: hidden; }
+      img, svg, video, canvas { max-width: 100%; }
+      :root {
+        --bg: #ffffff;
+        --band: #f5f5f7;
+        --ink: #1d1d1f;
+        --muted: #6e6e73;
+        --line: rgba(0, 0, 0, 0.08);
+        --accent: #0071e3;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      section[id], article[id], main[id] { scroll-margin-top: 64px; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--bg);
+        font-family: "Yuanti SC", "Hiragino Maru Gothic ProN", "华文圆体", "STYuanti", "Arial Rounded MT Bold", "Microsoft YaHei UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.47;
+        letter-spacing: -0.011em;
+      }
+      .top {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 30;
+        color: #fff;
+        border-bottom: 1px solid transparent;
+        transition: background-color 0.28s ease, color 0.28s ease, border-color 0.28s ease;
+      }
+      .top.is-solid {
+        background: rgba(255, 255, 255, 0.86);
+        backdrop-filter: saturate(180%) blur(20px);
+        border-bottom-color: var(--line);
+        color: var(--ink);
+      }
+      .top-inner, .shell {
+        width: 100%;
+        max-width: 980px;
+        padding-inline: 24px;
+        box-sizing: border-box;
+        margin-inline: auto;
+      }
+      .top-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 48px;
+        gap: 16px;
+      }
+      .mark {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        color: inherit;
+      }
+      nav { display: flex; gap: 22px; flex-wrap: wrap; }
+      nav a {
+        color: inherit;
+        text-decoration: none;
+        font-size: 12px;
+        opacity: 0.8;
+      }
+      nav a:hover { opacity: 1; }
+      .cover {
+        --wave-h: clamp(96px, 12vw, 210px);
+        position: relative;
+        aspect-ratio: 1600 / 1094;
+        overflow: hidden;
+        background: #cfd6da;
+      }
+      .cover-img {
+        display: block;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        object-position: center;
+      }
+      .cover::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.14) 34%, rgba(0, 0, 0, 0) 58%),
+          linear-gradient(0deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.12) 14%, rgba(0, 0, 0, 0) 32%);
+      }
+      .top:not(.is-solid) .mark,
+      .top:not(.is-solid) nav a {
+        text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+      }
+      .cover-note,
+      .cover-hint {
+        position: absolute;
+        bottom: calc(var(--wave-h) + 22px);
+        margin: 0;
+        color: #fff;
+        font-size: 14px;
+        letter-spacing: 0.06em;
+        text-shadow: 0 1px 14px rgba(0, 0, 0, 0.45);
+      }
+      .cover-note { left: max(24px, calc((100% - 980px) / 2)); }
+      .cover-hint { right: max(24px, calc((100% - 980px) / 2)); }
+      .cover-wave {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        display: block;
+        width: 100%;
+        height: var(--wave-h);
+      }
+      .intro { padding: 46px 0 88px; }
+      h1 {
+        margin: 0;
+        font-size: clamp(2.8rem, 7vw, 4.8rem);
+        line-height: 1.04;
+        font-weight: 600;
+        letter-spacing: -0.04em;
+      }
+      .lead {
+        max-width: 34em;
+        margin: 18px 0 0;
+        color: var(--muted);
+        font-size: 19px;
+      }
+      .panel { padding: 84px 0; }
+      .panel.band { background: var(--band); }
+      #people.panel { background: #f7c600; margin-top: -1px; padding-bottom: 0; }
+      #missions { padding-bottom: 0; }
+      .wave-divider {
+        display: block;
+        width: 100%;
+        height: clamp(56px, 6vw, 96px);
+        margin-top: 4px;
+        margin-bottom: -1px;
+      }
+      h2 {
+        margin: 0 0 20px;
+        font-size: clamp(2rem, 4vw, 3rem);
+        letter-spacing: -0.03em;
+        font-weight: 600;
+      }
+      #name h2 { text-align: center; color: var(--accent); }
+      .creed {
+        max-width: 38em;
+        margin: 18px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.9;
+        letter-spacing: 0.02em;
+      }
+      .prose {
+        margin: 0;
+        max-width: 38em;
+        font-size: 19px;
+        color: var(--ink);
+      }
+      .prose + .prose { margin-top: 16px; }
+      .pair {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        gap: 20px;
+      }
+      .reveal-card {
+        opacity: 0;
+        transform: translateY(38px) scale(0.985);
+        transition: opacity 0.75s cubic-bezier(0.22, 0.68, 0.32, 1),
+                    transform 0.75s cubic-bezier(0.22, 0.68, 0.32, 1);
+        will-change: opacity, transform;
+      }
+      .reveal-card.is-in {
+        opacity: 1;
+        transform: none;
+      }
+      .reveal-card:nth-child(2) { transition-delay: 0.12s; }
+      @media (prefers-reduced-motion: reduce) {
+        .reveal-card { opacity: 1; transform: none; transition: none; }
+      }
+      .pair > article {
+        flex: 1 1 0;
+        width: 50%;
+        min-width: 0;
+        padding: 28px 26px 26px;
+        border-radius: 22px;
+        background: #fff;
+        overflow: visible;
+      }
+      .pair h2 { margin-top: 0; }
+      .pair .fine { margin: 0 0 16px; }
+      .prose.accent-line {
+        color: var(--ink);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.35;
+      }
+      .accent-line .hl { color: var(--accent); }
+      .prose .hl { color: var(--accent); font-weight: 700; }
+      .prose .strong { font-weight: 600; }
+      .man-stage {
+        width: min(100%, 260px);
+        aspect-ratio: 513 / 825;
+        margin: 8px auto 0;
+        perspective: 980px;
+        perspective-origin: 50% 36%;
+        overflow: visible;
+        touch-action: pan-y;
+        cursor: default;
+      }
+      .man-rig {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transform: rotateX(8deg) rotateY(-10deg);
+        transform-origin: 50% 58%;
+        transition: transform 0.12s ease-out;
+        will-change: transform;
+      }
+      .man-photo,
+      .man-layer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: auto;
+        display: block;
+        pointer-events: none;
+        user-select: none;
+      }
+      .man-photo {
+        z-index: 3;
+        transform: translateZ(42px);
+        filter: drop-shadow(10px 22px 18px rgba(0, 0, 0, 0.32));
+      }
+      .man-photo img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .man-layer.back {
+        z-index: 1;
+        opacity: 0.12;
+        filter: brightness(0) blur(1px);
+        transform: translateZ(0) scale(1.06);
+      }
+      .man-floor {
+        position: absolute;
+        left: 18%;
+        right: 18%;
+        bottom: 8px;
+        height: 18px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.18);
+        filter: blur(6px);
+        transform: translateZ(-8px) rotateX(75deg);
+        z-index: 0;
+      }
+      .fine {
+        margin: 14px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        letter-spacing: 0.04em;
+      }
+      .glyph {
+        margin: 28px 0 20px;
+      }
+      .glyph-pair {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+      }
+      .glyph-pair .glyph-svg {
+        flex: 0 0 44%;
+        width: 44%;
+      }
+      .glyph-photo {
+        display: block;
+        flex: 1 1 auto;
+        min-width: 0;
+        width: 100%;
+        height: auto;
+        border-radius: 16px;
+      }
+      .glyph-svg {
+        display: block;
+        width: min(100%, 560px);
+        height: auto;
+        overflow: visible;
+        color: #000;
+      }
+      .glyph-svg .glyph-big,
+      .glyph-svg .glyph-small {
+        font-family: inherit;
+        fill: currentColor;
+      }
+      .glyph-svg .glyph-big {
+        font-size: 248px;
+        font-weight: 700;
+        letter-spacing: -0.06em;
+      }
+      .glyph-svg .glyph-small {
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+      .school-card {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        margin-top: 8px;
+        padding: 28px 26px;
+        border-radius: 22px;
+        background: #fff;
+        text-decoration: none;
+        color: inherit;
+      }
+      .school-card strong {
+        display: block;
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+      .school-card em {
+        display: block;
+        margin-top: 6px;
+        font-style: normal;
+        color: var(--muted);
+        font-size: 17px;
+      }
+      .school-card span {
+        color: var(--accent);
+        font-size: 15px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .school-card:hover span { text-decoration: underline; }
+      .missions-board {
+        width: fit-content;
+        max-width: 100%;
+        margin-top: 18px;
+        padding: 24px 22px 22px;
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: #f5f7fa;
+      }
+      .missions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 18px;
+        margin-top: 0;
+      }
+      .mission-tile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        width: 108px;
+        color: var(--ink);
+        text-decoration: none;
+      }
+      #concept-open .mission-name {
+        color: #1d1d1f;
+        font-weight: 600;
+      }
+      #concept-open .mission-icon {
+        background: #c8102e;
+        border-color: #c8102e;
+        color: #ffd60a;
+        box-shadow: 0 2px 10px rgba(200, 16, 46, 0.28);
+      }
+      #concept-open .mission-icon:hover {
+        color: #ffd60a;
+      }
+      button.mission-tile {
+        border: 0;
+        padding: 0;
+        background: transparent;
+        font: inherit;
+        cursor: pointer;
+        appearance: none;
+      }
+      .mission-icon {
+        display: grid;
+        place-items: center;
+        width: 92px;
+        height: 92px;
+        border-radius: 24px;
+        border: 1px solid var(--line);
+        background: #ffffff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        color: var(--accent);
+        font-size: 20px;
+        font-weight: 650;
+        letter-spacing: 0.14em;
+        text-indent: 0.14em;
+        transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+          box-shadow 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+          border-color 0.28s ease;
+      }
+      .mission-tile:hover .mission-icon {
+        transform: translateY(-3px);
+        border-color: rgba(0, 113, 227, 0.38);
+        box-shadow: 0 18px 30px -20px rgba(0, 0, 0, 0.5);
+      }
+      .mission-tile:focus-visible {
+        outline: none;
+      }
+      .mission-tile:focus-visible .mission-icon {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+      .mission-name {
+        font-size: 13px;
+        line-height: 1.4;
+        color: var(--muted);
+        text-align: center;
+        white-space: nowrap;
+      }
+      .members {
+        list-style: none;
+        margin: 36px 0 0;
+        padding: 0 0 10px;
+        display: flex;
+        align-items: stretch;
+        gap: 20px;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: none;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 0, 0, 0.22) transparent;
+      }
+      .members::-webkit-scrollbar { height: 6px; }
+      .members::-webkit-scrollbar-track { background: transparent; }
+      .members::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.18);
+        border-radius: 999px;
+      }
+      .members:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 4px;
+      }
+      .members-hint {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin: -6px 0 18px;
+        font-size: 13px;
+        color: var(--muted);
+        letter-spacing: 0.02em;
+        transition: opacity 0.3s ease;
+      }
+      .members-hint.is-done { opacity: 0; }
+      .members-hint-arrow {
+        display: inline-block;
+        animation: hint-slide 1.5s ease-in-out infinite;
+      }
+      .members-hint-arrow:last-child { animation-delay: 0.35s; }
+      @keyframes hint-slide {
+        0%, 100% { transform: translateX(0); opacity: 0.55; }
+        50% { transform: translateX(4px); opacity: 1; }
+      }
+      .members-wrap {
+        position: relative;
+      }
+      .members-fade {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 72px;
+        pointer-events: none;
+        border-radius: 0 10px 10px 0;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0), #ffffff 78%);
+        transition: opacity 0.25s ease;
+      }
+      .members-fade.is-off { opacity: 0; }
+      .members li {
+        flex: 0 0 clamp(320px, 34vw, 480px);
+        scroll-snap-align: start;
+        margin: 0;
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        min-height: 172px;
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .photo {
+        display: block;
+        flex: 0 0 42%;
+        align-self: stretch;
+        width: 42%;
+        height: auto;
+        object-fit: cover;
+        object-position: center 34%;
+        background: #eef2f6;
+      }
+      .photo.blank {
+        display: grid;
+        place-items: center;
+        color: #aeaeb2;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+      }
+      .member-meta {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 10px;
+        padding: 20px 18px;
+      }
+      .member-name {
+        flex: 0 0 auto;
+        margin: 0;
+        color: var(--ink);
+        font-size: clamp(18px, 2vw, 24px);
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+      .member-date {
+        align-self: flex-end;
+        margin-top: auto;
+        padding-top: 8px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.3;
+        letter-spacing: 0.06em;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      .member-tag {
+        display: inline-block;
+        margin-left: 7px;
+        padding: 2px 7px;
+        border-radius: 5px;
+        background: #fbf3dc;
+        border: 1px solid rgba(184, 134, 11, 0.32);
+        color: #a97b0b;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        line-height: 1.5;
+        vertical-align: 0.18em;
+        white-space: nowrap;
+      }
+      .member-tag.blue {
+        background: #eaf2ff;
+        border-color: rgba(0, 113, 227, 0.28);
+        color: var(--accent);
+      }
+      .member-tag.pink {
+        background: #ffeef4;
+        border-color: rgba(214, 51, 108, 0.3);
+        color: #d6336c;
+      }
+      .member-tag.yellow {
+        background: #fff7d6;
+        border-color: rgba(214, 170, 0, 0.35);
+        color: #a67c00;
+      }
+      .member-tag.black {
+        background: #1d1d1f;
+        border-color: #1d1d1f;
+        color: #ffffff;
+      }
+      .member-tag.svg-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 6px;
+        line-height: 0;
+      }
+      .member-tag.svg-badge svg {
+        display: block;
+        width: 15px;
+        height: 15px;
+      }
+      .member-tag.svg-badge img {
+        display: block;
+        width: 16px;
+        height: 16px;
+        object-fit: contain;
+      }
+      .member-bio {
+        flex: 0 0 auto;
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.75;
+        white-space: pre-line;
+      }
+      .member-link {
+        padding: 0;
+        border: 0;
+        border-bottom: 1px solid rgba(0, 113, 227, 0.35);
+        border-radius: 2px;
+        background: none;
+        color: var(--accent);
+        font: inherit;
+        cursor: pointer;
+      }
+      .member-link:hover {
+        border-bottom-color: var(--accent);
+      }
+      .member-link:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .avatar-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(6px);
+      }
+      .avatar-modal[hidden] {
+        display: none;
+      }
+      .avatar-box {
+        width: min(78vw, 340px);
+        background: #fff;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+      }
+      .avatar-box img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .avatar-box p {
+        margin: 0;
+        padding: 12px 14px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .sheet-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 70;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(6px);
+      }
+      .sheet-modal[hidden] {
+        display: none;
+      }
+      .sheet-box {
+        position: relative;
+        width: min(88vw, 560px);
+        max-height: 76vh;
+        overflow: auto;
+        padding: 34px 34px 30px;
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 26px 70px rgba(0, 0, 0, 0.38);
+      }
+      .sheet-box h2 {
+        margin: 0 0 14px;
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        color: var(--ink);
+      }
+      .idea-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .idea-list li {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        padding: 16px 0;
+        border-top: 1px solid var(--line);
+      }
+      .idea-list li:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+      .idea-list .num {
+        flex: none;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        color: #8a8a8e;
+        padding-top: 4px;
+        font-variant-numeric: tabular-nums;
+      }
+      .idea-list p {
+        margin: 0 !important;
+        text-indent: 0 !important;
+        color: var(--ink) !important;
+        font-size: 15.5px !important;
+        line-height: 1.95 !important;
+      }
+      .sheet-body p {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.9;
+        color: var(--muted);
+        text-indent: 2em;
+      }
+      .sheet-figure img {
+        cursor: zoom-in;
+      }
+      .photo-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 90;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.88);
+        cursor: zoom-out;
+      }
+      .photo-modal[hidden] {
+        display: none;
+      }
+      .photo-modal img {
+        max-width: 94vw;
+        max-height: 90vh;
+        width: auto;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+      }
+      .sheet-figure {
+        margin: 20px 0 0;
+      }
+      .sheet-figure img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+      }
+      .sheet-close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        width: 32px;
+        height: 32px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: #fff;
+        color: #6e6e73;
+        font-size: 18px;
+        line-height: 1;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease;
+      }
+      .sheet-close:hover {
+        background: #f2f2f4;
+        color: var(--ink);
+      }
+      body.modal-open {
+        overflow: hidden;
+      }
+      .member-bio .red {
+        color: #d70015;
+        font-weight: 700;
+      }
+      .member-bio .gold {
+        color: #b8860b;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+      .photo-window {
+        position: relative;
+        margin-top: 0;
+        overflow: hidden;
+        height: clamp(580px, 94vh, 1040px);
+        background: #f7c600;
+      }
+      .photo-track {
+        display: flex;
+        width: max-content;
+        height: 100%;
+        animation: photo-drift 160s linear infinite;
+        will-change: transform;
+      }
+      .photo-set { display: flex; height: 100%; }
+      .shot {
+        position: relative;
+        flex: 0 0 auto;
+        width: clamp(660px, 88vw, 1440px);
+        height: 100%;
+        overflow: hidden;
+        cursor: zoom-in;
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .photo-window-edge {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        fill: #f7c600;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .shot-del {
+        z-index: 3;
+        position: absolute;
+        top: 46px;
+        right: 46px;
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.55);
+        color: #fff;
+        font-size: 16px;
+        line-height: 1;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      .shot:hover .shot-del { opacity: 1; }
+      @keyframes photo-drift {
+        from { transform: translate3d(-50%, 0, 0); }
+        to { transform: translate3d(0, 0, 0); }
+      }
+      #gallery { padding: 0; background: #f7c600; }
+      .gallery-story { padding: 76px 0 38px; }
+      .dalian-wrap {
+        margin-top: 28px;
+      }
+      .dalian-btn {
+        position: relative;
+        text-decoration: none;
+        display: block;
+        width: 240px;
+        max-width: 70%;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: #ffffff;
+        cursor: pointer;
+        transition: transform 0.25s ease, color 0.25s ease;
+      }
+      .dalian-btn:hover { transform: translateY(-3px) scale(1.02); color: #fffdf5; }
+      .dalian-btn:active { transform: translateY(0) scale(0.99); }
+      .dalian-btn svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        /* 硬投影做出“厚度”，软投影做落地阴影 */
+        filter: drop-shadow(0 5px 0 rgba(146, 108, 0, 0.50))
+                drop-shadow(0 12px 0 rgba(146, 108, 0, 0.32))
+                drop-shadow(0 22px 14px rgba(118, 88, 0, 0.24));
+      }
+      .school-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 6px;
+      }
+      .school-btn {
+        display: block;
+        width: auto;
+        height: auto;
+        border-radius: 0;
+        background: none;
+        text-decoration: none;
+        transition: transform 0.25s ease;
+        filter: drop-shadow(0 5px 0 rgba(138, 98, 0, 0.46))
+                drop-shadow(0 12px 0 rgba(138, 98, 0, 0.30))
+                drop-shadow(0 22px 14px rgba(118, 86, 0, 0.26));
+      }
+      .school-btn:hover { transform: translateY(-3px) scale(1.04); }
+      .school-icon { display: block; font-size: 96px; line-height: 1; }
+      .school-caption {
+        margin: 14px 0 0;
+        color: var(--accent);
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+      }
+      .navy-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 6px;
+      }
+      .navy-btn {
+        display: block;
+        text-decoration: none;
+        line-height: 1;
+        transition: transform 0.25s ease;
+        filter: grayscale(1) brightness(0.72)
+                drop-shadow(0 5px 0 rgba(90, 96, 104, 0.38))
+                drop-shadow(0 12px 0 rgba(90, 96, 104, 0.24))
+                drop-shadow(0 22px 14px rgba(70, 76, 84, 0.22));
+      }
+      .navy-btn:hover { transform: translateY(-3px) scale(1.04); }
+      .navy-icon {
+        display: block;
+        font-size: 92px;
+        line-height: 1;
+      }
+      .navy-caption {
+        margin: 14px 0 0;
+        color: var(--accent);
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        white-space: nowrap;
+      }
+      .dalian-caption {
+        margin: 14px 0 0;
+        color: var(--accent);
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+      }
+      .dalian-btn .dalian-label {
+        position: absolute;
+        left: 45.3%;
+        top: 41.4%;
+        transform: translate(-50%, -50%);
+        color: var(--accent);
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        pointer-events: none;
+      }
+      .story-text { margin: 0; color: rgba(255, 255, 255, 0.88); font-size: 16px; line-height: 1.9; }
+      .story-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        justify-items: center;
+        align-items: start;
+        gap: 0;
+        width: min(1080px, 100%);
+        margin: 26px 0 30px;
+      }
+      .story-row > * {
+        justify-self: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        height: 300px;
+      }
+      .dalian-btn svg { display: block; height: 150px; width: auto; }
+      .pig-stage canvas { width: 190px; }
+      .school-icon, .navy-icon { font-size: 86px; }
+      .story-row .pig-hint { display: none; }
+      .story-row .pig-birthday { margin: 14px 0 0; }
+      @media (max-width: 760px) {
+        .story-row {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 26px 0;
+          width: 100%;
+        }
+      }
+      .pig-stage {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        width: 240px;
+      }
+      .pig-stage canvas { cursor: pointer; }
+      .pig-stage canvas {
+        width: 100%;
+        height: auto;
+        background: none;
+        box-shadow: none;
+        border-radius: 0;
+        cursor: grab;
+        touch-action: none;
+      }
+      .pig-stage canvas:active { cursor: grabbing; }
+      .pig-birthday {
+        margin: 8px 0 2px;
+        color: #ff7aa8;
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-align: center;
+      }
+      .pig-birthday .pig-name {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: #ff5f97;
+        font: inherit;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        cursor: pointer;
+      }
+      .pig-birthday .pig-name:hover { color: #e63c7b; }
+      .pig-hint {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.88);
+        font-size: 12px;
+        letter-spacing: 0.06em;
+      }
+      .ending-panel { padding: 92px 0 120px; background: linear-gradient(180deg, #c98a00, #b37600); }
+      .ending-panel .map-panel-title { color: #141414; font-size: 2.45rem; letter-spacing: 0.02em; }
+      .ending-panel .ending-text { color: #ffffff; text-shadow: 0 1px 2px rgba(90, 55, 0, 0.28); }
+      .ending-text {
+        margin: 26px 0 0;
+        max-width: 880px;
+        font-size: 1.18rem;
+        font-weight: 600;
+        line-height: 2.1;
+        color: #ffffff;
+        letter-spacing: 0.01em;
+      }
+      .map-panel .ending-text {
+        color: #1d1d1f;
+        font-weight: 500;
+        text-shadow: none;
+      }
+      .map-panel .ending-brand { color: #1d1d1f; }
+      .ending-wish {
+        margin: 30px 0 0;
+        font-size: 1.34rem;
+        font-weight: 700;
+        line-height: 1.9;
+        color: #ffffff;
+        text-shadow: 0 1px 2px rgba(90, 55, 0, 0.3);
+        letter-spacing: 0.02em;
+      }
+      .ending-brand {
+        display: inline-block;
+        margin-left: 6px;
+        font-size: 1.9rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        vertical-align: -0.06em;
+        white-space: nowrap;
+        color: #1d1d1f;
+      }
+      .map-panel { padding: 92px 0 64px; background: #ffffff; }
+      .map-panel-title { margin: 0 0 12px; font-size: 2rem; font-weight: 800; letter-spacing: 0.01em; color: #1d1d1f; }
+      .map-embed.is-zoomed {
+        position: fixed; inset: 0; z-index: 95;
+        background: #ffffff;
+        padding: 0;
+        display: flex; align-items: stretch;
+      }
+      .map-embed.is-zoomed iframe { height: 100% !important; border-radius: 0; }
+      .map-embed { width: 100%; }
+      .map-embed iframe {
+        display: block;
+        width: 100%;
+        height: 780px;
+        border: 0;
+        border-radius: 20px;
+        background: #ffffff;
+      }
+      @media (max-width: 900px) { .map-embed iframe { height: 560px; } }
+      @media (max-width: 600px) { .map-embed iframe { height: 360px; } }
+      .map-entry {
+        margin: 34px 0 0;
+        display: flex;
+        justify-content: center;
+      }
+      .map-entry-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 24px 12px 20px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.42);
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        transition: background 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+      }
+      .map-entry-btn:hover {
+        background: rgba(255, 255, 255, 0.28);
+        border-color: rgba(255, 255, 255, 0.7);
+        transform: translateY(-2px);
+      }
+      .map-entry-icon { font-size: 22px; line-height: 1; }
+      .story-ends {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 92px 0 0;
+      }
+      .story-end {
+        margin: 0;
+        color: #ffffff;
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        line-height: 1.8;
+      }
+      .gallery-story h2 {
+        display: inline-block;
+        color: #fff;
+        padding: 0;
+        font-size: clamp(2.6rem, 5.4vw, 4.2rem);
+        letter-spacing: 0.01em;
+        font-weight: 700;
+      }
+      .shots-empty {
+        margin: 18px 0 0;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .members li.todo strong { font-size: 15px; font-weight: 600; color: var(--ink); }
+      .members li.todo span { font-size: 13px; }
+      .site-foot {
+        padding: 76px 0 64px;
+        background: #ffffff;
+        border-top: 1px solid #e6e8ec;
+        color: #0071e3;
+      }
+      .foot-grid {
+        display: flex;
+        justify-content: space-between;
+        gap: 40px;
+        flex-wrap: wrap;
+        padding-bottom: 40px;
+        border-bottom: 1px solid #e6e8ec;
+      }
+      .foot-brand {
+        margin: 0;
+        font-size: clamp(2.2rem, 5vw, 3.4rem);
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        line-height: 1.1;
+        color: #0071e3;
+      }
+      .foot-sub {
+        margin: 14px 0 0;
+        font-size: 0.9rem;
+        color: rgba(0, 113, 227, 0.62);
+        letter-spacing: 0.02em;
+      }
+      .foot-nav {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(120px, auto));
+        gap: 10px 34px;
+        align-content: end;
+      }
+      .foot-nav a {
+        color: rgba(0, 113, 227, 0.85);
+        text-decoration: none;
+        font-size: 0.92rem;
+        transition: color 0.18s ease;
+      }
+      .foot-nav a:hover { color: #0058b0; }
+      .foot-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 20px;
+        flex-wrap: wrap;
+        padding-top: 26px;
+      }
+      .foot-notes { display: flex; flex-direction: column; }
+      .foot-note--sub { margin: 0 0 6px; }
+      .foot-disc {
+        margin: 26px 0 0;
+        padding-top: 18px;
+        border-top: 1px solid #eef1f5;
+        font-size: 0.76rem;
+        line-height: 1.9;
+        color: #9aa0a8;
+      }
+      .foot-note {
+        margin: 0;
+        font-size: 0.86rem;
+        color: rgba(0, 113, 227, 0.62);
+        letter-spacing: 0.04em;
+      }
+      .foot-year {
+        margin: 0;
+        font-size: 0.78rem;
+        color: rgba(0, 113, 227, 0.42);
+        letter-spacing: 0.06em;
+      }
+      @media (max-width: 640px) {
+        .site-foot { padding: 56px 0 48px; }
+        .foot-grid { flex-direction: column; gap: 26px; }
+        .foot-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 18px; }
+      }
+      .tip-fab {
+        position: fixed;
+        right: max(24px, env(safe-area-inset-right));
+        bottom: max(24px, env(safe-area-inset-bottom));
+        z-index: 60;
+        display: grid;
+        place-items: center;
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: linear-gradient(180deg, #2683f0, #0071e3);
+        border: 2px solid rgba(255, 255, 255, 0.7);
+        box-shadow: 0 12px 28px rgba(0, 90, 200, 0.32), 0 2px 6px rgba(0, 60, 160, 0.18);
+        text-decoration: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .tip-fab:hover { transform: translateY(-2px); box-shadow: 0 18px 36px rgba(0, 90, 200, 0.42); }
+      .tip-fab:active { transform: translateY(0); }
+      .tip-fab-text {
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+      @media (max-width: 640px) {
+        .tip-fab { width: 60px; height: 60px; }
+        .tip-fab-text { font-size: 13px; }
+      }
+      footer {
+        padding: 36px 0 56px;
+        color: var(--muted);
+        font-size: 12px;
+        background: var(--bg);
+      }
+      @media (max-width: 900px) {
+        .pair > article { padding: 24px 22px; }
+      }
+      @media (max-width: 734px) {
+        .members li { flex-basis: min(92vw, 480px); min-height: 264px; }
+        .photo {
+          flex: 0 0 56%;
+          width: 56%;
+          align-self: stretch;
+          height: auto;
+          object-fit: cover;
+          object-position: center top;
+          background: #eef2f6;
+        }
+        .members li.todo { flex-basis: min(76vw, 340px); }
+        .cover { height: auto; min-height: 0; aspect-ratio: 1600 / 1094; }
+        .intro { padding: 36px 0 64px; }
+        .lead, .prose { font-size: 17px; }
+        .prose.accent-line { font-size: 24px; }
+        .glyph-pair { gap: 18px; }
+        .pair { gap: 14px; }
+        .pair > article { padding: 22px 18px; }
+      }
+      @media (max-width: 640px) {
+        .pair { flex-direction: column; }
+        .pair > article { width: 100%; flex: 1 1 auto; padding: 24px 22px; }
+        .glyph-pair { flex-direction: column; align-items: stretch; gap: 20px; }
+        .glyph-pair .glyph-svg { flex: 0 0 auto; width: min(100%, 420px); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        .man-rig { transition: none; }
+      }
+    </style>
+  <script>try{if(localStorage.getItem("zjban.lang")==="en"||/[?&]lang=en/.test(location.search))document.documentElement.classList.add("lang-en");}catch(e){}</script>
+<script>/* 打开页面时停在最上方（无 #锚点 时） */
+(function(){
+  try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }catch(e){}
+  function toTop(){
+    if (location.hash) return;
+    var de = document.documentElement;
+    var prev = de.style.scrollBehavior;
+    de.style.scrollBehavior = 'auto';
+    window.scrollTo(0, 0);
+    de.style.scrollBehavior = prev;
+  }
+  document.addEventListener('DOMContentLoaded', function(){ toTop(); });
+  window.addEventListener('pageshow', function(){ toTop(); });
+  window.addEventListener('load', function(){ toTop(); setTimeout(toTop, 60); });
+})();</script>
+</head>
+  <body>
+    <header class="top" id="site-top">
+      <div class="top-inner">
+        <a class="mark" href="#top">肘家班</a>
+        <nav>
+          <a href="#birth">诞生地点</a>
+          <a href="#origin">创建初史</a>
+          <a href="#name">名字</a>
+          <a href="#missions">关于我们</a>
+          <a href="#people">成员</a>
+          <a href="#story">我们的故事</a>
+          <a href="#map">成员分布</a>
+          <a href="#ending">结语</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="cover" id="cover">
+        <img class="cover-img" src="cover-photo.jpg" srcset="cover-photo-900.jpg 900w, cover-photo.jpg 1600w" sizes="100vw" alt="高三十二班的同学们在操场上的合影" width="1600" height="1094" fetchpriority="high" decoding="async" />
+        <p class="cover-note">哈尔滨市剑桥第三中学 · 高三十二班</p>
+        <p class="cover-hint">向下滑动 ↓</p>
+        <svg class="cover-wave" viewBox="0 0 1440 180" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <path d="M0,116 C240,56 470,168 720,140 C970,112 1210,40 1440,92 L1440,180 L0,180 Z" fill="#ffffff" />
+        </svg>
+      </section>
+
+      <section class="intro shell">
+        <h1>肘家班</h1>
+        <p class="lead">诞生在哈尔滨市剑桥第三中学高三十二班。一群关系很好的高中同学，后来成了肘家班。</p>
+      </section>
+
+      <section id="birth" class="panel band">
+        <div class="shell">
+          <h2>肘家班的诞生地点</h2>
+          <a class="school-card" href="https://www.jq3z.com.cn/" target="_blank" rel="noopener noreferrer">
+            <div>
+              <strong>哈尔滨市剑桥第三中学</strong>
+              <em>高三十二班</em>
+            </div>
+            <span>打开官网</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="panel band">
+        <div class="shell pair">
+          <article id="origin" class="reveal-card">
+            <h2>创建初史</h2>
+            <p class="prose">肘家班出自哈尔滨市剑桥第三中学高三十二班。</p>
+            <p class="prose">高二，「将军时代」落幕。班内逐渐形成两支队伍：一支由我率领的吕家军，一支由朱星驰率领的驰家军。两支队伍每日对垒，冲突持续数月，近于一场持久的部落冲突。</p>
+          </article>
+          <article id="merge" class="reveal-card">
+            <h2>队伍合并</h2>
+            <p class="fine">本是同根生，相煎何太急</p>
+            <p class="prose accent-line">直至这个男人出现使这两支队伍找到了共同打击对象，也就有了<span class="hl">肘家班</span>的雏形</p>
+            <div class="man-stage" id="man-stage">
+              <div class="man-rig" id="man-rig">
+                <div class="man-floor" aria-hidden="true"></div>
+                <img class="man-layer back" src="that-man.webp" alt="" decoding="async" loading="lazy">
+                <picture class="man-photo">
+                  <source srcset="that-man.webp" type="image/webp" />
+                  <img src="that-man-cut.png" alt="那个男人" width="513" height="825" decoding="async" loading="lazy">
+                </picture>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="name" class="panel">
+        <div class="shell">
+          <h2>我们为什么叫肘家班</h2>
+          <figure class="glyph">
+            <div class="glyph-pair">
+              <svg class="glyph-svg" viewBox="-2 54 508 304" role="img" aria-label="肘，释义肘击">
+                <text class="glyph-big" x="4" y="318">肘</text>
+                <path d="M278 148 L 360 78 H 428" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="butt" stroke-linejoin="miter" />
+                <circle cx="272" cy="152" r="6" fill="currentColor" />
+                <text class="glyph-small" x="438" y="86">肘击</text>
+              </svg>
+              <img class="glyph-photo" src="elbow-clean.webp" alt="两名同学隔着课桌对拳的动画，背景写着「勤学探究 日新共勉」" width="760" height="403" loading="lazy" decoding="async" />
+            </div>
+          </figure>
+          <p class="prose">肘家班之名，起于我与王源泉一次课上的打闹。当时二人互相肘击，较量谁能把疼痛忍到最后。这项比试渐渐传入团体，大家都开始加入肘击game，当然，这里面最厉害的是我。后期<span class="strong">吕家军</span>、<span class="strong">驰家军</span>合并，这支庞大的队伍索性取名<span class="hl">肘家班</span>。</p>
+          <p class="creed">或许在生活中某个心血来潮的提议，某个随意的决定，都会影响着我们的未来</p>
+        </div>
+      </section>
+
+      <section id="missions" class="panel">
+        <div class="shell">
+          <h2>关于我们</h2>
+          <div class="missions-board">
+            <div class="missions">
+              <a class="mission-tile" href="founding.html">
+                <span class="mission-icon" aria-hidden="true">创立</span>
+                <span class="mission-name">我们的创立</span>
+              </a>
+              <a class="mission-tile" href="missions.html">
+                <span class="mission-icon" aria-hidden="true">任务</span>
+                <span class="mission-name">我们的任务</span>
+              </a>
+              <a class="mission-tile" id="idea-open" href="ideas.html">
+                <span class="mission-icon" aria-hidden="true">承诺</span>
+                <span class="mission-name">我们的承诺</span>
+              </a>
+              <button class="mission-tile" id="apology-open" type="button">
+                <span class="mission-icon" aria-hidden="true">致歉</span>
+                <span class="mission-name">我们的致歉</span>
+              </button>
+              <button class="mission-tile" id="concept-open" type="button">
+                <span class="mission-icon" aria-hidden="true">理念</span>
+                <span class="mission-name">我们的理念</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <svg class="wave-divider" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0 90 H1440 V52 C1180 4 900 94 640 56 C430 26 210 76 0 38 Z" fill="#f7c600"></path>
+        </svg>
+      </section>
+
+      <section id="people" class="panel band">
+        <div class="shell">
+          <h2>成员</h2>
+          <p class="members-hint" id="members-hint">
+            <span class="members-hint-arrow">←</span>
+            左右滑动查看更多成员
+            <span class="members-hint-arrow">→</span>
+          </p>
+          <div class="members-wrap">
+            <ul class="members" id="member-list" tabindex="0" aria-label="成员列表"></ul>
+            <div class="members-fade" id="members-fade" aria-hidden="true"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="gallery" class="panel">
+        <div class="photo-window" id="photo-window">
+          <div class="photo-track" id="shots"></div>
+          <svg class="photo-window-edge" viewBox="0 0 1440 620" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 0 H1440 V30 C1130 120 880 0 610 52 C390 92 190 26 0 66 Z"></path>
+            <path d="M0 620 H1440 V556 C1130 406 880 614 610 516 C390 436 190 554 0 494 Z"></path>
+          </svg>
+        </div>
+        <div class="shell">
+          <p class="shots-empty" id="shots-empty" hidden>还没有照片。</p>
+        </div>
+        <div class="shell gallery-story">
+          <h2 id="story">我们的故事</h2>
+          <p class="story-text" id="story-text">点击下方图标，走进肘家班的故事</p>
+          <div class="story-row">
+                        <div class="school-wrap">
+              <a class="school-btn" href="school.html" aria-label="肘家班的校园生活">
+                <span class="school-icon" aria-hidden="true">🏫</span>
+              </a>
+              <p class="school-caption">肘家班的校园生活</p>
+            </div>
+            <div class="pig-stage">
+              <canvas id="pig-canvas" width="320" height="320" role="img" aria-label="可旋转的粉色小猪 3D 模型"></canvas>
+              <p class="pig-birthday"><button class="pig-name member-link" type="button" data-photo="member-caoyh.webp?v=1" data-name="曹宇桓" aria-label="查看曹宇桓的头像">猪</button>的生日</p>
+              <p class="pig-hint">拖动旋转</p>
+            </div>
+<div class="dalian-wrap">
+            <a class="dalian-btn" href="dalian.html" aria-label="大连">
+              <svg viewBox="0 0 100 79.11" role="img" aria-hidden="true">
+                                <path fill="currentColor" d="M61.43 39.50L63.69 38.19L64.41 36.49L65.72 36.80L70.77 34.41L70.40 33.36L70.86 33.34L71.32 34.11L72.01 33.72L72.36 33.24L72.21 32.56L72.92 32.02L76.26 32.02L76.54 32.45L77.52 32.54L77.87 31.23L79.51 30.09L79.07 29.57L79.30 29.21L79.73 29.09L80.09 29.99L80.55 29.92L80.13 29.31L80.22 28.87L80.66 28.72L80.80 29.01L81.76 28.60L82.20 29.10L82.75 29.00L82.81 28.16L84.07 29.24L84.12 29.83L84.48 29.84L85.50 28.32L87.55 28.71L87.98 27.91L87.44 27.39L87.72 27.01L89.06 27.47L89.87 27.07L90.33 27.21L90.46 26.73L89.77 26.15L90.01 25.38L88.70 24.57L88.90 24.27L89.94 24.93L90.28 24.59L89.97 23.96L90.26 23.84L94.62 24.41L94.53 25.17L94.80 25.67L97.08 25.21L97.50 24.48L98.25 24.49L98.45 23.65L98.94 23.83L99.32 23.61L99.35 23.19L100.00 23.19L99.96 21.16L99.28 20.09L99.41 19.27L98.53 18.41L98.17 17.53L98.81 16.15L98.01 14.95L97.54 15.30L97.76 14.95L97.44 14.72L97.15 15.13L97.11 14.75L96.64 15.06L95.58 14.41L95.02 14.89L95.07 14.44L94.75 14.36L94.95 13.57L94.49 13.35L94.16 12.48L95.18 11.91L95.35 10.55L94.79 10.21L94.18 10.92L93.52 10.85L92.59 9.89L91.44 9.53L90.45 10.17L89.62 8.85L88.62 8.98L86.54 7.48L84.63 7.12L84.25 6.72L83.49 7.55L82.89 6.96L82.68 7.12L81.66 8.79L80.86 7.73L79.95 7.63L79.71 7.08L78.39 6.57L77.89 5.43L78.18 4.71L77.02 4.35L76.20 2.85L76.00 1.41L74.15 0.95L74.28 0.00L73.22 1.25L72.82 2.45L72.48 2.61L72.41 3.15L72.81 3.77L72.51 4.30L71.41 4.51L70.98 5.43L69.07 5.08L67.66 5.89L66.66 7.34L62.89 7.52L62.47 8.12L61.25 7.97L60.93 8.28L59.68 7.63L59.29 8.53L60.17 9.89L59.90 10.24L59.19 10.11L58.85 10.91L59.83 11.36L59.67 12.39L60.38 12.45L60.10 13.37L60.56 14.06L59.18 14.09L58.52 14.68L58.56 15.17L57.94 14.36L57.13 14.16L54.67 12.43L52.85 12.74L51.23 11.74L50.01 12.04L49.21 12.75L48.14 11.50L48.27 10.73L47.46 9.76L46.48 10.93L45.65 11.02L45.57 10.61L44.88 10.22L44.68 9.50L43.96 9.04L43.24 9.29L42.32 8.60L41.18 8.86L40.32 7.33L39.52 7.28L37.82 8.20L37.20 8.15L36.65 6.99L36.95 6.09L36.27 4.73L35.55 4.07L34.36 5.61L33.93 6.86L32.71 8.09L31.91 8.16L31.48 8.84L30.20 8.99L30.26 9.58L29.09 10.99L28.86 12.65L28.24 14.25L27.78 14.49L25.12 14.28L23.57 15.99L22.50 16.05L22.35 16.81L21.81 17.38L19.86 18.13L18.45 17.72L18.29 18.62L17.28 19.94L15.87 20.83L15.80 21.79L16.43 22.82L16.43 23.45L15.32 24.30L15.23 24.69L17.00 26.76L16.57 28.75L14.67 29.34L14.65 29.88L15.09 30.15L14.84 30.93L12.13 31.80L10.79 31.78L9.72 32.19L8.55 31.96L7.16 32.82L5.64 34.67L5.60 36.76L6.57 37.62L6.90 38.40L7.35 38.53L7.55 37.81L8.12 37.22L8.81 38.24L8.73 38.87L6.43 39.90L6.93 41.03L7.43 41.11L7.36 41.46L6.50 41.65L6.93 42.47L6.39 43.20L6.50 43.57L7.16 44.33L9.26 43.40L9.66 44.45L10.91 44.12L12.84 44.96L13.66 44.74L14.14 45.21L14.25 46.67L15.52 47.21L15.46 48.20L16.26 49.18L16.81 49.27L17.24 48.68L17.53 48.98L19.18 47.65L19.46 47.05L21.89 46.87L22.51 46.29L24.59 45.75L25.78 44.71L26.10 44.67L26.13 45.00L25.58 45.97L25.89 46.53L25.80 47.32L25.22 46.85L23.80 47.69L23.64 48.65L24.38 48.60L24.55 49.21L23.99 49.56L23.40 49.14L22.80 49.37L22.08 49.02L21.85 49.44L20.96 49.38L20.60 49.78L20.78 50.96L21.37 50.56L21.91 51.25L22.74 51.47L22.01 51.53L22.28 52.20L21.12 51.96L20.57 52.18L20.63 52.68L21.09 53.02L20.48 53.74L21.00 55.23L22.77 55.51L23.15 56.39L23.61 56.48L23.74 57.14L24.44 57.76L23.34 59.17L22.52 59.58L22.51 59.99L21.16 60.27L22.85 58.10L20.70 55.97L19.43 57.37L20.98 59.00L20.97 59.33L20.42 60.11L19.63 60.34L17.21 62.45L15.71 62.90L15.25 62.53L13.48 62.71L11.86 60.88L11.31 61.78L10.51 61.98L10.50 62.59L10.03 62.78L9.86 63.32L9.39 63.45L9.52 64.15L10.26 64.17L10.43 64.91L9.73 65.73L7.84 65.67L7.36 66.27L5.97 66.65L5.42 67.42L4.72 67.41L4.41 66.75L3.73 66.40L1.57 66.45L0.12 68.07L0.00 69.72L1.45 70.14L1.64 70.64L0.87 71.62L0.99 73.74L1.60 74.97L0.89 76.00L1.53 77.26L1.81 78.92L4.51 79.11L5.13 78.47L5.55 77.26L7.01 75.65L9.09 75.41L10.32 73.91L11.10 73.74L13.96 74.33L16.47 73.70L16.69 73.76L16.60 74.18L17.29 73.98L18.03 72.71L18.65 72.42L19.05 71.67L18.76 71.51L19.36 71.39L19.69 70.89L21.18 71.12L21.74 71.59L23.47 71.69L24.18 71.60L24.42 70.86L25.05 71.46L25.50 71.03L26.09 69.38L25.92 68.52L24.30 67.88L24.18 67.41L23.60 67.18L22.03 67.61L21.77 67.03L23.58 66.07L24.17 64.51L23.31 64.10L24.02 63.70L25.06 64.00L25.20 63.68L25.46 63.88L25.35 64.16L26.70 64.31L27.76 63.81L27.45 63.06L27.72 62.75L28.84 63.07L29.46 64.93L29.44 65.81L30.61 66.91L32.01 67.30L33.84 66.19L34.22 65.87L33.52 65.57L33.57 64.30L31.53 62.87L31.42 62.36L33.52 62.75L33.68 63.23L34.28 63.53L34.56 62.94L34.09 61.85L33.65 61.75L33.65 61.29L34.32 61.40L36.14 62.70L37.33 60.57L38.32 60.38L40.37 60.99L40.49 60.51L39.54 59.13L39.55 58.49L41.01 58.37L42.72 56.54L44.49 56.24L44.36 55.79L42.45 54.95L42.60 53.43L42.31 52.85L43.31 52.70L44.08 51.58L47.68 49.83L48.80 47.08L49.51 46.30L50.11 46.61L50.19 45.80L51.62 45.52L52.45 44.76L52.77 43.97L53.92 43.37L54.48 42.31L56.06 42.31L56.23 42.76L58.01 42.83L59.56 41.73ZM79.58 35.13L78.84 34.70L78.00 34.74L77.58 34.31L76.85 35.21L76.35 36.50L77.41 36.63L77.53 37.61L78.51 37.82L80.14 35.84ZM85.25 62.91L86.76 61.74L87.16 60.96L86.91 60.10L86.31 59.80L86.37 59.09L85.80 58.77L85.82 59.65L84.47 59.54L84.45 60.20L84.80 60.63L84.57 62.20ZM52.53 55.61L52.39 55.12L52.65 54.89L53.11 54.95L52.96 55.36L53.13 55.45L54.07 55.47L53.66 55.02L53.28 53.62L53.59 52.96L54.29 52.62L52.91 53.33L51.63 53.40L51.77 53.87L51.30 54.33L50.52 54.40L50.77 54.95L50.65 55.70L51.35 56.47L51.82 56.46ZM60.82 49.66L61.27 49.92L61.14 50.21L61.60 50.87L61.58 50.43L61.93 50.11L61.65 50.00L61.81 49.79L64.16 50.08L64.88 50.61L65.84 49.73L65.15 49.86L63.86 48.90L61.90 49.41L61.15 49.11L60.53 48.27L60.21 48.99L60.13 48.29L59.66 47.82L59.16 48.37L58.85 47.98L58.69 48.27L57.98 48.19L58.05 48.44ZM63.84 52.22L64.41 51.78L65.14 51.73L65.38 52.10L65.76 51.73L66.52 51.89L66.63 52.17L65.96 52.98L65.99 53.58L66.77 52.75L67.47 52.67L67.52 52.20L67.74 52.41L68.51 51.79L67.97 51.01L67.25 51.32L67.14 51.10L63.65 51.37L63.38 52.07ZM68.87 63.23L68.41 62.98L68.31 62.38L67.54 62.40L67.27 61.60L67.02 61.57L66.90 61.99L66.49 61.90L67.12 62.66L66.72 62.74L66.79 62.97L67.64 63.54L68.69 63.75ZM82.20 41.50L82.22 40.83L82.86 40.78L82.80 40.53L80.86 39.86L80.92 40.56L81.45 41.22L81.76 41.07ZM58.58 52.38L59.58 52.30L60.08 51.70L58.12 51.40L57.72 51.90ZM51.61 45.80L50.79 45.94L50.68 46.85L51.85 46.64L51.99 45.91ZM30.33 70.99L30.18 71.12L30.49 71.51L30.96 71.03L30.65 70.41L30.85 69.85L30.38 69.87L30.31 70.25L30.60 70.39L30.21 70.57ZM69.51 51.91L69.19 52.06L69.65 52.59L70.88 52.15ZM73.40 61.32L73.61 60.70L72.49 60.46L72.99 61.53L73.33 61.63ZM78.83 50.99L79.30 50.35L78.15 50.51Z"></path>
+              </svg>
+              <span class="dalian-label">大连</span>
+            </a>
+              <p class="dalian-caption">肘家班在大连</p>
+            </div>
+            <div class="navy-wrap">
+              <a class="navy-btn" href="navy.html" aria-label="肘家班水师">
+                <span class="navy-icon" aria-hidden="true">⚓️</span>
+              </a>
+              <p class="navy-caption">肘家班水师</p>
+            </div>
+          </div>
+          <div class="story-ends">
+            <p class="story-end">这个页面还不完整，因为我们之间的故事是写不完的</p>
+            <p class="story-end">这个页面没有底线，因为我们的故事还在书写</p>
+          </div>
+          <script src="pig3d.js" defer></script>
+        </div>
+      </section>
+
+      <section id="map" class="panel map-panel">
+        <div class="shell">
+          <h2 class="map-panel-title">目前肘家班成员分布</h2>
+          <div class="map-embed">
+            <iframe src="china.html?embed=1" title="目前肘家班成员分布地图" loading="lazy" scrolling="no"></iframe>
+          </div>
+          <p class="ending-text">千里搭长棚，天下没有不散的筵席。虽然高中生活结束了，我们各自投奔了自己的前程；即使相隔千里，我们的心也连在一处，永不离散<strong class="ending-brand">肘家班</strong></p>
+        </div>
+      </section>
+
+      <section id="ending" class="panel ending-panel">
+        <div class="shell">
+          <h2 class="map-panel-title">结语</h2>
+          <p class="ending-text">翻看相册的时候，我总会具象地、惊讶地意识到，我的生命中那些美好的瞬间是真实存在过的，像走马灯一样在我的脑海里重播。我们都不懂时间的重量，所以当离别真正到来的时候，只能傻傻愣在原地。人有时候突然变得脆弱，被漫长回忆里某个细节抓住，突然陷入深深的沉默，妄想在记忆里刻舟求剑。后来我们才明白，有些东西失去以后，我们唯一能做的只有怀念。</p>
+          <p class="ending-wish">愿肘家班的友谊天长地久！</p>
+        </div>
+      </section>
+
+  <script>
+  (function () {
+    var wrap = document.querySelector('.map-embed');
+    if (!wrap) return;
+    window.addEventListener('message', function (e) {
+      if (!e.data) return;
+      if (e.data.type === 'zjban:map-height' && e.data.h) {
+        var fr = wrap.querySelector('iframe');
+        if (fr && !wrap.classList.contains('is-zoomed')) fr.style.height = Math.max(240, e.data.h) + 'px';
+        return;
+      }
+      if (e.data.type !== 'zjban:map-zoom') return;
+      wrap.classList.toggle('is-zoomed', !!e.data.on);
+      document.body.style.overflow = e.data.on ? 'hidden' : '';
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && wrap.classList.contains('is-zoomed')) {
+        wrap.classList.remove('is-zoomed');
+        document.body.style.overflow = '';
+      }
+    });
+  })();
+  </script>
+    </main>
+
+    <footer class="site-foot">
+      <div class="shell">
+        <div class="foot-grid">
+          <div class="foot-brand-block">
+            <p class="foot-brand">肘家班</p>
+            <p class="foot-sub">哈尔滨市剑桥第三中学 · 高三十二班</p>
+          </div>
+          <nav class="foot-nav" aria-label="站内导航">
+            <a href="#story">我们的故事</a>
+            <a href="#people">成员</a>
+            <a href="#map">成员分布</a>
+            <a href="dalian.html">肘家班在大连</a>
+            <a href="school.html">校园生活</a>
+            <a href="navy.html">肘家班水师</a>
+            <a href="pig.html">猪的生日</a>
+          </nav>
+        </div>
+        <div class="foot-bottom">
+          <div class="foot-notes">
+            <p class="foot-note foot-note--sub">这个网站还不完整，因为我们之间的故事是写不完的。</p>
+            <p class="foot-note">这个网站没有底线，因为我们的故事还在书写。</p>
+          </div>
+          <p class="foot-year">© 2026 肘家班</p>
+        </div>
+        <p class="foot-disc">声明：本网站里的内容纯属虚构，请自行分辨，切勿当真。</p>
+      </div>
+    </footer>
+
+
+    <a class="tip-fab" href="reward.html" aria-label="打赏">
+      <span class="tip-fab-text">打赏</span>
+    </a>
+  <div class="sheet-modal" id="concept-modal" hidden>
+    <div class="sheet-box" role="dialog" aria-modal="true" aria-labelledby="concept-heading">
+      <button class="sheet-close" id="concept-close" type="button" aria-label="关闭">×</button>
+      <h2 id="concept-heading">我们的理念</h2>
+      <div class="sheet-body">
+        <p>肘家班坚持走中国特色社会主义道路，坚定不移听党话、跟党走，坚定理想信念，厚植家国情怀；团结协作、担当实干，守正向善、行有所止。以青春之力践行使命，以同心之志共赴远方，恪守底线，扶危规过，携手为民族复兴贡献青春力量！</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet-modal" id="apology-modal" hidden>
+    <div class="sheet-box" role="dialog" aria-modal="true" aria-labelledby="apology-heading">
+      <button class="sheet-close" id="apology-close" type="button" aria-label="关闭">×</button>
+      <h2 id="apology-heading">我们的致歉</h2>
+      <div class="sheet-body">
+        <p>作为十二班的一员，我们的行为给班主任带来了很多不必要的麻烦，给她出了很多难题，也多次惹她生气。但她对我们十分照顾与包容，愿意抽出时间辅导我们功课、督促我们学习、聆听我们的心声。肘家班很荣幸遇到这么好的老师，同时也对我们的行为感到抱歉与愧疚。在这里，肘家班诚恳道歉。</p>
+        <figure class="sheet-figure">
+          <img src="apology-photo.webp" alt="肘家班同学与班主任在操场上合影" width="1200" height="900" loading="lazy" decoding="async">
+        </figure>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet-modal" id="idea-modal" hidden>
+    <div class="sheet-box" role="dialog" aria-modal="true" aria-labelledby="idea-heading">
+      <button class="sheet-close" id="idea-close" type="button" aria-label="关闭">×</button>
+      <h2 id="idea-heading">我们的承诺</h2>
+      <div class="sheet-body">
+        <ol class="idea-list">
+          <li>
+            <span class="num">01</span>
+            <p>肘家班成员互帮互助、互相信任，笑过、骂过、脸红过，就是没有散过；处理事情对事不对人，遇到困难一致对外，遇到难题勇往直前；凝心聚力、彼此支撑，携手共度每一道难关。我们不只是酒肉朋友，更是能在顺境时互相勉励、逆境时不离不弃，真心相待、长久同行。愿肘家班的友谊天长地久！</p>
+          </li>
+        </ol>
+        <figure class="sheet-figure">
+          <img src="promise-photo.webp" alt="肘家班同学在操场上的合影" width="1200" height="900" loading="lazy" decoding="async">
+        </figure>
+      </div>
+    </div>
+  </div>
+
+  <div class="photo-modal" id="photo-modal" hidden>
+    <img id="photo-modal-img" alt="" decoding="async" loading="lazy">
+  </div>
+
+  <div class="avatar-modal" id="avatar-modal" hidden>
+    <div class="avatar-box" role="dialog" aria-modal="true" aria-label="成员头像">
+      <img alt="" loading="lazy" decoding="async">
+      <p></p>
+    </div>
+  </div>
+
+    <script>
+      const EN_MODE = document.documentElement.classList.contains('lang-en');
+      const MEMBER_EN = {
+"吕奥": {
+"name": "Lv Ao",
+"title": "Golden Enforcer",
+"badge": "Founder",
+"bio": "Led the Lv Corps after the General's exit\\nBrother Long's strictest father\\nGood at tying, taming and training the Dragon\\nGood at spotting problems and solving them\\nUnites and organizes members; bold yet careful\\nLeft and right hands in daily [Mission]s: [[Zhang Hao]] [[Cao Yuhuan]]\\nOnce served as second undercover in a [Mission]\\nHighest appearance frequency\\nFounder of Zhoujiaban\\nVeteran member of Zhoujiaban"
+},
+"朱星驰": {
+"name": "Zhu Xingchi",
+"title": "",
+"badge": "Co-founder",
+"bio": "Led the Chi Corps after the General's exit\\nPhysique passed the national pilot physical exam\\nThe most repressed person here\\nGood at making friends and networking\\nArrested by the authorities the most times ({{Arrested}})\\nOnce became the top egg-thrower in a [Mission]\\nHighest appearance frequency\\nVeteran member of Zhoujiaban"
+},
+"王源泉": {
+"name": "Wang Yuanquan",
+"title": "Golden Enforcer",
+"badge": "",
+"bio": "Former deputy of the Lv Corps\\nBest athletic talent among members; superb physique\\nOnce served as poisoner in a [Mission] ({{Arrested}})\\nTop damage output in daily [Mission]s\\nHighest appearance frequency\\nVeteran member of Zhoujiaban"
+},
+"张昊": {
+"name": "Zhang Hao",
+"title": "Golden Enforcer",
+"badge": "",
+"bio": "Former member of the Lv Corps\\nCan boss around a thousand chickens at home; bold\\nTook first blood in a [Mission]\\nOnce made Brother Long's mouth bleed in a [Mission]\\nHighest appearance frequency\\nVeteran member of Zhoujiaban"
+},
+"张桓": {
+"name": "Zhang Huan",
+"title": "",
+"badge": "Secretary",
+"bio": "Former member of the Lv Corps\\nSensitive and detail-minded\\nInner Mongolia's No.1 verbal output\\nOnce did verbal output in the group chat\\nSolved Zhoujiaban's biggest hidden threat\\nDirectly brought about today's Zhoujiaban\\nMedium appearance rate in [Mission]\\nVeteran member of Zhoujiaban"
+},
+"王者禹": {
+"name": "Wang Zheyu",
+"title": "",
+"badge": "",
+"bio": "Originally neutral faction\\nHulan Hero's fellow townsman\\nBold and steady; Zhoujiaban's silent pillar\\nBiggest guy in Zhoujiaban\\nOnce helped Zhang Huan defuse a team hazard\\nMostly serves as verbal output in [Mission]\\nHits the vitals; highly insulting\\nMedium appearance rate in [Mission]\\nVeteran member of Zhoujiaban"
+},
+"曹宇桓": {
+"name": "Cao Yuhuan",
+"title": "",
+"badge": "^(*￣(oo)￣)^",
+"bio": "Former Lv Corps member; codename: Pig\\nSlow-witted, highly reliable, fragile nerves, timid, obedient\\nSparring partner for Lv Ao; Zhoujiaban's thickest meat shield\\nServed as Lv Ao's deputy in several [Mission]s\\nFairly high appearance rate\\nVeteran member of Zhoujiaban"
+},
+"郎宏泽": {
+"name": "Lang Hongze",
+"title": "",
+"badge": "",
+"bio": "Former Chi Corps member; skilled at verbal output\\nVulgar, insulting, deeply perverse, utterly obscene\\nHigh smut IQ; strong at sophistry\\nZhoujiaban's most indispensable trash-talk talent\\nStrong execution, generous, never nitpicks\\nLoves to show off; timid; great at begging for mercy\\nOnce aided poisoner Wang Yuanquan in a [Mission] ({{Arrested}})\\nFairly high appearance rate\\nVeteran member of Zhoujiaban"
+},
+"周佳聪": {
+"name": "Zhou Jiacong",
+"title": "",
+"badge": "Fruit King",
+"bio": "Originally neutral faction\\nClassic blade-cut hair is the sharpest weapon\\nZhoujiaban's tank driver\\nZhoujiaban's on-campus record keeper\\nOnce picked a fight and framed the Big Bro in a [Mission]\\nOnce served as top undercover in a [Mission]\\nLater moved to Jinzhou, Liaoning; missed all [Mission]s\\nCurrently the most mature man in Zhoujiaban\\nVeteran member of Zhoujiaban"
+},
+"王振蘅": {
+"name": "Wang Zhenheng",
+"title": "",
+"badge": "(・ᴥ・)",
+"bio": "Former Lv Corps member; codename: Dog\\nSquare face is genetic, not from betel nut\\nZhoujiaban's No.1 simp\\nNo.1 science-brained\\nRanks last in Zhoujiaban\\nClever and scheming, but easily egged on and tempted\\nThe only one in Zhoujiaban who needs protecting\\nIn daily [Mission]s, always picks the fight first\\nFairly high appearance rate\\nVeteran figure of Zhoujiaban"
+},
+"宋君昊": {
+"name": "Song Junhao",
+"title": "",
+"badge": "",
+"bio": "Former member of the Chi Corps\\nZhoujiaban's diver\\nHumorous in daily talk; loyal to the team\\nRarely speaks, skips missions\\nUnsung esports player; high skill level\\nLow appearance rate\\nBrought into Zhoujiaban by [[Zhu Xingchi]] after the Chi Corps merger"
+},
+"只海博": {
+"name": "Zhi Haibo",
+"title": "",
+"badge": "",
+"bio": "Originally neutral; codename: Jiahao, Dog Bro\\nKind and plain; Zhoujiaban's golden voice, first-rate singer\\nThe most honest guy in Zhoujiaban\\nThe ballinest man in Zhoujiaban\\nThe kindest man in Zhoujiaban\\nZhoujiaban's backstage support\\nGood at counseling members and soothing their feelings\\nGenerally upbeat and cheerful\\nLow appearance rate\\nHonest and loyal; brought into Zhoujiaban by [[Zhou Jiacong]]\\nAlso the last member to join Zhoujiaban"
+}
+};
+      const MEMBER_TOTAL = 12;
+      const members = [
+        {
+          name: "吕奥",
+          date: "2008.08.10",
+          title: "金牌打手",
+          badge: "创始人",
+          bio: "将军落幕后曾带领吕家军\n龙哥大哥最严厉的父亲\n擅长捆龙 驯龙 调教龙\n擅长发现问题，解决问题\n擅长团结成员 组织成员 胆大心细\n日常【任务】左右手[[张昊]] [[曹宇桓]]\n曾在【任务】中担任第二卧底\n【任务】出场频率最高\n肘家班创始人\n肘家班元老级成员",
+          photo: "member-lvao.webp?v=3"
+        },
+        {
+          name: "朱星驰",
+          date: "2008.05.15",
+          badge: "副创始人",
+          bio: "将军落幕后曾带领驰家军\n身体素质通过国家飞行员体检\n最压抑之人\n擅长交友 联络\n被官方（{{逮捕}}）次数最多之人\n曾在【任务】中成为第一鸡蛋投手\n【任务】出场频率最高\n肘家班元老级成员",
+          photo: "member-zhu.webp?v=1"
+        },
+        {
+          name: "王源泉",
+          date: "2008.07.06",
+          title: "金牌打手",
+          bio: "原吕家军二把手\n成员中运动天赋最高，身体素质极好\n曾在【任务】中担任毒师（{{被逮捕}}）\n日常【任务】中第一输出\n【任务】出场频率最高\n肘家班元老级成员",
+          photo: "member-wang.webp?v=1"
+        },
+        {
+          name: "张昊",
+          date: "2008.03.27",
+          title: "金牌打手",
+          bio: "原吕家军成员\n在家能掌管上千只🐔，胆大\n拿下【任务】中一血\n【任务】中曾使龙哥嘴角流血\n【任务】出场频率最高\n肘家班元老级成员",
+          photo: "member-zhanghao.webp?v=1"
+        },
+        {
+          name: "张桓",
+          date: "2008.05.14",
+          badge: "秘书",
+          bio: "原吕家军成员\n心思细腻\n内蒙古第一语言输出\n曾在群内通过语言输出\n解决了肘家班最大的隐患\n直接促成了今天的肘家班\n【任务】出场率中等\n肘家班元老级成员",
+          photo: "member-zhanghuan.webp?v=1"
+        },
+        {
+          name: "王者禹",
+          date: "2008.04.13",
+          bio: "原中立派\n呼兰大侠老乡\n胆大沉稳　肘家班的默默砥柱\n肘家班块头最大之人\n曾协助张桓解决团队隐患\n【任务】中大多担任言语输出\n风格直击要害　侮辱性强\n【任务】出场率中等\n肘家班元老级成员",
+          photo: "member-wangzy.webp?v=1"
+        },
+        {
+          name: "曹宇桓",
+          badge: "^(*￣(oo)￣)^",
+          badgeTone: "pink",
+          date: "2008.03.01",
+          bio: "原吕家军成员　代号：猪\n头脑慢 可信度高 心理素质偏脆弱 胆小 听话\n日常做吕奥陪练　肘家班最厚肉盾\n曾在多次【任务】中做吕奥副手\n【任务】出场率偏高\n肘家班元老级成员",
+          photo: "member-caoyh.webp?v=1"
+        },
+        {
+          name: "郎宏泽",
+          date: "2008.05.16",
+          bio: "原驰家军成员　擅长语言输出\n风格偏低俗　侮辱　极具恶趣味　淫秽不堪\n淫商高　狡辩能力强\n肘家班最不可或缺的垃圾话输出人才\n执行力强，为人大方不爱计较\n酷爱装逼　胆小　擅求饶\n曾在【任务】中协助毒师王源泉（{{被逮捕}}）\n【任务】出场率偏高\n肘家班元老级成员",
+          photo: "member-langhz.webp?v=1"
+        },
+        {
+          name: "周佳聪",
+          badge: "水果王",
+          date: "2007.04.24",
+          bio: "原中立派\n经典刀片头是最锋利的武器\n肘家班坦克驾驶员\n肘家班校内记录员\n曾在【任务】中找茬并诬陷大哥\n曾在【任务】中做第一卧底\n后续转到辽宁锦州未参与【任务】\n肘家班目前最成熟的男人\n肘家班元老级成员",
+          photo: "member-zhoujc.webp?v=1"
+        },
+        {
+          name: "王振蘅",
+          date: "2007.12.24",
+          badge: "(・ᴥ・)",
+          badgeTone: "yellow",
+          bio: "原吕家军成员　代号：狗\n方脸不是爱槟郎而是天生\n肘家班第一舔狗\n理科思维第一\n实力肘家班中垫底\n头脑聪明 心眼儿多但经不起怂恿与诱惑\n肘家班中唯一需要被团队保护的人\n日常【任务】中善于优先找茬\n【任务】出场率偏高\n肘家班元老级人物",
+          photo: "member-wangzh.webp?v=1"
+        },
+        {
+          name: "宋君昊",
+          date: "2008.02.28",
+          bio: "原驰家军成员\n肘家班潜水员\n日常生活说话幽默　忠于团队\n平时很少发表言论不参与任务\n默默无闻的电竞员　游戏水平高\n【任务】出场率低\n驰家军合并后由[[朱星驰]]带入肘家班",
+          photo: "member-songjh.webp?v=1"
+        },
+        {
+          name: "只海博",
+          date: "2007.10.09",
+          badgeImg: "badge-zhihb-white.png",
+          badgeTone: "black",
+          bio: "原中立派　代号：嘉豪，狗哥\n善良忠厚 朴实　肘家班金嗓子 唱歌一流\n肘家班最老实的人\n肘家班最豪的男人\n肘家班最善良的男人\n肘家班幕后保障\n善于给成员做心理疏导，安慰他人情绪\n总体乐观开朗\n【任务】出场率低\n为人忠厚　由[[周佳聪]]带入肘家班\n也是最后加入肘家班的成员",
+          photo: "member-zhihb.webp?v=1"
+        }
+
+      ];
+
+      const list = document.getElementById("member-list");
+      members.forEach((person) => {
+        const L = EN_MODE ? (MEMBER_EN[person.name] || {}) : {};
+        const li = document.createElement("li");
+
+        if (person.photo) {
+          const img = document.createElement("img");
+          img.className = "photo";
+          img.src = person.photo;
+          img.alt = (L.name || person.name);
+          img.width = 800;
+          img.height = 1062;
+          img.loading = "lazy";
+          img.decoding = "async";
+          li.appendChild(img);
+        } else {
+          const ph = document.createElement("div");
+          ph.className = "photo blank";
+          ph.textContent = "照片待补";
+          li.appendChild(ph);
+        }
+
+        const meta = document.createElement("div");
+        meta.className = "member-meta";
+
+        const h = document.createElement("h3");
+        h.className = "member-name";
+        h.textContent = (L.name || person.name);
+        if (person.badgeImg) {
+          const logo = document.createElement("span");
+          logo.className = "member-tag svg-badge " + (person.badgeTone || "blue");
+          const img = document.createElement("img");
+          img.src = person.badgeImg;
+          img.alt = person.name + "的标签";
+          logo.appendChild(img);
+          h.appendChild(logo);
+        } else if (person.badgeSvg) {
+          const logo = document.createElement("span");
+          logo.className = "member-tag svg-badge " + (person.badgeTone || "blue");
+          logo.innerHTML = person.badgeSvg;
+          logo.setAttribute("aria-hidden", "true");
+          h.appendChild(logo);
+        } else if (person.badge) {
+          const badge = document.createElement("span");
+          badge.className = "member-tag " + (person.badgeTone || "blue");
+          badge.textContent = (L.badge || person.badge);
+          h.appendChild(badge);
+        }
+        if (person.title || L.title) {
+          const tag = document.createElement("span");
+          tag.className = "member-tag";
+          tag.textContent = (L.title || person.title);
+          h.appendChild(tag);
+        }
+
+        const p = document.createElement("p");
+        p.className = "member-bio";
+
+        const appendInline = (text, parent) => {
+          let rest = text;
+          while (rest.length) {
+            const redAt = rest.indexOf("{{");
+            const linkAt = rest.indexOf("[[");
+            if (redAt < 0 && linkAt < 0) {
+              parent.appendChild(document.createTextNode(rest));
+              return;
+            }
+            const isRed = redAt >= 0 && (linkAt < 0 || redAt < linkAt);
+            const open = isRed ? redAt : linkAt;
+            const closeToken = isRed ? "}}" : "]]";
+            if (open > 0) parent.appendChild(document.createTextNode(rest.slice(0, open)));
+            const close = rest.indexOf(closeToken, open + 2);
+            if (close < 0) {
+              parent.appendChild(document.createTextNode(rest.slice(open)));
+              return;
+            }
+            const inner = rest.slice(open + 2, close);
+            if (isRed) {
+              const mark = document.createElement("span");
+              mark.className = "red";
+              mark.textContent = inner;
+              parent.appendChild(mark);
+            } else {
+              const mate = members.find((item) => item.name === inner || (EN_MODE && MEMBER_EN[item.name] && MEMBER_EN[item.name].name === inner));
+              const btn = document.createElement("button");
+              btn.type = "button";
+              btn.className = "member-link";
+              btn.textContent = inner;
+              btn.setAttribute("aria-label", EN_MODE ? ("View " + inner + " photo") : ("查看" + inner + "的头像"));
+              if (mate && mate.photo) {
+                btn.dataset.photo = mate.photo;
+                btn.dataset.name = mate.name;
+              }
+              parent.appendChild(btn);
+            }
+            rest = rest.slice(close + 2);
+          }
+        };
+
+        (L.bio || person.bio).split("\n").forEach((line, i) => {
+          if (i) p.appendChild(document.createElement("br"));
+          const lineEl = document.createElement("span");
+          if (line === "金牌打手") lineEl.className = "gold";
+          appendInline(line, lineEl);
+          p.appendChild(lineEl);
+        });
+
+        meta.appendChild(h);
+        meta.appendChild(p);
+        if (person.date) {
+          const dateEl = document.createElement("span");
+          dateEl.className = "member-date";
+          dateEl.textContent = person.date;
+          meta.appendChild(dateEl);
+        }
+        li.appendChild(meta);
+        list.appendChild(li);
+      });
+
+
+
+      const remaining = Math.max(0, MEMBER_TOTAL - members.length);
+      if (remaining > 0) {
+        const todo = document.createElement("li");
+        todo.className = "todo";
+        const strong = document.createElement("strong");
+        strong.textContent = "还有 " + remaining + " 位同学";
+        const span = document.createElement("span");
+        span.textContent = "姓名、一句话简介、照片，到齐了再填。";
+        todo.appendChild(strong);
+        todo.appendChild(span);
+        list.appendChild(todo);
+      }
+
+      const avatarModal = document.getElementById("avatar-modal");
+      if (avatarModal && list) {
+        const avatarImg = avatarModal.querySelector("img");
+        const avatarName = avatarModal.querySelector("p");
+        let lastTrigger = null;
+
+        const closeAvatar = () => {
+          avatarModal.hidden = true;
+          document.body.classList.remove("modal-open");
+          if (lastTrigger) lastTrigger.focus();
+        };
+
+        document.addEventListener("click", (event) => {
+          const trigger = event.target.closest(".member-link");
+          if (!trigger || !trigger.dataset.photo) return;
+          lastTrigger = trigger;
+          avatarImg.src = trigger.dataset.photo;
+          avatarImg.alt = (trigger.dataset.name || "") + " 的头像";
+          avatarName.textContent = trigger.dataset.name || "";
+          avatarModal.hidden = false;
+          document.body.classList.add("modal-open");
+        });
+
+        avatarModal.addEventListener("click", (event) => {
+          if (!event.target.closest(".avatar-box")) closeAvatar();
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape" && !avatarModal.hidden) closeAvatar();
+        });
+      }
+
+      [
+        { trigger: "idea-open", modal: "idea-modal", close: "idea-close" },
+        { trigger: "apology-open", modal: "apology-modal", close: "apology-close" },
+        { trigger: "concept-open", modal: "concept-modal", close: "concept-close" }
+      ].forEach((cfg) => {
+        const trigger = document.getElementById(cfg.trigger);
+        const modal = document.getElementById(cfg.modal);
+        const closeBtn = document.getElementById(cfg.close);
+        if (!trigger || !modal) return;
+        const open = () => {
+          modal.hidden = false;
+          document.body.classList.add("modal-open");
+          if (closeBtn) closeBtn.focus();
+        };
+        const close = () => {
+          modal.hidden = true;
+          document.body.classList.remove("modal-open");
+          trigger.focus({ preventScroll: true });
+        };
+        trigger.addEventListener("click", (event) => {
+          event.preventDefault();
+          open();
+        });
+        if (closeBtn) closeBtn.addEventListener("click", close);
+        modal.addEventListener("click", (event) => {
+          if (!event.target.closest(".sheet-box")) close();
+        });
+        document.addEventListener("keydown", (event) => {
+          if (event.key !== "Escape" || modal.hidden) return;
+          const zoom = document.getElementById("photo-modal");
+          if (zoom && !zoom.hidden) return;
+          close();
+        });
+      });
+
+      const photoModal = document.getElementById("photo-modal");
+      const photoModalImg = document.getElementById("photo-modal-img");
+      if (photoModal && photoModalImg) {
+        const closePhoto = () => {
+          photoModal.hidden = true;
+          photoModalImg.removeAttribute("src");
+        };
+        document.addEventListener("click", (event) => {
+          const fig = event.target.closest(".sheet-figure img, .photo-window-inner img");
+          if (fig) {
+            photoModalImg.src = fig.currentSrc || fig.src;
+            photoModalImg.alt = fig.alt || "";
+            photoModal.hidden = false;
+            return;
+          }
+          if (!photoModal.hidden && !event.target.closest(".photo-modal img")) {
+            closePhoto();
+          }
+        });
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape" && !photoModal.hidden) {
+            event.stopPropagation();
+            closePhoto();
+          }
+        }, true);
+      }
+
+      const topBar = document.getElementById("site-top");
+      const cover = document.getElementById("cover");
+      if (topBar && cover) {
+        const syncBar = () => topBar.classList.toggle("is-solid", window.scrollY > cover.offsetHeight - 60);
+        syncBar();
+        window.addEventListener("scroll", syncBar, { passive: true });
+        window.addEventListener("resize", syncBar, { passive: true });
+      }
+
+      const stage = document.getElementById("man-stage");
+      const rig = document.getElementById("man-rig");
+      const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (stage && rig && !reduceMotion) {
+        let visible = true;
+        let frame = 0;
+        let px = 0;
+        let py = 0;
+
+        const draw = () => {
+          frame = 0;
+          const box = stage.getBoundingClientRect();
+          const cx = box.left + box.width / 2;
+          const cy = box.top + box.height / 2;
+          const dx = (px - cx) / Math.max(window.innerWidth * 0.45, 1);
+          const dy = (py - cy) / Math.max(window.innerHeight * 0.45, 1);
+          const ry = Math.max(-1, Math.min(1, dx)) * 32;
+          const rx = Math.max(-1, Math.min(1, dy)) * -18;
+          rig.style.transform = "rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) + "deg)";
+        };
+
+        const track = (x, y) => {
+          px = x;
+          py = y;
+          if (!frame && visible) frame = window.requestAnimationFrame(draw);
+        };
+
+        const reset = () => {
+          if (frame) {
+            window.cancelAnimationFrame(frame);
+            frame = 0;
+          }
+          rig.style.transform = "";
+        };
+
+        window.addEventListener("pointermove", (e) => track(e.clientX, e.clientY), { passive: true });
+        window.addEventListener("mouseleave", reset);
+        stage.addEventListener("touchend", reset, { passive: true });
+        stage.addEventListener("touchcancel", reset, { passive: true });
+        stage.addEventListener("touchstart", (e) => {
+          const t = e.changedTouches[0];
+          if (t) track(t.clientX, t.clientY);
+        }, { passive: true });
+        stage.addEventListener("touchmove", (e) => {
+          const t = e.touches[0];
+          if (t) track(t.clientX, t.clientY);
+        }, { passive: true });
+
+        if ("IntersectionObserver" in window) {
+          new IntersectionObserver((entries) => {
+            visible = entries[0].isIntersecting;
+            if (visible && !frame) frame = window.requestAnimationFrame(draw);
+          }).observe(stage);
+        }
+      }
+
+
+      (function () {
+      try {
+        const track = document.getElementById("shots");
+        const input = document.getElementById("shot-input");
+        const addBtn = document.getElementById("shot-add");
+        const empty = document.getElementById("shots-empty");
+        if (!track) return;
+
+        const KEY = "zhoujiaban.photos";
+        const SEED = [
+          { src: "gallery-1.webp", alt: "走廊里的合影" },
+          { src: "gallery-2.webp", alt: "操场上的合影" },
+          { src: "gallery-3.webp", alt: "球场边的合影" },
+          { src: "gallery-4.webp", alt: "吃饭时的合影" },
+          { src: "gallery-5.webp", alt: "钟楼前的合影" },
+          { src: "gallery-6.webp", alt: "室内的合影" },
+          { src: "gallery-7.webp", alt: "西装合影" },
+          { src: "gallery-8.webp", alt: "教室里挤在一起的合影" }
+        ];
+
+        const load = () => {
+          try {
+            const v = JSON.parse(localStorage.getItem(KEY) || "[]");
+            return Array.isArray(v) ? v : [];
+          } catch (e) {
+            return [];
+          }
+        };
+        const save = (list) => {
+          try {
+            localStorage.setItem(KEY, JSON.stringify(list));
+            return true;
+          } catch (e) {
+            alert("浏览器本地空间不够了，先删掉几张再上传。");
+            return false;
+          }
+        };
+
+        const shrink = (file) => new Promise((resolve, reject) => {
+          const url = URL.createObjectURL(file);
+          const img = new Image();
+          img.onload = () => {
+            const max = 1600;
+            const scale = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+            const w = Math.round(img.naturalWidth * scale);
+            const h = Math.round(img.naturalHeight * scale);
+            const canvas = document.createElement("canvas");
+            canvas.width = w;
+            canvas.height = h;
+            canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+            URL.revokeObjectURL(url);
+            resolve(canvas.toDataURL("image/jpeg", 0.84));
+          };
+          img.onerror = (e) => {
+            URL.revokeObjectURL(url);
+            reject(e);
+          };
+          img.src = url;
+        });
+
+        const cell = (item, editable, eager) => {
+          const box = document.createElement("div");
+          box.className = "shot";
+          const img = document.createElement("img");
+          img.src = item.src;
+          img.alt = item.alt || "照片";
+          img.loading = eager ? "eager" : "lazy";
+          img.decoding = "async";
+          box.appendChild(img);
+          if (item.id && editable) {
+            const del = document.createElement("button");
+            del.type = "button";
+            del.className = "shot-del";
+            del.textContent = "\u00d7";
+            del.title = "删除这张";
+            del.addEventListener("click", (event) => {
+              event.stopPropagation();
+              save(load().filter((photo) => photo.id !== item.id));
+              render();
+            });
+            box.appendChild(del);
+          }
+          return box;
+        };
+
+        const render = () => {
+          const items = SEED.concat(load());
+          if (empty) empty.hidden = items.length > 0;
+          track.textContent = "";
+          [true, false].forEach((visible) => {
+            const set = document.createElement("div");
+            set.className = "photo-set";
+            if (!visible) set.setAttribute("aria-hidden", "true");
+            items.forEach((item) => set.appendChild(cell(item, visible, visible)));
+            track.appendChild(set);
+          });
+        };
+
+        if (addBtn && input) {
+        addBtn.addEventListener("click", () => input.click());
+        input.addEventListener("change", async () => {
+          const files = Array.from(input.files || []);
+          input.value = "";
+          if (!files.length) return;
+          const list = load();
+          for (const file of files) {
+            if (!file.type.startsWith("image/")) continue;
+            try {
+              const src = await shrink(file);
+              list.push({
+                id: String(Date.now()) + Math.random().toString(16).slice(2, 8),
+                src: src,
+                alt: file.name
+              });
+            } catch (e) {
+              /* unreadable file: skip */
+            }
+          }
+          if (save(list)) render();
+        });
+        }
+
+        render();
+      } catch (err) { console.error("[zhoujiaban] module failed", err); }
+      })();
+    </script>
+<script src="exit-intent.js" defer></script>
+<script src="media-mobile.js" defer></script>
+<script>
+/* 成员横滑提示：滚动后淡出右侧渐隐，滑动过就收起提示 */
+(function () {
+  function syncMembersRail() {
+    var rail = document.getElementById('member-list');
+    var fade = document.getElementById('members-fade');
+    var hint = document.getElementById('members-hint');
+    if (!rail || !fade) return;
+    var max = rail.scrollWidth - rail.clientWidth;
+    var left = rail.scrollLeft || 0;
+    fade.classList.toggle('is-off', max <= 4 || left >= max - 8);
+    if (hint) hint.classList.toggle('is-done', left > 40 || max <= 4);
+  }
+  var rail = document.getElementById('member-list');
+  if (rail) {
+    rail.addEventListener('scroll', syncMembersRail, { passive: true });
+  }
+  window.addEventListener('resize', syncMembersRail);
+  window.addEventListener('load', function () { setTimeout(syncMembersRail, 200); });
+  setTimeout(syncMembersRail, 600);
+})();
+</script>
+<script>
+/* 创建初史 / 队伍合并：滚动进入视口时弹出 */
+(function () {
+  var cards = document.querySelectorAll('.reveal-card');
+  if (!cards.length) return;
+  if (!('IntersectionObserver' in window)) {
+    for (var i = 0; i < cards.length; i++) cards[i].classList.add('is-in');
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+  cards.forEach(function (c) { io.observe(c); });
+})();
+</script>
+  <script src="lang.js" defer></script>
+</body>
+</html>

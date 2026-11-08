@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>关卡 · 肘家班十二篇</title>
+<style>
+  :root{--bg:#0b0f16;--line:#243044;--gold:#e8b455;--gold2:#f5d08a;--txt:#dfe7f3;--dim:#8a9ab0}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{background:radial-gradient(1000px 600px at 50% -10%,#16233a,transparent 60%),var(--bg);
+    color:var(--txt);font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    display:flex;align-items:center;justify-content:center;padding:24px}
+  .box{width:min(680px,100%);border:1px solid var(--line);border-radius:18px;padding:34px 30px;
+    background:linear-gradient(180deg,rgba(22,31,46,.96),rgba(12,17,26,.97));text-align:center}
+  .no{font-size:12px;letter-spacing:.4em;color:var(--gold)}
+  h1{margin:12px 0 6px;font-size:30px;letter-spacing:.08em}
+  .tag{color:var(--gold);letter-spacing:.3em;font-size:13px}
+  img{height:150px;image-rendering:pixelated;margin:18px 0 6px}
+  p{color:#a9b8cc;line-height:1.95;font-size:14px}
+  .levels{display:flex;gap:10px;justify-content:center;margin:20px 0 26px;flex-wrap:wrap}
+  .lv{padding:12px 18px;border:1px solid var(--line);border-radius:10px;font-size:13px;color:#8fa3bd;background:rgba(255,255,255,.02)}
+  .lv.on{border-color:rgba(232,180,85,.55);color:var(--gold2);background:rgba(232,180,85,.08)}
+  .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  button, a.btn{font-family:inherit;padding:12px 22px;border-radius:11px;border:1px solid var(--line);
+    background:rgba(255,255,255,.03);color:var(--txt);text-decoration:none;font-size:14px;cursor:pointer}
+  a.btn.ghost:hover,button:hover{border-color:#38507a}
+  .hint{margin-top:18px;font-size:12px;color:#63748c;letter-spacing:.12em}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="no" id="no">第 一 篇</div>
+  <h1 id="name">吕奥</h1>
+  <div class="tag" id="tag">镜 头</div>
+  <img id="face" src="sprites/lvao.png" alt="">
+  <p id="desc">—</p>
+  <div class="levels">
+    <div class="lv on">第一关</div>
+    <div class="lv">第二关</div>
+    <div class="lv">第三关</div>
+  </div>
+  <div class="row">
+    <a class="btn ghost" href="index.html">← 返回十二篇</a>
+    <button id="play">进入第一关</button>
+  </div>
+  <div class="hint" id="hint">关卡正在制作中 · 先把入口留好</div>
+</div>
+
+<script>
+const CH = {
+  lvao:        {no:'一', name:'吕奥',   tag:'镜 头',   desc:'他手里总有一台相机。第一卷胶带里，装着十二个人还没散的夏天。'},
+  zhuxingchi:  {no:'二', name:'朱星驰', tag:'烟 雾',   desc:'走廊尽头那扇窗，烟雾散得比下课铃慢。要找的东西就藏在烟气后面。'},
+  zhanghuan:   {no:'三', name:'张桓',   tag:'球 鞋',   desc:'球场上画着十格线，他偏偏总踩在第十一格。这一篇从一双鞋开始。'},
+  zhoujiacong: {no:'四', name:'周佳聪', tag:'抽 屉',   desc:'记录员的抽屉里有一摞没编号的照片，每一张背面都写着日期。'},
+  wangzheyu:   {no:'五', name:'王者禹', tag:'迟 到',   desc:'他迟到的那节课，黑板上多写了一行没人承认的字。'},
+  caoyuhuan:   {no:'六', name:'曹宇桓', tag:'生 日',   desc:'被捆起来的十八岁，蛋糕上的蜡烛从头到尾只点着三根。'},
+  zhanghao:    {no:'七', name:'张昊',   tag:'漫 画',   desc:'他的课本边角全是画，最后一格永远是空白的，等着被填上。'},
+  wangyuanquan:{no:'八', name:'王源泉', tag:'外 套',   desc:'那件外套的肩上有一道红线。线从哪来，只有他知道。'},
+  wangzhenheng:{no:'九', name:'王振蘅', tag:'三号柜', desc:'实验室第三个柜子锁了很多年，钥匙挂在一只狗的项圈上。'},
+  songjunhao:  {no:'十', name:'宋君昊', tag:'白 T',   desc:'操场边那个木箱，只有他记得里面原本装的是什么。'},
+  zhihaibo:    {no:'十一', name:'只海博', tag:'口 罩', desc:'他很少把口罩摘下来。摘下来那天，班牌不见了。'},
+  langhongze:  {no:'十二', name:'郎宏泽', tag:'红面具', desc:'最后一班公交开走时，站牌上多了一个不属于这里的名字。'},
+};
+const id = new URLSearchParams(location.search).get('id') || 'lvao';
+const c = CH[id] || CH.lvao;
+document.getElementById('no').textContent = `第 ${c.no} 篇`;
+document.getElementById('name').textContent = c.name;
+document.getElementById('tag').textContent = c.tag;
+document.getElementById('desc').textContent = c.desc;
+document.getElementById('face').src = `sprites/${CH[id] ? id : 'lvao'}.png`;
+if(id === 'zhuxingchi'){ document.getElementById('hint').textContent = '第一关已可游玩：走进盒饭店'; }
+document.getElementById('play').addEventListener('click', () => {
+  if(id === 'zhuxingchi'){ location.href = 'ch2.html'; return; }
+  alert('这篇的关卡还在做，先做的是第二篇·朱星驰。');
+});
+</script>
+</body>
+</html>
