@@ -6,8 +6,8 @@
 <title>肘家班 · 逃生 — 主菜单</title>
 <style>
   html,body{margin:0;height:100%;background:#e9dcbe;overflow:hidden}
-  #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
-  canvas{display:block;cursor:default;touch-action:manipulation}
+  #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:2}
+  canvas{display:block;cursor:default;touch-action:manipulation;background:#e9dcbe}
   html,body,#wrap,canvas{-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
   #toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);
     background:#241f18ee;color:#f3e9d4;font:14px/1.5 "Kaiti SC","STKaiti",KaiTi,serif;
@@ -135,10 +135,10 @@ const VID = document.createElement('video');
 VID.src = 'sprites/mona-v8.mp4?v=230';
 VID.muted = true; VID.defaultMuted = true; VID.loop = true;
 VID.playsInline = true; VID.autoplay = true;
-['playsinline','webkit-playsinline','muted','autoplay','preload'].forEach(function(a){
-  VID.setAttribute(a, a==='preload' ? 'auto' : '');
-});
-VID.style.cssText='position:fixed;left:-4px;top:-4px;width:2px;height:2px;opacity:.01;pointer-events:none;z-index:-1';
+['playsinline','webkit-playsinline'].forEach(function(a){ VID.setAttribute(a,'true'); });
+['muted','autoplay'].forEach(function(a){ VID.setAttribute(a,''); });
+VID.setAttribute('preload','auto');
+VID.style.cssText='position:fixed;left:0;top:0;width:100%;height:100%;object-fit:cover;opacity:1;pointer-events:none;z-index:0;background:#e9dcbe';
 document.body.appendChild(VID);
 function vidKick(){ try{ var p=VID.play(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
 ['loadeddata','canplay','canplaythrough','stalled','suspend'].forEach(function(ev){
@@ -149,6 +149,9 @@ document.addEventListener('touchstart', vidKick, {passive:true});
 document.addEventListener('click', vidKick, {passive:true});
 document.addEventListener('visibilitychange', function(){ if(!document.hidden) vidKick(); });
 try{ VID.load(); }catch(e){}
+if(window.WeixinJSBridge){ vidKick(); }
+document.addEventListener('WeixinJSBridgeReady', function(){ vidKick(); }, false);
+[0,120,400,900,1800].forEach(function(ms){ setTimeout(vidKick, ms); });
 vidKick();
 let VIDFAIL=false;
 function vidReady(){ return !VIDFAIL && !VID.error && VID.readyState >= 2 && VID.videoWidth > 0; }
@@ -342,8 +345,7 @@ function drawTitle(t){
   g.restore();
   // 副标题
   g.save(); g.fillStyle='#4a3f31'; g.font='17px "Kaiti SC","STKaiti",KaiTi,serif';
-  g.fillText('哈西站 · 一盒饭引出的十二篇',LAY.sub.x,LAY.sub.y);
-  line(LAY.rule.x1,LAY.rule.y,LAY.rule.x2,LAY.rule.y,1.4,.45,1.2);
+
   g.restore();
 }
 
