@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>肘家班 · 逃生 — 主菜单</title>
+<style>
+  html,body{margin:0;height:100%;background:#e9dcbe;overflow:hidden}
+  #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:2}
+  canvas{display:block;cursor:default;touch-action:manipulation;background:#e9dcbe}
+  html,body,#wrap,canvas{-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+  #toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);
+    background:#241f18ee;color:#f3e9d4;font:14px/1.5 "Kaiti SC","STKaiti",KaiTi,serif;
+    padding:9px 16px;border-radius:2px;opacity:0;transition:opacity .25s;pointer-events:none;letter-spacing:.06em}
+  #toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="cv"></canvas></div>
+<div id="toast"></div>
+<script>
+const cv=document.getElementById('cv'), g=cv.getContext('2d');
+let W=720,H=1440,LAY={portrait:false};
+function layout(){
+  const vw=window.innerWidth||390, vh=window.innerHeight||844;
+  const portrait = vh > vw*1.02;
+  if(portrait){
+    W=720;
+    H=Math.max(1180, Math.round(720*vh/Math.max(1,vw)));
+    const top=Math.round(H*0.16);
+    const menuY=top+140, gap=90, hintY=menuY+2*gap+42;
+    const fy=hintY+26;
+    let fh=H-fy-104;
+    let fw=fh*3/4;
+    if(fw>W*0.82){ fw=W*0.82; fh=fw*4/3; }
+    if(fh<420){ fh=420; fw=fh*3/4; }
+    LAY={portrait:true,
+      title:{x:56,y:top,size:104}, seal:{x:436,y:top-36},
+      sub:{x:60,y:top+74}, rule:{x1:60,x2:452,y:top+86},
+      menu:{x:56,y:menuY,w:392,h:66,gap:gap},
+      hint:{x:56,y:hintY},
+      frame:{fx:Math.round((W-fw)/2),fy:fy,fw:Math.round(fw),fh:Math.round(fh)},
+      boxes:false};
+  }else{
+    W=1280;H=720;
+    LAY={portrait:false,
+      title:{x:70,y:150,size:104}, seal:{x:422,y:114},
+      sub:{x:72,y:206}, rule:{x1:72,x2:354,y:216},
+      menu:{x:70,y:268,w:262,h:58,gap:82},
+      hint:{x:72,y:452},
+      frame:{fx:752,fy:64,fw:452,fh:600},
+      boxes:true};
+  }
+  GY = portrait ? Math.round(H*0.34) : 520;
+}
+const KEY='zjban.escape.progress';
+let progress={}; try{progress=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){progress={};}
+const TOTAL=12;
+let cleared=Object.keys(progress).filter(k=>progress[k]).length;
+
+/* ================= 手绘工具 ================= */
+let seed=20260518;
+function rnd(){ seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff; }
+function rng(s){ seed=s; }
+const INK='#241f18', PAPER='#e9dcbe', RED='#a8372a', PAPER2='#f2e8d2';
+
+function stroke(pts,w,alpha,jit){
+  jit=jit==null?1.2:jit;
+  g.save(); g.strokeStyle=INK; g.globalAlpha=alpha==null?1:alpha;
+  g.lineWidth=w||2.4; g.lineCap='round'; g.lineJoin='round';
+  g.beginPath();
+  for(let i=0;i<pts.length-1;i++){
+    const a=pts[i], b=pts[i+1], len=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    const n=Math.max(1,Math.round(len/22));
+    for(let k=0;k<=n;k++){
+      const t=k/n;
+      const x=a[0]+(b[0]-a[0])*t+(rnd()-.5)*jit;
+      const y=a[1]+(b[1]-a[1])*t+(rnd()-.5)*jit;
+      if(i===0&&k===0) g.moveTo(x,y); else g.lineTo(x,y);
+    }
+  }
+  g.stroke(); g.restore();
+}
+function line(x1,y1,x2,y2,w,alpha,jit){ stroke([[x1,y1],[x2,y2]],w,alpha,jit); }
+function box(x,y,w,h,lw,alpha){ stroke([[x,y],[x+w,y],[x+w,y+h],[x,y+h],[x,y]],lw,alpha,1.4); }
+function fill(x,y,w,h,c){ g.fillStyle=c; g.fillRect(x,y,w,h); }
+function poly(pts,c,alpha){
+  g.save(); g.globalAlpha=alpha==null?1:alpha; g.fillStyle=c; g.beginPath();
+  pts.forEach(function(p,i){ i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]); }); g.closePath(); g.fill(); g.restore();
+}
+function hatch(x,y,w,h,step,alpha){
+  g.save(); g.beginPath(); g.rect(x,y,w,h); g.clip();
+  g.globalAlpha=alpha==null?.22:alpha; g.strokeStyle=INK; g.lineWidth=1;
+  g.beginPath();
+  for(let i=-h;i<w;i+=step){ g.moveTo(x+i,y+h); g.lineTo(x+i+h,y); }
+  g.stroke(); g.restore();
+}
+
+/* ================= 纸 ================= */
+function drawPaper(){
+  fill(0,0,W,H,PAPER);
+  // 细颗粒
+  rng(77);
+  // 纤维
+  for(let i=0;i<4200;i++){
+    const x=rnd()*W,y=rnd()*H;
+    g.fillStyle='rgba(92,72,44,'+(0.04+rnd()*0.07)+')';
+    g.fillRect(x,y,1+rnd()*2.2,1);
+  }
+  // 大块污渍
+  [[170,120,170,110,.06],[1080,600,220,140,.05],[600,660,240,100,.05],[340,420,120,80,.04]].forEach(function(s){
+    g.save(); g.globalAlpha=s[4]; g.fillStyle='#8a6940';
+    g.beginPath(); g.ellipse(s[0],s[1],s[2],s[3],.4,0,Math.PI*2); g.fill(); g.restore();
+  });
+  // 上下压暗
+  const v=g.createLinearGradient(0,0,0,H);
+  v.addColorStop(0,'rgba(96,72,42,.16)'); v.addColorStop(.18,'rgba(96,72,42,0)');
+  v.addColorStop(.82,'rgba(96,72,42,0)'); v.addColorStop(1,'rgba(96,72,42,.24)');
+  g.fillStyle=v; g.fillRect(0,0,W,H);
+  // 装订孔
+  g.save(); g.globalAlpha=.25; g.strokeStyle='#6b4f2c'; g.lineWidth=1.1;
+  for(let y=54;y<H;y+=52){ g.beginPath(); g.arc(24,y,2.6,0,Math.PI*2); g.stroke(); }
+  g.restore();
+}
+
+/* ================= 场景 ================= */
+let GY=520;   // 地面线
+
+/* ---------- 吕奥版蒙娜丽莎 ---------- */
+const IMG={};
+['sprites/lvao.png','sprites/mona-poster2.jpg?v=1'].forEach(function(src){
+  const im=new Image(); im.src=src; IMG[src]=im;
+});
+const VID = document.createElement('video');
+VID.src = 'sprites/mona-v9.mp4?v=1';
+VID.muted = true; VID.defaultMuted = true; VID.loop = true;
+VID.playsInline = true; VID.autoplay = true;
+['playsinline','webkit-playsinline'].forEach(function(a){ VID.setAttribute(a,'true'); });
+['muted','autoplay'].forEach(function(a){ VID.setAttribute(a,''); });
+VID.setAttribute('preload','auto');
+VID.style.cssText='position:fixed;left:0;top:0;width:100%;height:100%;object-fit:cover;opacity:1;pointer-events:none;z-index:0;background:#e9dcbe';
+document.body.appendChild(VID);
+function vidKick(){ try{ var p=VID.play(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
+['loadeddata','canplay','canplaythrough','stalled','suspend'].forEach(function(ev){
+  VID.addEventListener(ev, function(){ if(VID.paused) vidKick(); });
+});
+document.addEventListener('pointerdown', vidKick, {passive:true});
+document.addEventListener('touchstart', vidKick, {passive:true});
+document.addEventListener('click', vidKick, {passive:true});
+document.addEventListener('visibilitychange', function(){ if(!document.hidden) vidKick(); });
+try{ VID.load(); }catch(e){}
+if(window.WeixinJSBridge){ vidKick(); }
+document.addEventListener('WeixinJSBridgeReady', function(){ vidKick(); }, false);
+[0,120,400,900,1800].forEach(function(ms){ setTimeout(vidKick, ms); });
+vidKick();
+let VIDFAIL=false;
+function vidReady(){ return !VIDFAIL && !VID.error && VID.readyState >= 2 && VID.videoWidth > 0; }
+setTimeout(function(){ if(!vidReady()) VIDFAIL=true; }, 4000);
+VID.addEventListener('error', function(){ VIDFAIL=true; });
+
+function drawMona(t){
+  const fx=LAY.frame.fx, fy=LAY.frame.fy, fw=LAY.frame.fw, fh=LAY.frame.fh;
+  const pad=LAY.portrait?22:26;
+  const ix=fx+pad, iy=fy+pad, iw=fw-pad*2, ih=fh-pad*2;
+
+  // 画框（金褐色，手绘感）
+  g.save();
+  g.globalAlpha=.10; g.fillStyle='#2b2620';
+  g.beginPath(); g.rect(fx+10,fy+14,fw,fh); g.fill(); g.restore();
+  fill(fx-8,fy-8,fw+16,fh+16,'#7d5f31');
+  fill(fx,fy,fw,fh,'#8f6d38');
+  g.save(); g.strokeStyle='#c7a061'; g.lineWidth=2; g.globalAlpha=.9;
+  g.strokeRect(fx+7,fy+7,fw-14,fh-14); g.restore();
+  g.save(); g.strokeStyle=INK; g.lineWidth=3; g.globalAlpha=.55;
+  g.strokeRect(fx-8,fy-8,fw+16,fh+16); g.restore();
+
+  // 画作：写实版《蒙娜丽莎 × 吕奥》（含香烟与闭眼帧）
+  const cx=ix+iw*0.5;
+  const mon=IMG['sprites/mona-poster2.jpg?v=1'];
+  if(vidReady()){
+    const sw0=VID.videoWidth, sh0=VID.videoHeight;
+    const sAsp=sw0/sh0, tAsp=iw/ih;
+    let sx=0, sy=0, sw=sw0, sh=sh0;
+    if(sAsp > tAsp){ sw = sh0*tAsp; sx = (sw0-sw)/2; }
+    else { sh = sw0/tAsp; sy = (sh0-sh)/2; }
+    g.save(); g.imageSmoothingEnabled=true;
+    g.drawImage(VID, sx, sy, sw, sh, ix, iy, iw, ih);
+    g.restore();
+  }else if(mon && mon.complete && mon.naturalWidth){
+    const sw0=mon.naturalWidth, sh0=mon.naturalHeight;
+    const sAsp=sw0/sh0, tAsp=iw/ih;
+    let sx=0, sy=0, sw=sw0, sh=sh0;
+    if(sAsp > tAsp){ sw = sh0*tAsp; sx = (sw0-sw)/2; }
+    else { sh = sw0/tAsp; sy = (sh0-sh)/2; }
+
+    g.save();
+    g.imageSmoothingEnabled=true;
+    g.drawImage(mon, sx, sy, sw, sh, ix, iy, iw, ih);
+
+    // 烟从画面里的烟头（960x1428 的 618,444）飘出来
+    const tipX = ix + (410-sx)/sw*iw;
+    const tipY = iy + (320-sy)/sh*ih;
+    const unit = (iw/620);
+    g.save();
+    for(let i=0;i<8;i++){
+      const p2=((t*0.00010)+(i/8))%1;
+      const bx=tipX + (6 + p2*95 + Math.sin(p2*3.6+i*1.2)*22)*unit;
+      const by=tipY - (4 + p2*185)*unit;
+      const base=(4 + p2*15)*unit;
+      g.globalAlpha=Math.sin(Math.PI*p2)*0.17;
+      g.fillStyle='#efece3';
+      for(let k=0;k<3;k++){
+        const ox=Math.sin(i*2.1+k*1.7+p2*5)*base*0.55;
+        const oy=Math.cos(i*1.6+k*2.3+p2*4)*base*0.40;
+        g.beginPath(); g.arc(bx+ox, by+oy, base*(0.72+k*0.16), 0, Math.PI*2); g.fill();
+      }
+    }
+    g.globalAlpha=.30; g.strokeStyle='#f5f2ea'; g.lineWidth=2.0*unit; g.lineCap='round';
+    g.beginPath();
+    g.moveTo(tipX+1*unit, tipY-1*unit);
+    g.quadraticCurveTo(tipX+12*unit, tipY-14*unit, tipX+26*unit, tipY-30*unit);
+    g.stroke();
+    // 烟灰：慢慢变长（约 6 秒），然后自己断落
+    const ashCyc = 7200;
+    const ap = BOOT.has("ash") ? Math.min(1, Math.max(0, +BOOT.get("ash"))) : (t % ashCyc) / ashCyc;
+    const grow = ap < 0.84 ? (ap/0.84) : Math.max(0, 1 - (ap-0.84)/0.16);
+    const ang = 5 * Math.PI / 180;
+    const alen = 6 + 15*grow;          // 画布像素（往烟头外侧长）
+    g.save();
+    g.translate(tipX, tipY);
+    g.rotate(ang);
+    g.globalAlpha = .95;
+    const rr = (x,y,w,h,r) => { if(g.roundRect){ g.beginPath(); g.roundRect(x,y,w,h,r); g.fill(); } else { g.fillRect(x,y,w,h); } };
+    g.fillStyle = '#8f8b81';
+    for(let k=0;k<3;k++){
+      const t2=(k+1)/3;
+      g.beginPath();
+      g.arc(alen*t2*0.95 - 1, -0.6 + k*0.5, (3.9-k*0.7), 0, Math.PI*2);
+      g.fill();
+    }
+    g.fillStyle = '#6f6c64';
+    g.beginPath(); g.ellipse(alen*0.35, 1.4, alen*0.30, 1.9, 0, 0, Math.PI*2); g.fill();
+    g.fillStyle = '#4e4b47';
+    g.fillRect(-2, -2.4, 2.6, 4.8);
+    g.restore();
+    if(ap > 0.84){
+      const q = (ap-0.84)/0.16;
+      g.save();
+      g.globalAlpha = (1-q)*0.9;
+      g.fillStyle = '#7c796f';
+      const fx = tipX + Math.cos(ang)*(alen*0.6 + q*10) + q*5;
+      const fy = tipY + Math.sin(ang)*(alen*0.6 + q*10) + q*q*46;
+      g.beginPath(); g.ellipse(fx, fy, 3.6, 2.2, ang, 0, Math.PI*2); g.fill();
+      g.restore();
+    }
+    g.globalAlpha=.40+.25*Math.sin(t*0.005);
+    g.fillStyle='#ff8a3d';
+    g.beginPath(); g.arc(tipX, tipY, 2.1*unit, 0, Math.PI*2); g.fill();
+    g.restore();
+  }else{
+    g.save(); g.fillStyle='#6c6b54'; g.fillRect(ix,iy,iw,ih);
+    g.fillStyle='#c9a184'; g.beginPath();
+    g.ellipse(ix+iw*0.5, iy+ih*0.34, 96, 118, 0, 0, Math.PI*2); g.fill();
+    g.restore();
+  }
+
+  // 画布做旧：暗角 + 裂纹 + 清漆
+  g.save();
+  const vg=g.createRadialGradient(cx,iy+ih*0.5,iw*0.25, cx,iy+ih*0.5,iw*0.75);
+  vg.addColorStop(0,'rgba(60,45,15,0)'); vg.addColorStop(1,'rgba(40,30,10,.42)');
+  g.fillStyle=vg; g.fillRect(ix,iy,iw,ih);
+  g.globalAlpha=.16; g.strokeStyle='#efe3c4'; g.lineWidth=1;
+  for(let i=0;i<26;i++){ const x=ix+rnd()*iw, y=iy+rnd()*ih;
+    g.beginPath(); g.moveTo(x,y); g.lineTo(x+6+rnd()*14, y-4+rnd()*9); g.stroke(); }
+  g.restore();
+
+  // 画框内侧阴影
+  g.save(); g.globalAlpha=.30; g.strokeStyle='#2b2118'; g.lineWidth=6;
+  g.strokeRect(ix-3,iy-3,iw+6,ih+6); g.restore();
+
+  // 铜牌
+  g.save(); g.globalAlpha=.92; g.fillStyle='#c9a85f';
+  g.beginPath(); g.roundRect(cx-84, fy+fh-24, 168, 22, 4); g.fill();
+  g.fillStyle='#3a2c14'; g.font='700 12px "Kaiti SC",KaiTi,serif'; g.textAlign='center';
+  g.fillText('蒙娜丽奥', cx, fy+fh-8); g.restore();
+}
+
+function drawScene(t){
+  rng(2024);
+  // 天空淡色
+  poly([[0,0],[W,0],[W,GY],[0,GY]],'#dfd3b4',1);
+  poly([[0,0],[W,0],[W,GY*0.55],[0,GY*0.72]],'#d3d8cd',.55);
+
+  /* ---- 蒙娜丽莎（头像换成吕奥） ---- */
+  drawMona(t);
+
+  /* ---- 地上的盒饭与筷子 ---- */
+  if(LAY.boxes) (function(){
+    const bx=250, by=GY+72;
+    g.save();
+    // 影子
+    g.save(); g.globalAlpha=.16; g.fillStyle='#2b2620';
+    g.beginPath(); g.ellipse(bx+34, by+8, 40, 6, 0, 0, Math.PI*2); g.fill(); g.restore();
+    // 三个叠着的白色餐盒
+    for(let i=0;i<3;i++){
+      fill(bx, by-i*13, 58, 11, '#f4ecda');
+      box(bx, by-i*13, 58, 11, 2, .7);
+      line(bx+4, by-i*13+5, bx+54, by-i*13+5, 1.2, .35, .6);
+    }
+    // 筷子
+    line(bx+66, by-2, bx+96, by-14, 2.4, .85, .8);
+    line(bx+68, by+2, bx+98, by-10, 2.4, .85, .8);
+    g.restore();
+  })();
+
+  /* ---- 前景草 ---- */
+  for(let i=0;i<34;i++){
+    const x=rnd()*W,h=10+rnd()*30;
+    g.save(); g.strokeStyle='#6b6844'; g.lineWidth=1.5; g.globalAlpha=.5;
+    g.beginPath(); g.moveTo(x,H); g.quadraticCurveTo(x+5,H-h*.6,x+12+(rnd()*10),H-h); g.stroke(); g.restore();
+  }
+}
+
+/* ================= 标题 ================= */
+function drawTitle(t){
+  rng(4242);
+  g.save(); g.translate(LAY.title.x,LAY.title.y);
+  g.font='700 '+LAY.title.size+'px "Kaiti SC","STKaiti",KaiTi,serif';
+  const chars='肘家班'; let cx=0;
+  for(let i=0;i<chars.length;i++){
+    const w=g.measureText(chars[i]).width;
+    // 错版红
+    g.save(); g.globalAlpha=.26; g.fillStyle=RED; g.fillText(chars[i],cx+4,5); g.restore();
+    g.save(); g.translate(cx,-Math.sin(t*.0012+i)*1.6); g.rotate((rnd()-.5)*.022);
+    g.fillStyle=INK; g.fillText(chars[i],0,0); g.restore();
+    cx+=w+2;
+  }
+  g.restore();
+  // 印章
+  g.save(); g.translate(LAY.seal.x,LAY.seal.y); g.rotate(-.07);
+  fill(0,0,58,58,RED);
+  g.strokeStyle='#7d281f'; g.lineWidth=2; g.strokeRect(3.5,3.5,51,51);
+  g.fillStyle='#f6efe0'; g.font='700 19px "Kaiti SC","STKaiti",KaiTi,serif'; g.textAlign='center';
+  g.fillText('十',29,25); g.fillText('二',29,48);
+  g.restore();
+  // 副标题
+  g.save(); g.fillStyle='#4a3f31'; g.font='17px "Kaiti SC","STKaiti",KaiTi,serif';
+
+  g.restore();
+}
+
+/* ================= 菜单 ================= */
+const MENU=[
+  {k:'start', n:'开始游戏', s:'从第一关开始'},
+  {k:'cont',  n:'继续游戏', s:'接着上次的进度'},
+];
+let hit=[], hover=-1, press=-1;
+let BOOT=new URLSearchParams(location.search); if(BOOT.has('hover')) hover=+BOOT.get('hover');
+function menuRect(i){ const m=LAY.menu; return {x:m.x, y:m.y+i*m.gap, w:m.w, h:m.h}; }
+
+function drawMenu(t){
+  hit=[];
+  MENU.forEach(function(m,i){
+    const r=menuRect(i); hit.push(r);
+    const on=(hover===i||press===i);
+    const dis=(m.k==='cont' && cleared===0);
+    // 手绘框（只在悬停时填墨）
+    rng(600+i*17);
+    if(on && !dis){
+      g.save(); g.globalAlpha=.92; fill(r.x,r.y,r.w,r.h,INK); g.restore();
+    }else{
+      g.save(); g.globalAlpha=.55; fill(r.x,r.y,r.w,r.h,PAPER2); g.restore();
+      fill(r.x+3,r.y+3,r.w-6,r.h-6,'rgba(233,220,190,.55)');
+    }
+    box(r.x,r.y,r.w,r.h,2.8,dis?.3:.9);
+    // 左边墨角
+    g.save(); g.globalAlpha=dis?.2:.8; g.fillStyle=INK;
+    g.fillRect(r.x-1,r.y+8,3,r.h-16); g.restore();
+    // 文案
+    g.save(); g.textBaseline='middle';
+    g.fillStyle=dis?'rgba(36,31,24,.32)':(on?'#f5ebd6':INK);
+    g.font='700 23px "Kaiti SC","STKaiti",KaiTi,serif';
+    g.fillText(m.n,r.x+24,r.y+r.h/2+1);
+    g.globalAlpha=dis?.28:.6;
+    g.font='12px "Kaiti SC","STKaiti",KaiTi,serif';
+    g.fillText(m.s,r.x+150,r.y+r.h/2+2);
+    g.restore();
+  });
+}
+
+/* ================= 页脚 ================= */
+function drawFooter(){
+  g.save();
+  g.fillStyle='rgba(36,31,24,.62)'; g.font='13px "Kaiti SC","STKaiti",KaiTi,serif';
+  g.fillText('本机进度：已通关 '+cleared+' / '+TOTAL+' 篇　·　换设备不同步',LAY.portrait?56:72,H-(LAY.portrait?48:40));
+  g.save(); g.globalAlpha=.72; g.font='700 15px "Kaiti SC","STKaiti",KaiTi,serif';
+  g.fillStyle=INK; g.textAlign='left';
+  var hintText = LAY.portrait ? '点下方按钮进入　·　也可点画面两侧' : '↑ ↓ 选择　·　Enter 开始';
+  g.fillText(hintText,LAY.hint.x,LAY.hint.y);
+  g.restore();
+  g.globalAlpha=.34; g.font='11px system-ui,sans-serif';
+  g.fillText('v0.1  ·  肘家班 · 逃生',LAY.portrait?56:72,H-(LAY.portrait?24:18));
+  g.restore();
+}
+
+/* ================= 循环 ================= */
+function resize(){
+  layout();
+  const vw=window.innerWidth, vh=window.innerHeight;
+  const s=Math.min(vw/W, vh/H);
+  const dpr=Math.min(2.5, window.devicePixelRatio||1);
+  cv.width=Math.round(W*s*dpr); cv.height=Math.round(H*s*dpr);
+  cv.style.width=Math.round(W*s)+'px'; cv.style.height=Math.round(H*s)+'px';
+  g.setTransform(s*dpr,0,0,s*dpr,0,0);
+  g.imageSmoothingEnabled=true;
+}
+let last=0;
+function frame(now){
+  last=now;
+  drawPaper();
+  drawScene(now);
+  drawTitle(now);
+  drawMenu(now);
+  drawFooter();
+  requestAnimationFrame(frame);
+}
+
+/* ================= 交互 ================= */
+function toWorld(ev){
+  const r=cv.getBoundingClientRect();
+  return {x:(ev.clientX-r.left)/r.width*W, y:(ev.clientY-r.top)/r.height*H};
+}
+function inside(p,r){ return p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h; }
+cv.addEventListener('pointermove',function(ev){
+  const p=toWorld(ev); hover=-1;
+  hit.forEach(function(r,i){ if(inside(p,r)) hover=i; });
+  cv.style.cursor=hover>=0?'pointer':'default';
+});
+cv.addEventListener('pointerdown',function(ev){
+  const p=toWorld(ev); press=-1;
+  hit.forEach(function(r,i){ if(inside(p,r)) press=i; });
+});
+cv.addEventListener('pointerup',function(ev){
+  const p=toWorld(ev);
+  hit.forEach(function(r,i){ if(press===i&&inside(p,r)) choose(i); });
+  press=-1;
+});
+window.addEventListener('keydown',function(ev){
+  if(ev.key==='ArrowDown'||ev.key==='s'){ hover=(hover+1)%MENU.length; ev.preventDefault(); }
+  if(ev.key==='ArrowUp'||ev.key==='w'){ hover=(hover+MENU.length-1)%MENU.length; ev.preventDefault(); }
+  if(ev.key==='Enter'||ev.key===' '){ choose(hover<0?0:hover); ev.preventDefault(); }
+});
+
+const toastEl=document.getElementById('toast'); let toastT=0;
+function toast(msg){
+  toastEl.textContent=msg; toastEl.classList.add('on');
+  clearTimeout(toastT); toastT=setTimeout(function(){ toastEl.classList.remove('on'); },1900);
+}
+function choose(i){
+  const k=MENU[i]&&MENU[i].k; if(!k) return;
+  if(k==='start'){ location.href='levels.html?v=241'; return; }
+  if(k==='cont'){
+    if(!progress['zhuxingchi']){ toast('还没有进度 —— 先去第一关'); return; }
+    location.href='levels.html?v=241'; return;
+  }
+}
+document.addEventListener('contextmenu',function(e){ e.preventDefault(); },false);
+cv.addEventListener('selectstart',function(e){ e.preventDefault(); },false);
+document.addEventListener('gesturestart',function(e){ e.preventDefault(); },false);
+window.addEventListener('resize',resize);
+resize(); requestAnimationFrame(frame);
+</script>
+</body>
+</html>
