@@ -10,7 +10,7 @@
   html,body{height:100%;margin:0;background:var(--bg);color:var(--txt);
     font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;overflow:hidden}
   #app{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
-  canvas{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  canvas{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     width:min(100vw, calc(100vh * 16 / 9));height:auto;
     image-rendering:pixelated;display:block;background:#05070b}
 
@@ -1367,7 +1367,7 @@ function loop(now){
   g.setTransform(S,0,0,S,0,0);
   if(G.room==='street') drawStreet(); else drawShop();
   drawPlayer();
-  drawTouchUI();
+  // DOM 触屏按钮（#tL/#tR）已接管，画布内不再重复绘制
   drawSpeech();
 
   // 金色粒子（付款）
@@ -1476,6 +1476,8 @@ setTimeout(function(){
   }
 }, 600);
 requestAnimationFrame(loop);
+document.addEventListener('contextmenu',function(e){e.preventDefault();},false);
+document.addEventListener('selectstart',function(e){e.preventDefault();},false);
 </script>
 </body>
 </html>

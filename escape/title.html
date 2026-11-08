@@ -8,6 +8,7 @@
   html,body{margin:0;height:100%;background:#e9dcbe;overflow:hidden}
   #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
   canvas{display:block;cursor:default;touch-action:manipulation}
+  html,body,#wrap,canvas{-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
   #toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);
     background:#241f18ee;color:#f3e9d4;font:14px/1.5 "Kaiti SC","STKaiti",KaiTi,serif;
     padding:9px 16px;border-radius:2px;opacity:0;transition:opacity .25s;pointer-events:none;letter-spacing:.06em}
@@ -19,7 +20,39 @@
 <div id="toast"></div>
 <script>
 const cv=document.getElementById('cv'), g=cv.getContext('2d');
-const W=1280,H=720;
+let W=720,H=1440,LAY={portrait:false};
+function layout(){
+  const vw=window.innerWidth||390, vh=window.innerHeight||844;
+  const portrait = vh > vw*1.02;
+  if(portrait){
+    W=720;
+    H=Math.max(1180, Math.round(720*vh/Math.max(1,vw)));
+    const top=Math.round(H*0.16);
+    const menuY=top+140, gap=90, hintY=menuY+2*gap+42;
+    const fy=hintY+26;
+    let fh=H-fy-104;
+    let fw=fh*3/4;
+    if(fw>W*0.82){ fw=W*0.82; fh=fw*4/3; }
+    if(fh<420){ fh=420; fw=fh*3/4; }
+    LAY={portrait:true,
+      title:{x:56,y:top,size:104}, seal:{x:436,y:top-36},
+      sub:{x:60,y:top+74}, rule:{x1:60,x2:452,y:top+86},
+      menu:{x:56,y:menuY,w:392,h:66,gap:gap},
+      hint:{x:56,y:hintY},
+      frame:{fx:Math.round((W-fw)/2),fy:fy,fw:Math.round(fw),fh:Math.round(fh)},
+      boxes:false};
+  }else{
+    W=1280;H=720;
+    LAY={portrait:false,
+      title:{x:70,y:150,size:104}, seal:{x:422,y:114},
+      sub:{x:72,y:206}, rule:{x1:72,x2:354,y:216},
+      menu:{x:70,y:268,w:262,h:58,gap:82},
+      hint:{x:72,y:452},
+      frame:{fx:752,fy:64,fw:452,fh:600},
+      boxes:true};
+  }
+  GY = portrait ? Math.round(H*0.34) : 520;
+}
 const KEY='zjban.escape.progress';
 let progress={}; try{progress=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){progress={};}
 const TOTAL=12;
@@ -91,7 +124,7 @@ function drawPaper(){
 }
 
 /* ================= 场景 ================= */
-const GY=520;   // 地面线
+let GY=520;   // 地面线
 
 /* ---------- 吕奥版蒙娜丽莎 ---------- */
 const IMG={};
@@ -100,14 +133,32 @@ const IMG={};
 });
 const VID = document.createElement('video');
 VID.src = 'sprites/mona-v8.mp4';
-VID.muted = true; VID.loop = true; VID.playsInline = true; VID.autoplay = true;
-VID.setAttribute('playsinline','');
-VID.play && VID.play().catch(function(){});
-function vidReady(){ return VID.readyState >= 2 && VID.videoWidth > 0; }
+VID.muted = true; VID.defaultMuted = true; VID.loop = true;
+VID.playsInline = true; VID.autoplay = true;
+['playsinline','webkit-playsinline','muted','autoplay','preload'].forEach(function(a){
+  VID.setAttribute(a, a==='preload' ? 'auto' : '');
+});
+VID.style.cssText='position:fixed;left:-4px;top:-4px;width:2px;height:2px;opacity:.01;pointer-events:none;z-index:-1';
+document.body.appendChild(VID);
+function vidKick(){ try{ var p=VID.play(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
+['loadeddata','canplay','canplaythrough','stalled','suspend'].forEach(function(ev){
+  VID.addEventListener(ev, function(){ if(VID.paused) vidKick(); });
+});
+document.addEventListener('pointerdown', vidKick, {passive:true});
+document.addEventListener('touchstart', vidKick, {passive:true});
+document.addEventListener('click', vidKick, {passive:true});
+document.addEventListener('visibilitychange', function(){ if(!document.hidden) vidKick(); });
+try{ VID.load(); }catch(e){}
+vidKick();
+let VIDFAIL=false;
+function vidReady(){ return !VIDFAIL && !VID.error && VID.readyState >= 2 && VID.videoWidth > 0; }
+setTimeout(function(){ if(!vidReady()) VIDFAIL=true; }, 4000);
+VID.addEventListener('error', function(){ VIDFAIL=true; });
 
 function drawMona(t){
-  const fx=752, fy=64, fw=452, fh=600;
-  const ix=fx+26, iy=fy+26, iw=fw-52, ih=fh-52;
+  const fx=LAY.frame.fx, fy=LAY.frame.fy, fw=LAY.frame.fw, fh=LAY.frame.fh;
+  const pad=LAY.portrait?22:26;
+  const ix=fx+pad, iy=fy+pad, iw=fw-pad*2, ih=fh-pad*2;
 
   // 画框（金褐色，手绘感）
   g.save();
@@ -249,7 +300,7 @@ function drawScene(t){
   drawMona(t);
 
   /* ---- 地上的盒饭与筷子 ---- */
-  (function(){
+  if(LAY.boxes) (function(){
     const bx=250, by=GY+72;
     g.save();
     // 影子
@@ -278,8 +329,8 @@ function drawScene(t){
 /* ================= 标题 ================= */
 function drawTitle(t){
   rng(4242);
-  g.save(); g.translate(70,150);
-  g.font='700 104px "Kaiti SC","STKaiti",KaiTi,serif';
+  g.save(); g.translate(LAY.title.x,LAY.title.y);
+  g.font='700 '+LAY.title.size+'px "Kaiti SC","STKaiti",KaiTi,serif';
   const chars='肘家班'; let cx=0;
   for(let i=0;i<chars.length;i++){
     const w=g.measureText(chars[i]).width;
@@ -291,7 +342,7 @@ function drawTitle(t){
   }
   g.restore();
   // 印章
-  g.save(); g.translate(422,114); g.rotate(-.07);
+  g.save(); g.translate(LAY.seal.x,LAY.seal.y); g.rotate(-.07);
   fill(0,0,58,58,RED);
   g.strokeStyle='#7d281f'; g.lineWidth=2; g.strokeRect(3.5,3.5,51,51);
   g.fillStyle='#f6efe0'; g.font='700 19px "Kaiti SC","STKaiti",KaiTi,serif'; g.textAlign='center';
@@ -299,8 +350,8 @@ function drawTitle(t){
   g.restore();
   // 副标题
   g.save(); g.fillStyle='#4a3f31'; g.font='17px "Kaiti SC","STKaiti",KaiTi,serif';
-  g.fillText('哈西站 · 一盒饭引出的十二篇',72,206);
-  line(72,216,354,216,1.4,.45,1.2);
+  g.fillText('哈西站 · 一盒饭引出的十二篇',LAY.sub.x,LAY.sub.y);
+  line(LAY.rule.x1,LAY.rule.y,LAY.rule.x2,LAY.rule.y,1.4,.45,1.2);
   g.restore();
 }
 
@@ -311,7 +362,7 @@ const MENU=[
 ];
 let hit=[], hover=-1, press=-1;
 let BOOT=new URLSearchParams(location.search); if(BOOT.has('hover')) hover=+BOOT.get('hover');
-function menuRect(i){ return {x:70, y:268+i*82, w:262, h:58}; }
+function menuRect(i){ const m=LAY.menu; return {x:m.x, y:m.y+i*m.gap, w:m.w, h:m.h}; }
 
 function drawMenu(t){
   hit=[];
@@ -347,19 +398,22 @@ function drawMenu(t){
 function drawFooter(){
   g.save();
   g.fillStyle='rgba(36,31,24,.62)'; g.font='13px "Kaiti SC","STKaiti",KaiTi,serif';
-  g.fillText('本机进度：已通关 '+cleared+' / '+TOTAL+' 篇　·　换设备不同步',72,H-40);
+  g.fillText('本机进度：已通关 '+cleared+' / '+TOTAL+' 篇　·　换设备不同步',LAY.portrait?56:72,H-(LAY.portrait?48:40));
   g.save(); g.globalAlpha=.72; g.font='700 15px "Kaiti SC","STKaiti",KaiTi,serif';
   g.fillStyle=INK; g.textAlign='left';
-  g.fillText('↑ ↓ 选择　·　Enter 开始',72,452);
+  var hintText = LAY.portrait ? '点下方按钮进入　·　也可点画面两侧' : '↑ ↓ 选择　·　Enter 开始';
+  g.fillText(hintText,LAY.hint.x,LAY.hint.y);
   g.restore();
   g.globalAlpha=.34; g.font='11px system-ui,sans-serif';
-  g.fillText('v0.1  ·  肘家班 · 逃生',72,H-18);
+  g.fillText('v0.1  ·  肘家班 · 逃生',LAY.portrait?56:72,H-(LAY.portrait?24:18));
   g.restore();
 }
 
 /* ================= 循环 ================= */
 function resize(){
-  const s=Math.min(window.innerWidth/W,window.innerHeight/H);
+  layout();
+  const vw=window.innerWidth, vh=window.innerHeight;
+  const s=Math.min(vw/W, vh/H);
   cv.width=Math.round(W*s); cv.height=Math.round(H*s);
   cv.style.width=Math.round(W*s)+'px'; cv.style.height=Math.round(H*s)+'px';
   g.setTransform(s,0,0,s,0,0);
@@ -414,6 +468,9 @@ function choose(i){
     location.href='levels.html'; return;
   }
 }
+document.addEventListener('contextmenu',function(e){ e.preventDefault(); },false);
+cv.addEventListener('selectstart',function(e){ e.preventDefault(); },false);
+document.addEventListener('gesturestart',function(e){ e.preventDefault(); },false);
 window.addEventListener('resize',resize);
 resize(); requestAnimationFrame(frame);
 </script>
