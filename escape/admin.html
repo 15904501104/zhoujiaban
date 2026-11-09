@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>肘家班 · 访客看板</title>
+<script src="js/track-config.js"></script>
+<style>
+:root{
+  --paper:#efe6d4; --paper2:#e7dcc6; --ink:#2b2723; --ink2:#6d6355;
+  --line:#cbbd9f; --card:#fffdf6; --red:#b23a2c; --gold:#a2773c;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:radial-gradient(120% 90% at 50% 0%,#f4ecdc 0%,var(--paper) 45%,#e3d7c0 100%);
+  color:var(--ink);font-family:"Songti SC","Noto Serif SC",Georgia,"Microsoft YaHei",serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:26px 22px 60px}
+header{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px}
+h1{margin:0;font-size:30px;letter-spacing:2px}
+.seal{background:var(--red);color:#fff;font-size:13px;padding:3px 7px;border-radius:3px;letter-spacing:1px}
+.sub{color:var(--ink2);font-size:13px;margin-left:auto}
+.gate{max-width:420px;margin:80px auto;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px 24px;box-shadow:0 12px 30px rgba(80,60,30,.10)}
+.gate h2{margin:0 0 6px;font-size:20px}
+.gate p{margin:0 0 16px;color:var(--ink2);font-size:13px;line-height:1.7}
+.gate input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:15px;font-family:inherit}
+.gate button{margin-top:12px;width:100%;padding:11px;border:0;border-radius:8px;background:var(--red);color:#fff;font-size:15px;font-family:inherit;cursor:pointer}
+.gate .err{color:var(--red);font-size:13px;margin-top:10px;min-height:18px}
+main{display:none}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:18px 0 10px}
+.chip{border:1px solid var(--line);background:#fffdf6cc;border-radius:999px;padding:7px 14px;font-size:13px;cursor:pointer;color:var(--ink2)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.spacer{flex:1}
+.stat{font-size:13px;color:var(--ink2)}
+.stat b{color:var(--ink);font-size:17px;margin:0 2px}
+.grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.95fr);gap:18px;align-items:start}
+@media (max-width:880px){ .grid{grid-template-columns:1fr} }
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 14px 10px;box-shadow:0 8px 22px rgba(80,60,30,.07)}
+.panel h3{margin:0 0 8px;font-size:14px;letter-spacing:1px;color:var(--ink2);font-weight:600}
+canvas{width:100%;height:auto;display:block;border-radius:10px;background:
+  radial-gradient(70% 60% at 50% 45%, #fbf6ea 0%, #f3ecd9 70%, #ece3cd 100%);}
+#tip{position:fixed;pointer-events:none;background:#2b2723ee;color:#fff;font-size:12px;line-height:1.5;padding:6px 9px;border-radius:6px;opacity:0;transition:opacity .1s;z-index:9;white-space:nowrap}
+ol.list{list-style:none;margin:0;padding:0;max-height:520px;overflow:auto}
+ol.list li{display:grid;grid-template-columns:74px 1fr;gap:2px 10px;padding:9px 4px;border-bottom:1px dashed #ddd2ba;font-size:13px}
+ol.list li .t{color:var(--ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
+ol.list li .c{font-weight:600}
+ol.list li .m{grid-column:2;color:var(--ink2);font-size:12px}
+.empty{color:var(--ink2);font-size:13px;padding:18px 4px}
+footer{margin-top:22px;color:var(--ink2);font-size:12px;text-align:center;line-height:1.8}
+a.back{color:var(--ink2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>访客看板</h1>
+    <span class="seal">仅站长</span>
+    <span class="sub">肘家班 · 逃生</span>
+  </header>
+
+  <div class="gate" id="gate">
+    <h2>请输入口令</h2>
+    <p>口令只在本机校验；数据通过数据库里的校验函数读取，页面本身拿不到读权限。</p>
+    <input id="pass" type="password" placeholder="站长口令" autocomplete="current-password">
+    <button id="enter">进入</button>
+    <div class="err" id="err"></div>
+  </div>
+
+  <main id="main">
+    <div class="toolbar">
+      <button class="chip on" data-r="24">近 24 小时</button>
+      <button class="chip" data-r="168">近 7 天</button>
+      <button class="chip" data-r="720">近 30 天</button>
+      <button class="chip" data-r="all">全部</button>
+      <span class="spacer"></span>
+      <span class="stat" id="stat"></span>
+      <button class="chip" id="reload">刷新</button>
+      <button class="chip" id="logout">退出</button>
+    </div>
+
+    <div class="grid">
+      <section class="panel">
+        <h3>到访分布</h3>
+        <canvas id="map" width="1000" height="760"></canvas>
+      </section>
+      <section class="panel">
+        <h3>最近到访</h3>
+        <ol class="list" id="list"></ol>
+      </section>
+    </div>
+
+    <footer>
+      <div id="note">只记录页面、时间、城市与设备；不含姓名、手机号等个人信息。</div>
+      <div><a class="back" href="title2.html">← 回主页</a></div>
+    </footer>
+  </main>
+</div>
+<div id="tip"></div>
+
+<script>
+/* ---------- 中国示意轮廓（经纬度，顺时针） ---------- */
+var CN = [
+ [122.4,53.5],[120.7,53.3],[119.1,50.4],[117.8,49.5],[116.1,49.0],[115.9,47.7],[117.8,47.9],
+ [119.7,46.6],[117.8,46.6],[116.7,46.4],[114.5,45.4],[111.9,43.7],[110.0,42.8],[107.5,42.4],
+ [105.0,41.6],[101.8,42.5],[98.2,42.5],[96.4,43.0],[95.4,44.3],[93.5,44.9],[91.0,45.2],
+ [90.0,47.8],[88.0,48.6],[87.3,48.0],[85.5,47.1],[83.0,47.2],[82.6,45.1],[80.9,43.2],
+ [80.3,43.0],[80.2,42.2],[78.5,41.5],[76.5,41.0],[74.9,40.5],[73.5,39.4],[74.9,38.5],
+ [74.5,37.0],[76.0,35.8],[77.8,35.5],[78.7,34.5],[78.0,33.4],[78.7,32.5],[79.0,31.4],
+ [81.0,30.3],[83.0,29.2],[85.8,28.2],[88.0,27.5],[89.1,27.3],[92.0,27.8],[94.0,28.2],
+ [95.3,29.0],[96.3,28.5],[98.4,28.2],[98.7,27.5],[97.5,26.5],[98.1,25.5],[97.5,24.7],
+ [97.7,23.9],[98.9,23.2],[99.9,22.0],[100.1,21.5],[101.1,21.5],[101.8,21.2],[102.5,22.4],
+ [103.3,22.7],[104.0,22.5],[105.3,23.3],[106.7,22.8],[106.7,22.0],[108.5,21.5],[109.6,21.5],
+ [110.0,20.4],[110.9,21.5],[113.5,22.2],[115.0,22.8],[117.0,23.5],[118.2,24.5],[119.6,26.0],
+ [120.3,27.0],[121.7,28.6],[122.2,29.9],[121.3,30.8],[121.9,31.0],[121.8,32.6],[120.3,34.3],
+ [119.2,35.0],[120.3,36.3],[122.3,36.9],[122.7,37.4],[121.3,37.5],[119.5,37.2],[118.9,38.2],
+ [117.7,39.0],[119.0,39.3],[121.0,40.8],[122.3,40.1],[121.7,39.05],[124.3,40.0],[126.0,41.0],
+ [128.0,42.0],[130.6,42.4],[131.0,42.9],[131.3,44.9],[133.9,45.4],[135.1,48.5],[134.7,48.4],
+ [132.5,47.7],[130.7,48.9],[127.4,50.2],[125.7,53.1]
+];
+/* 海南 / 台湾 两个示意小块 */
+var ISLES = [
+ [[109.2,18.2],[110.6,18.4],[111.0,19.6],[110.0,20.1],[108.7,19.6],[108.6,18.7]],
+ [[120.0,25.3],[121.6,25.2],[122.0,24.0],[121.0,22.3],[120.2,22.6],[120.1,23.9]]
+];
+
+var PAD = {l:70, r:70, t:56, b:60};
+var LON = [73, 136], LAT = [3.5, 54.5];
+var cv = document.getElementById('map'), g = cv.getContext('2d');
+var pts = [], hover = null;
+
+function proj(lon, lat){
+  var w = cv.width, h = cv.height;
+  var x = PAD.l + (lon - LON[0]) / (LON[1] - LON[0]) * (w - PAD.l - PAD.r);
+  var y = PAD.t + (LAT[1] - lat) / (LAT[1] - LAT[0]) * (h - PAD.t - PAD.b);
+  return [x, y];
+}
+
+function drawBase(){
+  var w = cv.width, h = cv.height;
+  g.clearRect(0,0,w,h);
+
+  /* 经纬网格 */
+  g.save();
+  g.strokeStyle = 'rgba(150,130,95,.22)';
+  g.lineWidth = 1;
+  for (var lon = 80; lon <= 130; lon += 10){
+    var a = proj(lon, LAT[0]), b = proj(lon, LAT[1]);
+    g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke();
+    g.fillStyle = 'rgba(120,105,80,.55)'; g.font = '18px Georgia';
+    g.fillText(lon + '°E', a[0] - 16, h - PAD.b + 26);
+  }
+  for (var lat = 10; lat <= 50; lat += 10){
+    var c = proj(LON[0], lat), d = proj(LON[1], lat);
+    g.beginPath(); g.moveTo(c[0], c[1]); g.lineTo(d[0], d[1]); g.stroke();
+    g.fillStyle = 'rgba(120,105,80,.55)'; g.font = '18px Georgia';
+    g.fillText(lat + '°N', 26, c[1] + 6);
+  }
+  g.restore();
+
+  /* 陆地 */
+  function path(poly, close, smooth){
+    var qs = poly.map(function(p){ return proj(p[0], p[1]); });
+    g.beginPath();
+    if (!smooth){
+      qs.forEach(function(q, i){ if (i) g.lineTo(q[0], q[1]); else g.moveTo(q[0], q[1]); });
+      if (close) g.closePath();
+      return;
+    }
+    /* 以相邻点中位为锚、原始点为控制点，画出平滑轮廓 */
+    var n = qs.length, mid = function(a, b){ return [(a[0]+b[0])/2, (a[1]+b[1])/2]; };
+    var start = mid(qs[n-1], qs[0]);
+    g.moveTo(start[0], start[1]);
+    for (var i = 0; i < n; i++){
+      var cur = qs[i], nxt = qs[(i+1) % n], m = mid(cur, nxt);
+      g.quadraticCurveTo(cur[0], cur[1], m[0], m[1]);
+    }
+    if (close) g.closePath();
+  }
+  g.save();
+  g.shadowColor = 'rgba(110,85,50,.18)'; g.shadowBlur = 18; g.shadowOffsetY = 8;
+  path(CN, true, true);
+  g.fillStyle = '#f6efdd'; g.fill();
+  g.restore();
+
+  g.save();
+  g.strokeStyle = 'rgba(120,96,60,.85)'; g.lineWidth = 2.4; g.lineJoin = 'round';
+  path(CN, true, true); g.stroke();
+  ISLES.forEach(function(p){ path(p, true, true); g.fillStyle = '#f6efdd'; g.fill(); g.stroke(); });
+  g.restore();
+
+  /* 南海诸岛示意点 */
+  g.save(); g.fillStyle = 'rgba(120,96,60,.6)';
+  [[112,10],[115,8],[117,6],[110,7]].forEach(function(p){ var q = proj(p[0],p[1]); g.beginPath(); g.arc(q[0],q[1],2.4,0,7); g.fill(); });
+  g.restore();
+}
+
+function jitter(i, n){
+  var a = (i * 2.399963) % 6.283, r = Math.sqrt(i / Math.max(n,1)) * 9 + (i%3)*2.5;
+  return [Math.cos(a)*r, Math.sin(a)*r];
+}
+
+function drawDots(){
+  drawBase();
+  var n = pts.length;
+  g.save();
+  pts.forEach(function(p, i){
+    if (typeof p.lat !== 'number' || typeof p.lon !== 'number') return;
+    var q = proj(p.lon, p.lat);
+    var j = jitter(i, n);
+    q = [q[0] + j[0], q[1] + j[1]];
+    p._q = q;
+    var hot = hover === p;
+    var r = hot ? 9 : 5.2;
+    var grd = g.createRadialGradient(q[0], q[1], 0, q[0], q[1], r * 3.2);
+    grd.addColorStop(0, 'rgba(178,58,44,.55)');
+    grd.addColorStop(1, 'rgba(178,58,44,0)');
+    g.fillStyle = grd;
+    g.beginPath(); g.arc(q[0], q[1], r * 3.2, 0, 7); g.fill();
+    g.fillStyle = hot ? '#b23a2c' : 'rgba(178,58,44,.92)';
+    g.beginPath(); g.arc(q[0], q[1], r, 0, 7); g.fill();
+    g.strokeStyle = 'rgba(255,253,246,.9)'; g.lineWidth = 1.6; g.stroke();
+  });
+  g.restore();
+
+  /* 城市标签（去重，最多 8 个） */
+  var seen = {};
+  g.save(); g.font = '20px "Songti SC", Georgia, serif'; g.fillStyle = 'rgba(60,50,36,.85)';
+  pts.forEach(function(p){
+    if (!p._q || !p.city || seen[p.city]) return;
+    seen[p.city] = 1;
+    if (Object.keys(seen).length > 8) return;
+    g.fillText(p.city, p._q[0] + 12, p._q[1] + 6);
+  });
+  g.restore();
+}
+
+/* ---------- 数据 ---------- */
+var C = window.ZJB_TRACK || {};
+var PASS_KEY = 'zjb.admin.pass';
+var rows = [], range = 24, pass = '';
+
+function fmtTime(t){
+  var d = new Date(t);
+  var p2 = function(n){ return (n < 10 ? '0' : '') + n; };
+  return p2(d.getMonth()+1) + '-' + p2(d.getDate()) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
+}
+
+function loadRows(){
+  var url = (C.url || '').replace(/\/$/, '');
+  if (!url || !C.key) throw new Error('还没配置 Supabase 地址与 anon key（js/track-config.js）');
+  return fetch(url + '/rest/v1/rpc/admin_visits', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': C.key, 'Authorization': 'Bearer ' + C.key },
+    body: JSON.stringify({ p_pass: pass })
+  }).then(function(r){
+    if (!r.ok) return r.text().then(function(t){ throw new Error(t.slice(0,160)); });
+    return r.json();
+  });
+}
+
+function filtered(){
+  if (range === 'all') return rows;
+  var cut = Date.now() - Number(range) * 3600e3;
+  return rows.filter(function(r){ return new Date(r.created_at).getTime() >= cut; });
+}
+
+function render(){
+  var data = filtered();
+  pts = data.filter(function(r){ return typeof r.lat === 'number' && typeof r.lon === 'number'; });
+  hover = null;
+  drawDots();
+
+  var cities = {}, today = 0, now = new Date();
+  data.forEach(function(r){
+    if (r.city) cities[r.city] = 1;
+    var d = new Date(r.created_at);
+    if (d.toDateString() === now.toDateString()) today++;
+  });
+  document.getElementById('stat').innerHTML =
+    '访客 <b>' + data.length + '</b> · 城市 <b>' + Object.keys(cities).length + '</b> · 今日 <b>' + today + '</b>';
+
+  var list = document.getElementById('list');
+  if (!data.length){ list.innerHTML = '<div class="empty">这个时间段还没有人访问。</div>'; return; }
+  list.innerHTML = data.slice(0, 200).map(function(r){
+    var place = [r.country, r.region, r.city].filter(Boolean).join(' · ') || '位置未知';
+    var dev = /Mobile|Android|iPhone|iPad/i.test(r.ua || '') ? '手机' : '电脑';
+    return '<li><span class="t">' + fmtTime(r.created_at) + '</span>' +
+      '<span class="c">' + place + '</span>' +
+      '<span class="m">' + (r.page || '/') + ' · ' + dev + '</span></li>';
+  }).join('');
+}
+
+function enter(){
+  document.getElementById('err').textContent = '正在读取…';
+  loadRows().then(function(list){
+    rows = list || [];
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+    try { sessionStorage.setItem(PASS_KEY, pass); } catch (e) {}
+    render();
+  }).catch(function(e){
+    document.getElementById('err').textContent = '口令不对，或还没配置好：' + e.message;
+  });
+}
+
+document.getElementById('enter').onclick = function(){
+  pass = document.getElementById('pass').value.trim();
+  if (!pass){ document.getElementById('err').textContent = '请先输入口令'; return; }
+  enter();
+};
+document.getElementById('pass').addEventListener('keydown', function(e){ if (e.key === 'Enter') document.getElementById('enter').click(); });
+
+Array.prototype.forEach.call(document.querySelectorAll('.chip[data-r]'), function(btn){
+  btn.onclick = function(){
+    Array.prototype.forEach.call(document.querySelectorAll('.chip[data-r]'), function(b){ b.classList.remove('on'); });
+    btn.classList.add('on');
+    range = btn.dataset.r;
+    render();
+  };
+});
+document.getElementById('reload').onclick = function(){ if (pass) enter(); };
+document.getElementById('logout').onclick = function(){
+  try { sessionStorage.removeItem(PASS_KEY); } catch (e) {}
+  location.reload();
+};
+
+/* 悬停提示 */
+var tip = document.getElementById('tip');
+cv.addEventListener('mousemove', function(e){
+  var r = cv.getBoundingClientRect();
+  var x = (e.clientX - r.left) * (cv.width / r.width);
+  var y = (e.clientY - r.top) * (cv.height / r.height);
+  var hit = null;
+  pts.forEach(function(p){
+    if (!p._q) return;
+    if (Math.hypot(p._q[0]-x, p._q[1]-y) < 14) hit = p;
+  });
+  if (hit !== hover){ hover = hit; drawDots(); }
+  if (hit){
+    tip.textContent = [hit.city, hit.region].filter(Boolean).join(' · ') + ' · ' + fmtTime(hit.created_at);
+    tip.style.left = (e.clientX + 14) + 'px';
+    tip.style.top = (e.clientY - 10) + 'px';
+    tip.style.opacity = 1;
+  } else { tip.style.opacity = 0; }
+});
+cv.addEventListener('mouseleave', function(){ hover = null; tip.style.opacity = 0; drawDots(); });
+
+/* 自动恢复口令 */
+(function(){
+  var saved = '';
+  try { saved = sessionStorage.getItem(PASS_KEY) || ''; } catch (e) {}
+  if (saved){ pass = saved; document.getElementById('pass').value = saved; enter(); }
+  else drawBase();
+})();
+</script>
+</body>
+</html>
