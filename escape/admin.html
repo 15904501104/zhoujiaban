@@ -302,7 +302,15 @@ function enter(){
     try { sessionStorage.setItem(PASS_KEY, pass); } catch (e) {}
     render();
   }).catch(function(e){
-    document.getElementById('err').textContent = '口令不对，或还没配置好：' + e.message;
+    var msg = String(e && e.message || e);
+    var net = /Failed to fetch|NetworkError|Load failed|Network request failed|ERR_|10054|timed out/i.test(msg);
+    if (net){
+      document.getElementById('err').innerHTML =
+        '连不上数据库域名（网络被拦截或暂时不通）。<br>' +
+        '可以先用手机流量重试；如果一直这样，需要换代理域名。';
+      return;
+    }
+    document.getElementById('err').textContent = '口令不对，或还没配置好：' + msg;
   });
 }
 
