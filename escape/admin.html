@@ -42,6 +42,8 @@ main{display:none}
 .panel h3{margin:0 0 8px;font-size:14px;letter-spacing:1px;color:var(--ink2);font-weight:600}
 canvas{width:100%;height:auto;display:block;border-radius:10px;background:
   radial-gradient(70% 60% at 50% 45%, #fbf6ea 0%, #f3ecd9 70%, #ece3cd 100%);}
+.hint{font-size:12.5px;line-height:1.7;color:var(--ink2);margin:10px 2px 0}
+.hint b{color:var(--ink)}
 #tip{position:fixed;pointer-events:none;background:#2b2723ee;color:#fff;font-size:12px;line-height:1.5;padding:6px 9px;border-radius:6px;opacity:0;transition:opacity .1s;z-index:9;white-space:nowrap}
 ol.list{list-style:none;margin:0;padding:0;max-height:520px;overflow:auto}
 ol.list li{display:grid;grid-template-columns:74px 1fr;gap:2px 10px;padding:9px 4px;border-bottom:1px dashed #ddd2ba;font-size:13px}
@@ -75,6 +77,7 @@ a.back{color:var(--ink2)}
       <button class="chip" data-r="168">近 7 天</button>
       <button class="chip" data-r="720">近 30 天</button>
       <button class="chip" data-r="all">全部</button>
+      <button class="chip" data-r="overseas">海外</button>
       <span class="spacer"></span>
       <span class="stat" id="stat"></span>
       <button class="chip" id="reload">刷新</button>
@@ -85,6 +88,7 @@ a.back{color:var(--ink2)}
       <section class="panel">
         <h3>到访分布</h3>
         <canvas id="map" width="1000" height="760"></canvas>
+        <div class="hint" id="overseas"></div>
       </section>
       <section class="panel">
         <h3>最近到访</h3>
@@ -225,14 +229,32 @@ function drawDots(){
   });
   g.restore();
 
-  /* 城市标签（去重，最多 8 个） */
-  var seen = {};
-  g.save(); g.font = '20px "Songti SC", Georgia, serif'; g.fillStyle = 'rgba(60,50,36,.85)';
+  /* 城市标签：按城市取质心，贪心避让，最多 6 个 */
+  var agg = {}, order = [];
   pts.forEach(function(p){
-    if (!p._q || !p.city || seen[p.city]) return;
-    seen[p.city] = 1;
-    if (Object.keys(seen).length > 8) return;
-    g.fillText(p.city, p._q[0] + 12, p._q[1] + 6);
+    if (!p._q || !p.city) return;
+    var a = agg[p.city];
+    if (!a){ agg[p.city] = a = { x: 0, y: 0, n: 0 }; order.push(p.city); }
+    a.x += p._q[0]; a.y += p._q[1]; a.n++;
+  });
+  order.sort(function(a, b){ return agg[b].n - agg[a].n; });
+  var placed = [];
+  g.save();
+  g.font = '20px "Songti SC", Georgia, serif';
+  g.textBaseline = 'middle';
+  order.forEach(function(name){
+    if (placed.length >= 6) return;
+    var a = agg[name], x = a.x / a.n, y = a.y / a.n;
+    var tx = x + 12, ty = y + 2, w = g.measureText(name).width;
+    for (var i = 0; i < placed.length; i++){
+      var b = placed[i];
+      if (tx < b.x + b.w + 8 && tx + w + 8 > b.x && ty - 12 < b.y + 12 && ty + 12 > b.y - 12) return;
+    }
+    placed.push({ x: tx, y: ty, w: w });
+    g.lineWidth = 3.4; g.strokeStyle = 'rgba(246,239,221,.92)';
+    g.strokeText(name, tx, ty);
+    g.fillStyle = 'rgba(60,50,36,.88)';
+    g.fillText(name, tx, ty);
   });
   g.restore();
 }
@@ -240,7 +262,8 @@ function drawDots(){
 /* ---------- 数据 ---------- */
 var C = window.ZJB_TRACK || {};
 var PASS_KEY = 'zjb.admin.pass';
-var rows = [], range = 24, pass = '';
+var rows = [], range = 24, scope = 'all', pass = '';
+function isCN(r){ return /中国|china/i.test((r.country||'') + ''); }
 
 function fmtTime(t){
   var d = new Date(t);
@@ -262,30 +285,56 @@ function loadRows(){
 }
 
 function filtered(){
-  if (range === 'all') return rows;
-  var cut = Date.now() - Number(range) * 3600e3;
-  return rows.filter(function(r){ return new Date(r.created_at).getTime() >= cut; });
+  var out = rows;
+  if (range !== 'all'){
+    var cut = Date.now() - Number(range) * 3600e3;
+    out = out.filter(function(r){ return new Date(r.created_at).getTime() >= cut; });
+  }
+  if (scope === 'overseas') out = out.filter(function(r){ return !isCN(r); });
+  return out;
 }
 
 function render(){
   var data = filtered();
-  pts = data.filter(function(r){ return typeof r.lat === 'number' && typeof r.lon === 'number'; });
+  var dom = data.filter(isCN), over = data.filter(function(r){ return !isCN(r); });
+  pts = (scope === 'overseas' ? [] : dom).filter(function(r){ return typeof r.lat === 'number' && typeof r.lon === 'number'; });
   hover = null;
   drawDots();
 
   var cities = {}, today = 0, now = new Date();
+  var ovCities = {};
   data.forEach(function(r){
-    if (r.city) cities[r.city] = 1;
+    if (r.city && isCN(r)) cities[r.city] = 1;
+    if (r.city && !isCN(r)) ovCities[r.city] = 1;
     var d = new Date(r.created_at);
     if (d.toDateString() === now.toDateString()) today++;
   });
   document.getElementById('stat').innerHTML =
-    '访客 <b>' + data.length + '</b> · 城市 <b>' + Object.keys(cities).length + '</b> · 今日 <b>' + today + '</b>';
+    '访客 <b>' + data.length + '</b> · 城市 <b>' + Object.keys(scope === 'overseas' ? ovCities : cities).length + '</b> · 今日 <b>' + today + '</b>'
+    + (over.length ? ' · 海外 <b>' + over.length + '</b>' : '');
+
+  var ov = document.getElementById('overseas');
+  if (ov){
+    if (!over.length){ ov.innerHTML = ''; }
+    else {
+      var tally = {}, order = [];
+      over.forEach(function(r){
+        var k = [r.country, r.region, r.city].filter(Boolean).join(' · ') || '未知地区';
+        if (!tally[k]){ tally[k] = 0; order.push(k); }
+        tally[k]++;
+      });
+      order.sort(function(a,b){ return tally[b]-tally[a]; });
+      ov.innerHTML = (scope === 'overseas' ? '海外访客不在中国地图范围内，下面按次数列出：' : '另有 <b>' + over.length + '</b> 位海外访客（不在地图内）：')
+        + order.slice(0,6).map(function(k){ return k + ' ×' + tally[k]; }).join('、')
+        + (order.length > 6 ? ' …' : '');
+    }
+  }
 
   var list = document.getElementById('list');
   if (!data.length){ list.innerHTML = '<div class="empty">这个时间段还没有人访问。</div>'; return; }
   list.innerHTML = data.slice(0, 200).map(function(r){
     var place = [r.country, r.region, r.city, r.district].filter(Boolean).join(' · ') || '位置未知';
+    if (!isCN(r)) place = '🌐 ' + place;
     var dev = /Mobile|Android|iPhone|iPad/i.test(r.ua || '') ? '手机' : '电脑';
     return '<li><span class="t">' + fmtTime(r.created_at) + '</span>' +
       '<span class="c">' + place + '</span>' +
@@ -325,7 +374,8 @@ Array.prototype.forEach.call(document.querySelectorAll('.chip[data-r]'), functio
   btn.onclick = function(){
     Array.prototype.forEach.call(document.querySelectorAll('.chip[data-r]'), function(b){ b.classList.remove('on'); });
     btn.classList.add('on');
-    range = btn.dataset.r;
+    var v = btn.dataset.r;
+    if (v === 'overseas'){ scope = 'overseas'; } else { scope = 'all'; range = v; }
     render();
   };
 });
