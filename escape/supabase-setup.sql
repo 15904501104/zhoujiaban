@@ -35,7 +35,7 @@ security definer
 set search_path = public
 as $$
 begin
-  if p_pass is null or p_pass <> '换成你自己的口令' then
+  if p_pass is null or p_pass <> '710710' then
     raise exception 'unauthorized' using errcode = '28000';
   end if;
   return query select * from public.visits order by created_at desc limit 5000;
