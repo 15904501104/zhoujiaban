@@ -7,11 +7,12 @@
   var table = C.table || 'visits';
   var ENDPOINT = C.url.replace(/\/$/, '') + '/rest/v1/' + table;
 
+  /* 稳定的访客标识：存 localStorage，同一浏览器反复访问算同一个人 */
   function sid() {
     try {
-      var k = 'zjb.sid';
-      var v = sessionStorage.getItem(k);
-      if (!v) { v = (Date.now().toString(36) + Math.random().toString(36).slice(2, 8)); sessionStorage.setItem(k, v); }
+      var k = 'zjb.vid';
+      var v = localStorage.getItem(k);
+      if (!v) { v = (Date.now().toString(36) + Math.random().toString(36).slice(2, 10)); localStorage.setItem(k, v); }
       return v;
     } catch (e) { return 'na'; }
   }
