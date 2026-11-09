@@ -24,10 +24,10 @@
             filter:drop-shadow(0 6px 10px rgba(0,0,0,.55))}
   .cast.l{left:48px}
   .cast.r{right:48px}
-  #stick{position:fixed;left:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));
+  #stick{position:fixed;left:14px;top:0;
     width:86px;height:86px;border-radius:50%;
-    background:radial-gradient(circle at 50% 42%, rgba(255,253,246,.62), rgba(255,253,246,.34));
-    border:2px solid rgba(201,178,140,.8);
+    background:radial-gradient(circle at 50% 42%, rgba(255,253,246,.46), rgba(255,253,246,.20));
+    border:2px solid rgba(201,178,140,.62);
     box-shadow:0 6px 16px rgba(60,38,14,.22), inset 0 0 0 6px rgba(255,253,246,.16);
     display:none;z-index:9;pointer-events:auto;touch-action:none;
     -webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;user-select:none;
@@ -36,8 +36,8 @@
     border-radius:50%;background:rgba(255,253,246,.96);border:2px solid #c2a87f;
     box-shadow:0 3px 8px rgba(60,38,14,.32);transition:transform .07s ease-out}
   @media (orientation:portrait){
-    #stick{width:74px;height:74px;left:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px))}
-    #stickKnob{width:32px;height:32px;margin:-16px 0 0 -16px}
+    #stick{width:64px;height:64px;left:10px}
+    #stickKnob{width:28px;height:28px;margin:-14px 0 0 -14px;background:rgba(255,253,246,.92)}
   }
   @media (pointer:coarse),(max-width:820px){
     #stick{display:block}
@@ -254,7 +254,7 @@ const HIDDEN = { id:'tudousi', n:'炒土豆丝', p:3, hidden:true };
 const TARGET = ['liuroud','hongshao','tudousi'];
 
 const G = {
-  room:'street', x:120, y:0, face:1, t:0,
+  room:'street', x:168, y:0, face:1, t:0,
   money:13, lidOpen:false, borrowed:false, introSeen:false, duo:false, speech:null,
   picked:new Set(), orderDone:false,
   dlg:null, choosing:false, menuOpen:false, near:null,
@@ -622,7 +622,24 @@ addEventListener('keyup', e=>{ keys[e.key.toLowerCase()]=false; });
   ['touchstart','touchmove','contextmenu','selectstart'].forEach(function(t){
     base.addEventListener(t, function(e){ e.preventDefault(); }, {passive:false});
   });
-  addEventListener('resize', function(){ if(pid===null) rect(); });
+  // 把摇杆固定在“游戏画面”内的左下角（跟着 canvas 实际矩形走）
+  function placeStick(){
+    const cv=document.getElementById('cv'); if(!cv) return;
+    const r=cv.getBoundingClientRect();
+    const w=base.offsetWidth||74, h=base.offsetHeight||74;
+    const pad=Math.round(Math.min(14, r.height*0.06));
+    let x=Math.round(r.left+pad), y=Math.round(r.bottom-h-pad);
+    x=Math.max(4,Math.min(x, innerWidth-w-4));
+    y=Math.max(4,Math.min(y, innerHeight-h-4));
+    base.style.left=x+'px'; base.style.top=y+'px';
+  }
+  base.__place=placeStick;
+  placeStick();
+  addEventListener('load', placeStick);
+  addEventListener('resize', function(){ placeStick(); if(pid===null) rect(); });
+  addEventListener('orientationchange', function(){ setTimeout(placeStick,60); });
+  if(window.visualViewport){ visualViewport.addEventListener('resize', placeStick); }
+  [120,400,900,1600].forEach(function(ms){ setTimeout(placeStick, ms); });
 })();
 
 function hit(x,y,rx,ry,rw,rh){ return x>rx && x<rx+rw && y>ry && y<ry+rh; }
