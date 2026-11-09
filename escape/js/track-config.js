@@ -3,6 +3,6 @@ window.ZJB_TRACK = {
   url: 'https://sntirknjfhhhutbzhija.supabase.co',
   key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNudGlya25qZmhoaHV0YnpoaWphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQxODA2MjEsImV4cCI6MjEwOTc1NjYyMX0.N-KinxukjOe17NKFvSHLHLzOMHNIy9fvBzFWPsTo1MA',
   table: 'visits',
-  tencentKey: '5QOBZ-V3MWB-YMSUC-JPLX7-QGDJQ-T5FFU',
+  tencentKey: '',
   timezone: 'Asia/Shanghai'
 };
