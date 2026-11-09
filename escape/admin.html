@@ -294,51 +294,76 @@ function filtered(){
   return out;
 }
 
+/* 同一个人只算一次：优先用 sid（浏览器持久 id），老数据退回「城市+经纬度」 */
+function uid(r){
+  if (r.sid && r.sid !== 'na') return r.sid;
+  return [r.city || '', r.lat, r.lon].join('|');
+}
+
+function uniqBy(list){
+  var seen = {}, out = [];
+  list.forEach(function(r){
+    var k = uid(r);
+    if (seen[k]) return;
+    seen[k] = 1; out.push(r);
+  });
+  return out;
+}
+
 function render(){
   var data = filtered();
   var dom = data.filter(isCN), over = data.filter(function(r){ return !isCN(r); });
-  pts = (scope === 'overseas' ? [] : dom).filter(function(r){ return typeof r.lat === 'number' && typeof r.lon === 'number'; });
+  var domU = uniqBy(dom), overU = uniqBy(over), dataU = uniqBy(data);
+
+  pts = (scope === 'overseas' ? [] : domU).filter(function(r){ return typeof r.lat === 'number' && typeof r.lon === 'number'; });
   hover = null;
   drawDots();
 
-  var cities = {}, today = 0, now = new Date();
+  var cities = {}, today = 0, now = new Date(), todaySet = {};
   var ovCities = {};
-  data.forEach(function(r){
+  dataU.forEach(function(r){
     if (r.city && isCN(r)) cities[r.city] = 1;
     if (r.city && !isCN(r)) ovCities[r.city] = 1;
+  });
+  data.forEach(function(r){
     var d = new Date(r.created_at);
-    if (d.toDateString() === now.toDateString()) today++;
+    if (d.toDateString() === now.toDateString() && !todaySet[uid(r)]){ todaySet[uid(r)] = 1; today++; }
   });
   document.getElementById('stat').innerHTML =
-    '访客 <b>' + data.length + '</b> · 城市 <b>' + Object.keys(scope === 'overseas' ? ovCities : cities).length + '</b> · 今日 <b>' + today + '</b>'
-    + (over.length ? ' · 海外 <b>' + over.length + '</b>' : '');
+    '访客 <b>' + dataU.length + '</b> · 城市 <b>' + Object.keys(scope === 'overseas' ? ovCities : cities).length + '</b> · 今日 <b>' + today + '</b>'
+    + (overU.length ? ' · 海外 <b>' + overU.length + '</b>' : '');
 
   var ov = document.getElementById('overseas');
   if (ov){
     if (!over.length){ ov.innerHTML = ''; }
     else {
       var tally = {}, order = [];
-      over.forEach(function(r){
+      overU.forEach(function(r){
         var k = [r.country, r.region, r.city].filter(Boolean).join(' · ') || '未知地区';
         if (!tally[k]){ tally[k] = 0; order.push(k); }
         tally[k]++;
       });
       order.sort(function(a,b){ return tally[b]-tally[a]; });
-      ov.innerHTML = (scope === 'overseas' ? '海外访客不在中国地图范围内，下面按次数列出：' : '另有 <b>' + over.length + '</b> 位海外访客（不在地图内）：')
+      ov.innerHTML = (scope === 'overseas' ? '海外访客不在中国地图范围内，下面按人数列出：' : '另有 <b>' + overU.length + '</b> 位海外访客（不在地图内）：')
         + order.slice(0,6).map(function(k){ return k + ' ×' + tally[k]; }).join('、')
         + (order.length > 6 ? ' …' : '');
     }
   }
 
   var list = document.getElementById('list');
+  var seen2 = {}, vc = {};
+  data.forEach(function(r){ var k = uid(r); vc[k] = (vc[k] || 0) + 1; });
   if (!data.length){ list.innerHTML = '<div class="empty">这个时间段还没有人访问。</div>'; return; }
   list.innerHTML = data.slice(0, 200).map(function(r){
     var place = [r.country, r.region, r.city, r.district].filter(Boolean).join(' · ') || '位置未知';
     if (!isCN(r)) place = '🌐 ' + place;
     var dev = /Mobile|Android|iPhone|iPad/i.test(r.ua || '') ? '手机' : '电脑';
-    return '<li><span class="t">' + fmtTime(r.created_at) + '</span>' +
+    var k = uid(r), n = vc[k] || 1;
+    var rep = n > 1 && seen2[k];
+    if (n > 1) seen2[k] = 1;
+    return '<li' + (rep ? ' class="rep"' : '') + '><span class="t">' + fmtTime(r.created_at) + '</span>' +
       '<span class="c">' + place + '</span>' +
-      '<span class="m">' + (r.page || '/') + ' · ' + dev + '</span></li>';
+      '<span class="m">' + (r.page || '/') + ' · ' + dev + (n > 1 ? ' · 该访客共 ' + n + ' 次' : '') + '</span></li>';
   }).join('');
 }
 
