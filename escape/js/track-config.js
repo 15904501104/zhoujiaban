@@ -1,8 +1,7 @@
-/* 访客统计配置：填上你自己的 Supabase 项目地址与 anon key 后即可开始记录。
-   留空 = 演示模式（不联网、不算访客）。 */
+/* 访客统计配置：Supabase 项目地址与 anon public key（可公开；读取由 RLS + 口令函数控制）。 */
 window.ZJB_TRACK = {
-  url: '',            // 例如 'https://abcdxyz.supabase.co'
-  key: '',            // 形如 'eyJhbGciOi...' 的 anon public key
+  url: 'https://sntirknjfhhhutbzhija.supabase.co',
+  key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNudGlya25qZmhoaHV0YnpoaWphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQxODA2MjEsImV4cCI6MjEwOTc1NjYyMX0.N-KinxukjOe17NKFvSHLHLzOMHNIy9fvBzFWPsTo1MA',
   table: 'visits',
   timezone: 'Asia/Shanghai'
 };
