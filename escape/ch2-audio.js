@@ -900,7 +900,7 @@
     gWin.connect(master);
 
     loadSamples();
-    debugPanel();
+    if (/(\?|&)debug=1/.test(location.search)) debugPanel();
 
     /* 任何界面点击都给一声「嗒」，压得住背景 */
     document.addEventListener('pointerdown', function (e) {
