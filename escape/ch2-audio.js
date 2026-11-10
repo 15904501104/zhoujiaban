@@ -644,7 +644,7 @@
 
     gShopBgm.gain.cancelScheduledValues(now);
     gShopBgm.gain.setValueAtTime(gShopBgm.gain.value, now);
-    gShopBgm.gain.linearRampToValueAtTime(tB * 0.16, now + 0.9);
+    gShopBgm.gain.linearRampToValueAtTime(tB * 0.30, now + 0.9);
 
     if (samples.station) { if (r === 'street') samples.station.start(); else samples.station.stop(); }
     if (samples.cook) { if (r === 'shop') samples.cook.start(); else samples.cook.stop(); }
