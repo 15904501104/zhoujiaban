@@ -198,6 +198,7 @@ cv.addEventListener('pointerup',function(ev){
   const i=hitTest(pos(ev)); if(i===press) pick(i); press=-1;
 });
 function pick(i){
+  if(window.ZJBSfx) ZJBSfx.click();
   if(i===-2){ location.href='title2.html'; return; }
   const lv=LEVELS[i]; if(!lv) return;
   if(!lv.ok){
@@ -215,6 +216,7 @@ window.addEventListener('keydown',function(e){
 });
 requestAnimationFrame(frame);
 </script>
+<script src="sfx.js?v=1"></script>
 <script src="js/track-config.js"></script>
 <script src="js/track.js?v=2" defer></script>
 </body>
