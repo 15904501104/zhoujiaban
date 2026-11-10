@@ -949,3 +949,14 @@
     boot();
   }
 })();
+
+/* 调试小字兜底：无论旧缓存或新逻辑，只要页面没有 ?debug=1，就把面板元素移除 */
+(function () {
+  function killDbg() {
+    if (/[?&]debug=1/.test(location.search)) return;
+    var el = document.getElementById('zjb-adbg');
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+  }
+  var n = 0, t = setInterval(function () { killDbg(); if (++n > 40) clearInterval(t); }, 250);
+  document.addEventListener('DOMContentLoaded', killDbg);
+})();
