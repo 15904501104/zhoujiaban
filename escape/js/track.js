@@ -7,12 +7,11 @@
   var table = C.table || 'visits';
   var ENDPOINT = C.url.replace(/\/$/, '') + '/rest/v1/' + table;
 
-  /* 稳定的访客标识：存 localStorage，同一浏览器反复访问算同一个人 */
   function sid() {
     try {
-      var k = 'zjb.vid';
+      var k = 'zjb.sid';
       var v = localStorage.getItem(k);
-      if (!v) { v = (Date.now().toString(36) + Math.random().toString(36).slice(2, 10)); localStorage.setItem(k, v); }
+      if (!v) { v = (Date.now().toString(36) + Math.random().toString(36).slice(2, 8)); localStorage.setItem(k, v); }
       return v;
     } catch (e) { return 'na'; }
   }
@@ -58,13 +57,27 @@
   }
 
   function send(geo) {
-    var o = makeBody(geo);
-    if (!o.district) { post(o).catch(function () {}); return; }
-    // 库里还没有 district 列时（没跑过 ALTER），退回不带区县的记录，避免整条丢失
-    post(o).catch(function () {
-      delete o.district;
-      post(o).catch(function () {});
-    });
+    var full = makeBody(geo);
+    /* 老库可能缺 sid / district / referrer 等列：逐级砍字段重试，绝不整条丢 */
+    var base = {
+      page: full.page,
+      ua: full.ua,
+      country: full.country,
+      region: full.region,
+      city: full.city,
+      lat: full.lat,
+      lon: full.lon
+    };
+    var steps = [
+      full,
+      (function () { var o = {}; for (var k in full) if (k !== 'sid') o[k] = full[k]; return o; })(),
+      (function () { var o = {}; for (var k in full) if (k !== 'sid' && k !== 'district') o[k] = full[k]; return o; })(),
+      base
+    ];
+    (function next(i) {
+      if (i >= steps.length) return;
+      post(steps[i]).catch(function () { next(i + 1); });
+    })(0);
   }
 
   function tencent(cb) {
