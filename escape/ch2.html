@@ -468,6 +468,7 @@ function finish(){
     const p=JSON.parse(localStorage.getItem(K)||'{}')||{};
     p.zhuxingchi=true; localStorage.setItem(K,JSON.stringify(p));
   }catch(e){}
+  if(window.ZJBAudio) ZJBAudio.win();
   elEnd.classList.add('on');
 }
 
@@ -550,9 +551,7 @@ function envUpdate(dt){
   ENV.traffic.gain.value += ((shop?0.004:0.020) - ENV.traffic.gain.value) * 0.02;
   ENV.tv.gain.value += ((shop?0.014:0.0) - ENV.tv.gain.value) * 0.02;
 }
-['pointerdown','keydown'].forEach(function(ev){
-  addEventListener(ev, function once(){ initEnv(); }, { once:true });
-});
+/* 环境音改由 ch2-audio.js 统一负责（室外/店内交叉淡化），这里不再重复启动 */
 
 function shadow(x,y,rx,ry,a){
   g.globalAlpha=a||.16; g.fillStyle='#4a3a24';
@@ -1466,7 +1465,7 @@ if(q.get('brief')!=='0'){
   setTimeout(function(){
     const b=document.getElementById('brief'); if(!b) return;
     BRIEFING=true; b.classList.add('on');
-    function go(){ BRIEFING=false; b.classList.remove('on'); G.t0=performance.now(); }
+    function go(){ BRIEFING=false; b.classList.remove('on'); G.t0=performance.now(); if(window.ZJBAudio) ZJBAudio.unlock(); }
     document.getElementById('briefGo').addEventListener('click',go);
     window.addEventListener('keydown',function esc(e){ if(e.key==='Enter'||e.key===' '||e.key==='Escape'){ go(); window.removeEventListener('keydown',esc);} });
   },80);
@@ -1533,7 +1532,6 @@ document.addEventListener('dragstart',function(e){e.preventDefault();},false);
 document.addEventListener('gesturestart',function(e){e.preventDefault();},false);
 try{ document.onselectstart=function(){return false;}; document.ondragstart=function(){return false;}; }catch(e){}
 </script>
-<script src="js/track-config.js"></script>
-<script src="js/track.js" defer></script>
+<script src="ch2-audio.js?v=8"></script>
 </body>
 </html>
