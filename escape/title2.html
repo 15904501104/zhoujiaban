@@ -132,15 +132,18 @@ const IMG={};
   const im=new Image(); im.src=src; IMG[src]=im;
 });
 const VID = document.createElement('video');
-VID.src = 'sprites/mona-v9.mp4?v=1';
+/* 默认用静态海报（62KB，自带程序化青烟），不再整页解码视频；
+   想要动态版加 ?video=1。 */
+const USEVID = /[?&]video=1/.test(location.search);
+VID.src = USEVID ? 'sprites/mona-v9.mp4?v=1' : '';
 VID.muted = true; VID.defaultMuted = true; VID.loop = true;
 VID.playsInline = true; VID.autoplay = true;
 ['playsinline','webkit-playsinline'].forEach(function(a){ VID.setAttribute(a,'true'); });
 ['muted','autoplay'].forEach(function(a){ VID.setAttribute(a,''); });
-VID.setAttribute('preload','auto');
+VID.setAttribute('preload', USEVID ? 'auto' : 'none');
 VID.style.cssText='position:fixed;left:0;top:0;width:100%;height:100%;object-fit:cover;opacity:1;pointer-events:none;z-index:0;background:transparent';
-document.body.appendChild(VID);
-function vidKick(){ try{ var p=VID.play(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
+if(USEVID) document.body.appendChild(VID);
+function vidKick(){ if(!USEVID) return; try{ var p=VID.play(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
 ['loadeddata','canplay','canplaythrough','stalled','suspend'].forEach(function(ev){
   VID.addEventListener(ev, function(){ if(VID.paused) vidKick(); });
 });
@@ -148,12 +151,12 @@ document.addEventListener('pointerdown', vidKick, {passive:true});
 document.addEventListener('touchstart', vidKick, {passive:true});
 document.addEventListener('click', vidKick, {passive:true});
 document.addEventListener('visibilitychange', function(){ if(!document.hidden) vidKick(); });
-try{ VID.load(); }catch(e){}
+try{ if(USEVID) VID.load(); }catch(e){}
 if(window.WeixinJSBridge){ vidKick(); }
 document.addEventListener('WeixinJSBridgeReady', function(){ vidKick(); }, false);
 [0,120,400,900,1800].forEach(function(ms){ setTimeout(vidKick, ms); });
 vidKick();
-let VIDFAIL=false;
+let VIDFAIL = !USEVID;
 function vidReady(){ return !VIDFAIL && !VID.error && VID.readyState >= 2 && VID.videoWidth > 0; }
 setTimeout(function(){ if(!vidReady()) VIDFAIL=true; }, 4000);
 VID.addEventListener('error', function(){ VIDFAIL=true; });
@@ -476,7 +479,7 @@ document.addEventListener('gesturestart',function(e){ e.preventDefault(); },fals
 window.addEventListener('resize',resize);
 resize(); requestAnimationFrame(frame);
 </script>
-<script src="level-bgm.js?v=1"></script>
+<script src="level-bgm.js?v=3"></script>
 <script src="js/track-config.js"></script>
 <script src="js/track.js?v=2" defer></script>
 </body>
