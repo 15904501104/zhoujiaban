@@ -176,14 +176,21 @@
   function start() {
     if (muted) return;
     if (!ensure()) return;
-    if (ctx.state === 'suspended') ctx.resume();
-    if (running) return;
-    running = true;
-    nextTime = ctx.currentTime + 0.12;
-    bar = 0;
-    tick();
-    timer = setInterval(tick, 60);
-    fade(0.45, 900);
+    var go = function () {
+      if (running) return;
+      running = true;
+      bar = 0;
+      nextTime = ctx.currentTime + 0.12;   /* resume 之后再排程，避免音符落在"过去" */
+      tick();
+      clearInterval(timer);
+      timer = setInterval(tick, 60);
+      fade(0.45, 900);
+    };
+    if (ctx.state === 'suspended' && ctx.resume) {
+      try { ctx.resume().then(go)['catch'](go); } catch (e) { go(); }
+    } else {
+      go();
+    }
   }
 
   function stop(hard) {
@@ -207,10 +214,39 @@
     tone({ type: 'triangle', f: 240, t: t + 0.014, gain: 0.04, decay: 0.10 });
   }
 
+  var hint = null;
+
+  function hideHint() {
+    if (!hint) return;
+    hint.style.opacity = '0';
+    setTimeout(function () {
+      if (hint && hint.parentNode) hint.parentNode.removeChild(hint);
+      hint = null;
+    }, 800);
+  }
+
+  function addHint() {
+    hint = document.createElement('div');
+    hint.id = 'zjb-bgm-hint';
+    hint.textContent = '轻触任意处开始';
+    hint.style.cssText = [
+      'position:fixed', 'left:50%', 'top:52%', 'transform:translate(-50%,-50%)',
+      'z-index:46', 'pointer-events:none', 'user-select:none',
+      'font:14px/1 serif', 'letter-spacing:0.2em', 'white-space:nowrap',
+      'color:rgba(60,50,36,.62)', 'text-shadow:0 1px 0 rgba(255,252,244,.75)',
+      'opacity:0', 'transition:opacity .7s ease'
+    ].join(';');
+    document.body.appendChild(hint);
+    setTimeout(function () { if (hint) hint.style.opacity = '1'; }, 30);
+    setTimeout(hideHint, 1600);
+  }
+
   function paint() {
     if (!btn) return;
     btn.textContent = muted ? '🔇' : '♪';
     btn.style.opacity = muted ? '0.5' : '0.62';
+    /* 起播前不显示，避免"要点这个按钮"的错觉；开声后才作为静音开关出现 */
+    btn.style.display = (running || muted) ? 'block' : 'none';
   }
 
   function toggle() {
@@ -238,19 +274,50 @@
   }
 
   function boot() {
-    try { muted = localStorage.getItem('zjban.levelbgm') === 'off'; } catch (e) {}
+    /* 每次进页面都默认开音乐：清掉旧的 'off'，避免"上次静音过就永远没声" */
+    try { localStorage.removeItem('zjban.levelbgm'); } catch (e) {}
+    muted = false;
     addButton();
+    addHint();
 
     function first(e) {
       if (e && e.target === btn) return;
       document.removeEventListener('pointerdown', first, true);
       document.removeEventListener('touchstart', first, true);
       document.removeEventListener('keydown', first, true);
-      if (!muted) start();
+      hideHint();
+      start();
+      paint();
+      /* 兜底：个别浏览器首个手势里 resume 仍被拖到下一帧 */
+      setTimeout(function () {
+        if (!muted && ctx && ctx.state === 'suspended' && ctx.resume) {
+          ctx.resume()['catch'](function () {});
+          running = false; start();
+        }
+      }, 600);
     }
     document.addEventListener('pointerdown', first, true);
     document.addEventListener('touchstart', first, true);
     document.addEventListener('keydown', first, true);
+
+    /* 先尝试零交互自动播放：有些环境（曾在站点交互过 / 系统允许自动播放 /
+       本地带 autoplay 参数的浏览器）能直接 running，就不再需要任何点击。 */
+    function tryAuto() {
+      if (muted || running) return;
+      start();
+      setTimeout(function () {
+        if (!ctx) return;
+        if (ctx.state !== 'running') { stop(true); }        /* 被拦：静默等第一次手势 */
+        else {
+          document.removeEventListener('pointerdown', first, true);
+          document.removeEventListener('touchstart', first, true);
+          document.removeEventListener('keydown', first, true);
+          hideHint(); paint();
+        }
+      }, 350);
+    }
+    tryAuto();
+    setTimeout(tryAuto, 900);
 
     document.addEventListener('visibilitychange', function () {
       if (!ctx) return;
