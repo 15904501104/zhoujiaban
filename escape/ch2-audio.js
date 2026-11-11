@@ -512,13 +512,13 @@
   }
   function bgmBarAt(t, i) {
     var ch = CH[i % CH.length];
-    tone({ type: 'sine', f: hz(ch[0] - 12), t: t, dur: BG_BEAT * 0.85, gain: 0.045, dest: gShopBgm });
-    tone({ type: 'sine', f: hz(ch[0] - 12), t: t + BG_BEAT * 2, dur: BG_BEAT * 0.8, gain: 0.034, dest: gShopBgm });
+    tone({ type: 'sine', f: hz(ch[0] - 12), t: t, dur: BG_BEAT * 0.85, gain: 0.095, dest: gShopBgm });
+    tone({ type: 'sine', f: hz(ch[0] - 12), t: t + BG_BEAT * 2, dur: BG_BEAT * 0.8, gain: 0.070, dest: gShopBgm });
     woodblock(t + BG_BEAT);
     woodblock(t + BG_BEAT * 3);
     var order = [0, 1, 2, 3, 2, 1, 2, 3];
     for (var k = 0; k < 8; k++) {
-      pluck(ch[order[k]] + 12, t + k * (BG_BEAT / 2), BG_BEAT * 0.42, 0.020);
+      pluck(ch[order[k]] + 12, t + k * (BG_BEAT / 2), BG_BEAT * 0.42, 0.036);
     }
   }
   function bgmTick() {
@@ -628,7 +628,8 @@
 
   /* ---------- 房间切换 ---------- */
   function applyRoom(r) {
-    if (!ctx || r === room) return;
+    if (!ctx) return;
+    if (r === room) { if (r === 'shop' && (!bgmNext || bgmNext < t0())) bgmTick(); return; }
     var prev = room;
     room = r;
     var now = t0();
@@ -636,7 +637,7 @@
     var tB = (r === 'shop') ? 1 : 0;
     gStreet.gain.cancelScheduledValues(now);
     gStreet.gain.setValueAtTime(gStreet.gain.value, now);
-    gStreet.gain.linearRampToValueAtTime(tS * 0.9, now + 0.7);
+    gStreet.gain.linearRampToValueAtTime(tS * 0.50, now + 1.4);
 
     gShopBed.gain.cancelScheduledValues(now);
     gShopBed.gain.setValueAtTime(gShopBed.gain.value, now);
@@ -644,13 +645,13 @@
 
     gShopBgm.gain.cancelScheduledValues(now);
     gShopBgm.gain.setValueAtTime(gShopBgm.gain.value, now);
-    gShopBgm.gain.linearRampToValueAtTime(tB * 0.30, now + 0.9);
+    gShopBgm.gain.linearRampToValueAtTime(tB * 0.60, now + 0.9);
 
     if (samples.station) { if (r === 'street') samples.station.start(); else samples.station.stop(); }
     if (samples.cook) { if (r === 'shop') samples.cook.start(); else samples.cook.stop(); }
     if (samples.crowd) { if (r === 'shop') samples.crowd.start(); else samples.crowd.stop(); }
 
-    if (r === 'shop') { bgmNext = 0; bgmBar = 0; doorEnter(now + 0.02); }
+    if (r === 'shop') { bgmNext = 0; bgmBar = 0; doorEnter(now + 0.02); bgmTick(); }
     if (prev === 'shop' && r !== 'shop') { /* 出店 */ }
   }
 
@@ -681,7 +682,7 @@
     var el = document.createElement('audio');
     el.src = this.url;
     el.loop = true;
-    el.preload = 'auto';
+    el.preload = 'none';
     el.setAttribute('playsinline', '');
     el.style.display = 'none';
     document.body.appendChild(el);
@@ -724,7 +725,18 @@
     if (!this.mixed && this.mixFn) { this.mixed = true; this.mixFn(); }
     this.playing = true;
     if (this.direct) {
-      try { this.el.volume = Math.min(1, this.level * 1.8); this.el.muted = false; } catch (e) {}
+      try {
+        var self2 = this, tgt = Math.min(1, this.level * 1.2), i = 0;
+        this.el.muted = false;
+        this.el.volume = 0;
+        clearInterval(this._fadeT);
+        this._fadeT = setInterval(function () {
+          i++;
+          var k = Math.min(1, i / 24);          /* 约 1.2 秒淡入，避免"突然炸出来" */
+          self2.el.volume = tgt * k;
+          if (k >= 1) clearInterval(self2._fadeT);
+        }, 50);
+      } catch (e) {}
     } else if (this.gainNode) {
       this.gainNode.gain.cancelScheduledValues(t);
       this.gainNode.gain.setValueAtTime(Math.max(0.0001, this.gainNode.gain.value), t);
@@ -737,6 +749,7 @@
     this.wanted = true;
     if (!running) return;
     if (!this.ensure()) return;
+    if (!this._loaded) { this._loaded = true; try { this.el.load(); } catch (e) {} }   /* 用到才下载，进关更快 */
     if (!this.playing) this.play();
   };
   SampleLayer.prototype.stop = function () {
@@ -766,7 +779,7 @@
     if (sw === '1') { var a = U.station; U.station = U.crowd; U.crowd = a; }
     if (sw === '2') { var b = U.station; U.station = U.cook; U.cook = b; }
 
-    samples.station = new SampleLayer(U.station, gStreet, 0.55, 'street');
+    samples.station = new SampleLayer(U.station, gStreet, 0.30, 'street');
     samples.cook = new SampleLayer(U.cook, gShopBed, 0.40, 'shop');
     samples.crowd = new SampleLayer(U.crowd, gShopBed, 0.50, 'shop');
 
@@ -902,10 +915,11 @@
     loadSamples();
     if (/(\?|&)debug=1/.test(location.search)) debugPanel();
 
-    /* 任何界面点击都给一声「嗒」，压得住背景 */
+    /* 界面点击给一声「嗒」；摇杆 / 十字键区域不出声（避免"一按就响"） */
     document.addEventListener('pointerdown', function (e) {
       var t = e.target;
       if (!t) return;
+      if (t.closest && t.closest('#touch, .pad, .stick, .joy, [data-noclick]')) return;
       uiClick();
     }, true);
 
