@@ -6,20 +6,35 @@
 (function () {
   'use strict';
 
-  var BPM = 92;
+  /* 两种气质：
+   * calm = 主页用的慢速 lo-fi 钢琴（66 BPM、A 小调、磁带底噪、无鼓）
+   * up   = 关卡选择/关卡内用的明快版（92 BPM、沙锤）
+   * 页面在引入本文件前设置 window.ZJB_BGM_STYLE = 'calm' | 'up'，或用 ?bgm=up 覆盖。
+   */
+  var STYLE_NAME = window.ZJB_BGM_STYLE || (/[?&]bgm=up/.test(location.search) ? 'up' : 'calm');
+  var STYLES = {
+    calm: {
+      BPM: 66,
+      CHORDS: [[45, 52, 57, 60], [41, 48, 53, 57], [48, 55, 59, 64], [43, 50, 55, 59]],
+      ARP: [0, 2, 1, 3, 2, 3, 1, 2],
+      MEL: [76, 0, 0, 72, 0, 74, 0, 0],
+      shaker: false, hiss: true, pad: 0.028, arpGain: 0.085, master: 0.42
+    },
+    up: {
+      BPM: 92,
+      CHORDS: [[48, 55, 59, 64], [45, 52, 57, 60], [41, 48, 53, 57], [43, 50, 55, 59]],
+      ARP: [0, 1, 2, 3, 2, 1, 2, 3],
+      MEL: [76, 0, 81, 0, 77, 0, 83, 0],
+      shaker: true, hiss: false, pad: 0.02, arpGain: 0.075, master: 0.45
+    }
+  };
+  var CFG = STYLES[STYLE_NAME] || STYLES.calm;
+  var BPM = CFG.BPM;
   var BEAT = 60 / BPM;
   var BAR = BEAT * 4;
-
-  /* Cmaj7 – Am7 – Fmaj7 – G6，整体比首页高一个色彩 */
-  var CHORDS = [
-    [48, 55, 59, 64],
-    [45, 52, 57, 60],
-    [41, 48, 53, 57],
-    [43, 50, 55, 59]
-  ];
-  var ARP = [0, 1, 2, 3, 2, 1, 2, 3];
-  /* 每小节一个长音，落在第三拍，避免太"练习曲" */
-  var MEL = [76, 0, 81, 0, 77, 0, 83, 0];
+  var CHORDS = CFG.CHORDS;
+  var ARP = CFG.ARP;
+  var MEL = CFG.MEL;
 
   var ctx = null, master = null, delay = null, wet = null;
   var timer = 0, nextTime = 0, bar = 0, muted = false, running = false;
@@ -125,11 +140,11 @@
     for (var s = 0; s < 8; s++) {
       var m = ch[ARP[s]] + (s >= 4 ? 0 : 0);
       var tt = t + s * BEAT * 0.5;
-      piano(m, tt, BEAT * 0.9, s % 2 === 0 ? 0.075 : 0.05);
-      if (s % 2 === 1) shaker(tt);
+      piano(m, tt, BEAT * 0.9, s % 2 === 0 ? CFG.arpGain : CFG.arpGain * 0.66);
+      if (CFG.shaker && s % 2 === 1) shaker(tt);
     }
     /* 铺底 */
-    pad(ch[1], t, BAR, 0.02);
+    pad(ch[1], t, BAR, CFG.pad);
     /* 长音旋律 */
     var mel = MEL[i % MEL.length];
     if (mel) tone({ type: 'sine', f: noteHz(mel), t: t + BEAT * 1.5, gain: 0.05, dur: BEAT * 2.2, wet: 1 });
@@ -173,6 +188,24 @@
     master.gain.linearRampToValueAtTime(Math.max(0.0001, target), t + ms / 1000);
   }
 
+  var hissSrc = null;
+
+  /* 磁带底噪（只在 calm 用）：一层很轻的带限噪声，让钢琴不那么"干净电子味" */
+  function hissBed() {
+    if (!ctx || hissSrc) return;
+    if (!noiseBuf) noiseBuf = mkNoise(4);
+    var src = ctx.createBufferSource();
+    src.buffer = noiseBuf;
+    src.loop = true;
+    var f = ctx.createBiquadFilter();
+    f.type = 'bandpass'; f.frequency.value = 1600; f.Q.value = 0.5;
+    var g = ctx.createGain();
+    g.gain.value = 0.012;
+    src.connect(f); f.connect(g); g.connect(master);
+    src.start();
+    hissSrc = src;
+  }
+
   function start() {
     if (muted) return;
     if (!ensure()) return;
@@ -184,7 +217,8 @@
       tick();
       clearInterval(timer);
       timer = setInterval(tick, 60);
-      fade(0.45, 900);
+      if (CFG.hiss) hissBed();
+      fade(CFG.master, 1200);
     };
     if (ctx.state === 'suspended' && ctx.resume) {
       try { ctx.resume().then(go)['catch'](go); } catch (e) { go(); }
@@ -331,7 +365,24 @@
     stop: function () { stop(false); },
     click: click,
     duck: function () { fade(0.08, 300); },
-    unduck: function () { if (!muted) fade(0.45, 500); }
+    unduck: function () { if (!muted) fade(0.45, 500); },
+    diag: function () {
+      return {
+        hasCtx: !!ctx,
+        state: ctx ? ctx.state : 'none',
+        running: running,
+        muted: muted,
+        master: master ? Math.round(master.gain.value * 1000) / 1000 : null,
+        bar: bar,
+        now: ctx ? Math.round(ctx.currentTime * 10) / 10 : 0
+      };
+    },
+    beep: function () {
+      if (!ensure()) return 'no-ctx';
+      var go = function () { tone({ type: 'sine', f: 660, t: now() + 0.02, gain: 0.35, dur: 0.5 }); return 'ok'; };
+      if (ctx.state === 'suspended' && ctx.resume) { ctx.resume(); }
+      return go();
+    }
   };
   window.ZJBSfx = window.ZJBSfx || { tick: click };
 
