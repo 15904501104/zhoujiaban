@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>BGM 自检</title>
+<style>
+  html,body{margin:0;height:100%;background:#f6efdd;color:#3c3224;font:15px/1.7 -apple-system,"Segoe UI",serif}
+  .wrap{max-width:640px;margin:0 auto;padding:22px 18px 60px}
+  h1{font:22px/1.4 serif;letter-spacing:.08em;margin:6px 0 14px}
+  .btns{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 18px}
+  button{font:15px/1 serif;padding:12px 16px;border-radius:10px;border:1px solid rgba(60,50,36,.35);
+         background:#fffdf5;color:#3c3224;cursor:pointer}
+  button:active{transform:translateY(1px)}
+  pre{background:#fffdf5;border:1px solid rgba(60,50,36,.18);border-radius:12px;padding:14px;
+      font:13px/1.6 ui-monospace,Consolas,monospace;white-space:pre-wrap;word-break:break-all}
+  .hint{color:#7a6a52;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>背景音乐 · 自检</h1>
+  <p class="hint">点下面按钮，把屏幕上的文字截图发我。<br>如果「滴一声」都听不到，说明是设备/浏览器的出声问题；如果滴一声能听到、但音乐没声，说明是音乐那套的问题。</p>
+
+  <div class="btns">
+    <button id="b1">① 滴一声（测试出声）</button>
+    <button id="b2">② 起播音乐</button>
+    <button id="b3">③ 停止</button>
+  </div>
+
+  <pre id="out">…</pre>
+
+  <p class="hint">诊断每秒刷新一次。重点看：<code>state</code>（running 才对）、<code>running</code>、<code>master</code>（音量，0 就是没声）、<code>bar</code>（小节数，能涨说明在排程）。</p>
+</div>
+
+<script src="level-bgm.js?v=3"></script>
+<script>
+(function () {
+  var out = document.getElementById('out');
+  var last = '';
+
+  function beepResult() {
+    try { return window.ZJBLevel && ZJBLevel.beep ? ZJBLevel.beep() : 'no-api'; }
+    catch (e) { return 'ERR ' + e.message; }
+  }
+
+  document.getElementById('b1').onclick = function () {
+    var r = beepResult();
+    out.textContent = 'beep() → ' + r + '\n\n' + pretty();
+  };
+  document.getElementById('b2').onclick = function () {
+    try { ZJBLevel.start(); } catch (e) { out.textContent = 'start() ERR ' + e.message; }
+  };
+  document.getElementById('b3').onclick = function () {
+    try { ZJBLevel.stop(); } catch (e) {}
+  };
+
+  function pretty() {
+    try { return JSON.stringify(ZJBLevel.diag(), null, 2); }
+    catch (e) { return 'diag ERR ' + e.message; }
+  }
+
+  setInterval(function () {
+    var s = pretty();
+    if (s !== last) { last = s; out.textContent = s; }
+  }, 700);
+
+  /* 页面一进来也尝试自动起播（可能被浏览器拦，属正常） */
+  setTimeout(function () { try { ZJBLevel.start(); } catch (e) {} }, 120);
+})();
+</script>
+</body>
+</html>
