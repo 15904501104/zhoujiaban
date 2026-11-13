@@ -388,9 +388,9 @@ window.onerror = function (m, s, l, c, e) {
     }
   }
   var CAST = [
-    { src:'sprites/zhanghao-bare.png?v=3', cx:118, name:'张昊' },      /* 左：第二形态 */
-    { src:'sprites/lvao.png',      cx:172, name:'吕奥' },              /* 中 */
-    { src:'sprites/caoyuhuan.png', cx:236, name:'曹宇桓' }             /* 右 */
+    { src:'sprites/zhanghao-bare.png?v=3', cx:134, name:'张昊' },      /* 左：第二形态 */
+    { src:'sprites/lvao.png',      cx:186, name:'吕奥' },              /* 中 */
+    { src:'sprites/caoyuhuan.png', cx:240, name:'曹宇桓' }             /* 右 */
   ];
   /* 张昊 = 曹宇桓的身体（赤膊、有胸肌乳头、脖子齐全）横向压到 0.95
      + 张昊自己的头（只取到下巴 y=52，不带衣领）。
@@ -431,7 +431,7 @@ window.onerror = function (m, s, l, c, e) {
       c.img.src = c.src + '?v=17';
     })(CAST[ci]);
   }
-  var GIRL = { img:new Image(), cx:74, name:'泳装少女' };
+  var GIRL = { img:new Image(), cx:100, name:'泳装少女' };
   GIRL.img.src = 'girl-art.png?v=1';
   var PS = 0.5;
   /* 张昊的「第二形态」：只把上衣换成赤裸上身，其余像素不动。
@@ -496,7 +496,7 @@ window.onerror = function (m, s, l, c, e) {
     /* 新人物：整张像素画，按「肚脐正好压在水面」定位 */
     if(GIRL.img.complete && GIRL.img.naturalWidth){
       var GW = GIRL.img.naturalWidth, GH = GIRL.img.naturalHeight;
-      var h2 = 124, w2 = Math.round(h2 * GW / GH);
+      var h2 = 84, w2 = Math.round(h2 * GW / GH);
       var nav = 0.75;                       /* 原图里肚脐约在 75% 高处 */
       var waterY = POOL2.cy - POOL2.ry * 0.55;
       var gy = Math.round(waterY - h2 * nav);
