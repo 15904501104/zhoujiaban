@@ -428,17 +428,46 @@ window.onerror = function (m, s, l, c, e) {
     (function(c){
       c.img = new Image();
       c.img.onerror = function(){ c.fail = true; };
-      c.img.onload = function(){ if(c.bare) setBare(c); };
-      c.img.src = c.src + '?v=15';
-      if(c.bare){
-        c.bodyImg = new Image();
-        c.bodyImg.onerror = function(){ c.fail = true; };
-        c.bodyImg.onload = function(){ setBare(c); };
-        c.bodyImg.src = 'sprites/caoyuhuan.png?v=15';
-      }
+      c.img.src = c.src + '?v=17';
     })(CAST[ci]);
   }
   var PS = 0.62;
+  /* 张昊的「第二形态」：只把上衣换成赤裸上身，其余像素不动。
+     全程只用 drawImage + fillRect，不读像素（该环境下读像素会抛 SecurityError）。 */
+  function bareCanvas(src){
+    var c = document.createElement('canvas');
+    c.width = 96; c.height = 120;
+    var g = c.getContext('2d');
+    g.imageSmoothingEnabled = false;
+    g.drawImage(src, 0, 0);
+
+    var SKIN='#e8c4a4', D='#d3a883', L='#f2d6bb',
+        NIP='#c08872', NIPD='#a86f5c', NAV='#c09a7c', LN='#d8b394';
+
+    g.fillStyle = SKIN;  g.fillRect(21, 55, 54, 42);   /* 躯干底 */
+    g.fillStyle = D;     g.fillRect(43, 50, 11, 8);    /* 脖子暗 */
+    g.fillStyle = SKIN;  g.fillRect(43, 50, 9, 8);
+    g.fillStyle = L;     g.fillRect(22, 57, 52, 2);    /* 肩头亮 */
+    g.fillStyle = D;     g.fillRect(21, 59, 3, 30);
+    g.fillStyle = D;     g.fillRect(72, 59, 3, 30);
+    g.fillStyle = D;     g.fillRect(21, 86, 54, 2);    /* 胸下影 */
+    g.fillStyle = L;     g.fillRect(27, 63, 18, 1);
+    g.fillStyle = L;     g.fillRect(51, 63, 18, 1);
+    g.fillStyle = LN;    g.fillRect(27, 72, 17, 1);    /* 胸肌下缘 */
+    g.fillRect(33, 73, 8, 1); g.fillRect(52, 72, 17, 1); g.fillRect(55, 73, 8, 1);
+    g.fillStyle = D;     g.fillRect(47, 66, 2, 8);     /* 胸沟 */
+    g.fillStyle = NIPD;  g.fillRect(34, 68, 3, 3);     /* 乳头 */
+    g.fillStyle = NIP;   g.fillRect(35, 68, 1, 1);
+    g.fillStyle = NIPD;  g.fillRect(59, 68, 3, 3);
+    g.fillStyle = NIP;   g.fillRect(60, 68, 1, 1);
+    g.fillStyle = D;     g.fillRect(47, 76, 1, 8);     /* 腹中线 */
+    g.fillStyle = NAV;   g.fillRect(46, 88, 3, 2);     /* 肚脐 */
+    g.fillStyle = D;     g.fillRect(46, 90, 3, 1);
+    g.fillStyle = D;     g.fillRect(27, 74, 1, 16);
+    g.fillRect(68, 74, 1, 16);
+    g.fillStyle = SKIN;  g.fillRect(21, 94, 54, 2);
+    return c;
+  }
   function people(){
     var S = PS, sw = 96*S, sh = 120*S;
     var top = POOL.y0 - sh*0.70;
@@ -447,7 +476,15 @@ window.onerror = function (m, s, l, c, e) {
       var c = CAST[i];
       var dx = Math.round(c.cx - sw/2), dy = Math.round(top);
       var W2 = Math.round(sw), H2 = Math.round(sh);
-      var src = (c.img.complete && c.img.naturalWidth) ? c.img : null;
+      var src = null;
+      if(c.img.complete && c.img.naturalWidth){
+        if(c.bare){
+          if(!c.cv){ try{ c.cv = bareCanvas(c.img); }catch(e){ c.cv = c.img; } }
+          src = c.cv;
+        } else {
+          src = c.img;
+        }
+      }
       if(src){
         ctx.drawImage(src, dx, dy, W2, H2);
       } else {
@@ -464,7 +501,7 @@ window.onerror = function (m, s, l, c, e) {
     }
     ctx.font = '6px monospace';
     ctx.fillStyle = ok === CAST.length ? 'rgba(0,0,0,.45)' : '#c40000';
-    ctx.fillText('v16 人物 ' + ok + '/' + CAST.length + (ok===CAST.length?' OK':' 载入失败'), 4, H-4);
+    ctx.fillText('v17 人物 ' + ok + '/' + CAST.length + (ok===CAST.length?' OK':' 载入失败'), 4, H-4);
   }
   /* 把水面盖回下半身，只留上半身 */
   function waterCover(){
