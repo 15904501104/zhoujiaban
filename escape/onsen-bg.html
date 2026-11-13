@@ -739,18 +739,18 @@ window.onerror = function (m, s, l, c, e) {
 
   function snowSky(){
     var g = ctx.createLinearGradient(0, 0, 0, 130);
-    g.addColorStop(0, '#1b2634');
-    g.addColorStop(0.55, '#33465a');
-    g.addColorStop(1, '#5d7288');
+    g.addColorStop(0, '#c9d6e3');
+    g.addColorStop(0.55, '#dfe8f1');
+    g.addColorStop(1, '#f2f6fa');
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, 140);
     /* 远处雪林剪影 */
     for(var i = 0; i < 26; i++){
       var x = i * 13 + 2, h = 16 + ((i * 37) % 20);
-      ctx.fillStyle = i % 2 ? '#26333f' : '#2e3d49';
+      ctx.fillStyle = i % 2 ? '#6c7d8c' : '#7d8e9c';
       ctx.beginPath();
       ctx.moveTo(x, 96); ctx.lineTo(x + 6, 96 - h); ctx.lineTo(x + 12, 96);
       ctx.closePath(); ctx.fill();
-      ctx.fillStyle = 'rgba(226,236,246,.55)';
+      ctx.fillStyle = 'rgba(255,255,255,.85)';
       ctx.fillRect(x + 3, 96 - h + 3, 6, 2);
     }
   }
@@ -768,7 +768,7 @@ window.onerror = function (m, s, l, c, e) {
   function bushRow(){
     for(var i = 0; i < 9; i++){
       var cx = 8 + i * 38, cy = 104;
-      ctx.fillStyle = '#2c3a33';
+      ctx.fillStyle = '#33453a';
       ctx.beginPath();
       ctx.ellipse(cx, cy, 20, 11, 0, 0, Math.PI * 2);
       ctx.fill();
@@ -845,7 +845,7 @@ window.onerror = function (m, s, l, c, e) {
       var x = POOL2.cx + Math.sin(ph * 1.3) * (60 + (i % 5) * 8);
       var y = POOL2.cy - 6 - ((clock * 0.012 + i * 11) % 46);
       var rr = 6 + (i % 4) * 3;
-      ctx.globalAlpha = 0.10 + 0.05 * Math.sin(ph * 2);
+      ctx.globalAlpha = 0.16 + 0.08 * Math.sin(ph * 2);
       ctx.fillStyle = '#f2f7fb';
       ctx.beginPath();
       ctx.ellipse(x, y, rr, rr * 0.62, 0, 0, Math.PI * 2);
