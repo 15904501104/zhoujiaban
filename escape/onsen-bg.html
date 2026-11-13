@@ -388,9 +388,9 @@ window.onerror = function (m, s, l, c, e) {
     }
   }
   var CAST = [
-    { src:'sprites/zhanghao-bare.png?v=3', cx:126, name:'张昊' },      /* 左：第二形态 */
+    { src:'sprites/zhanghao-bare.png?v=3', cx:96,  name:'张昊' },      /* 左：第二形态 */
     { src:'sprites/lvao.png',      cx:160, name:'吕奥' },              /* 中 */
-    { src:'sprites/caoyuhuan.png', cx:194, name:'曹宇桓' }             /* 右 */
+    { src:'sprites/caoyuhuan.png', cx:230, name:'曹宇桓' }             /* 右 */
   ];
   /* 张昊 = 曹宇桓的身体（赤膊、有胸肌乳头、脖子齐全）横向压到 0.95
      + 张昊自己的头（只取到下巴 y=52，不带衣领）。
@@ -431,7 +431,7 @@ window.onerror = function (m, s, l, c, e) {
       c.img.src = c.src + '?v=17';
     })(CAST[ci]);
   }
-  var PS = 0.75;
+  var PS = 1.0;
   /* 张昊的「第二形态」：只把上衣换成赤裸上身，其余像素不动。
      全程只用 drawImage + fillRect，不读像素（该环境下读像素会抛 SecurityError）。 */
   function bareCanvas(src){
@@ -526,7 +526,7 @@ window.onerror = function (m, s, l, c, e) {
 
   /* ---------- PLAYER-BLOCK：可走动 + 靠近对话 ---------- */
   var pl = { x: 160, y: 176, dir: 1, bob: 0, img: new Image() };
-  pl.img.src = 'sprites/zhanghuan.png?v=1';
+  pl.img.src = '';
   var keys = {};
   window.addEventListener('keydown', function(e){
     var k = (e.key || '').toLowerCase();
@@ -550,10 +550,18 @@ window.onerror = function (m, s, l, c, e) {
     return ['眼镜起雾了，什么都看不见。', '帮我看着点门口，行吗。'];
   }
 
+  var hoverX = -999, hoverY = -999;
+  cv.addEventListener('pointermove', function(e){
+    var b = cv.getBoundingClientRect();
+    hoverX = (e.clientX - b.left) / b.width * W;
+    hoverY = (e.clientY - b.top) / b.height * H;
+  });
+  cv.addEventListener('pointerleave', function(){ hoverX = -999; hoverY = -999; });
+
   function nearNpc(){
-    for(var i=0;i<CAST.length;i++){
+    for(var i = 0; i < CAST.length; i++){
       var c = CAST[i];
-      if(Math.abs(pl.x - c.cx) < 26) return c;
+      if(Math.abs(hoverX - c.cx) < 30 && hoverY > 60 && hoverY < 150) return c;
     }
     return null;
   }
@@ -635,11 +643,100 @@ window.onerror = function (m, s, l, c, e) {
     ctx.textAlign = 'left';
   }
 
+
+  /* ---------- 新版汤池：石砌不规则池 + 浅蓝水 + 水线泡沫 ---------- */
+  var POOL2 = { cx: 160, cy: 122, rx: 116, ry: 30 };
+
+  function poolEllipse(cx, cy, rx, ry, col){
+    ctx.fillStyle = col;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function pool2(){
+    /* 前景木台 */
+    r(0, 150, W, H - 150, '#2b2521');
+    for(var yy = 154; yy < H; yy += 8){
+      r(0, yy, W, 1, '#3a322c');
+      r(0, yy + 1, W, 1, '#221d19');
+    }
+    r(0, 148, W, 3, '#4a3e34');
+
+    /* 石砌外沿（比水面大一圈） */
+    for(var i = 0; i < 46; i++){
+      var a = i / 46 * Math.PI * 2;
+      var bx = Math.round(POOL2.cx + Math.cos(a) * (POOL2.rx + 7));
+      var by = Math.round(POOL2.cy + Math.sin(a) * (POOL2.ry + 7));
+      var bw = 7 + (i % 3), bh = 5 + (i % 2);
+      r(bx - (bw >> 1), by - (bh >> 1), bw, bh, (i % 4) ? P.stone2 : P.stone);
+      r(bx - (bw >> 1), by - (bh >> 1), bw, 1, P.stoneLit);
+    }
+
+    /* 池水：浅蓝，上浅下深 */
+    poolEllipse(POOL2.cx, POOL2.cy + 3, POOL2.rx + 3, POOL2.ry + 3, '#6f9fb2');
+    var g = ctx.createLinearGradient(0, POOL2.cy - POOL2.ry, 0, POOL2.cy + POOL2.ry);
+    g.addColorStop(0, '#a9d6e2');
+    g.addColorStop(0.55, '#8dc3d4');
+    g.addColorStop(1, '#5f93a8');
+    poolEllipse(POOL2.cx, POOL2.cy + 1, POOL2.rx, POOL2.ry, g);
+
+    /* 内壁反光 */
+    ctx.globalAlpha = 0.35;
+    poolEllipse(POOL2.cx, POOL2.cy - POOL2.ry * 0.45, POOL2.rx * 0.82, POOL2.ry * 0.34, '#d8f0f6');
+    ctx.globalAlpha = 1;
+  }
+
+  /* 水面：半透明 + 波纹 + 身体与水交界处的泡沫 */
+  function waterCover2(){
+    var top = POOL2.cy - POOL2.ry * 0.55;
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(POOL2.cx, POOL2.cy + 1, POOL2.rx, POOL2.ry, 0, 0, Math.PI * 2);
+    ctx.clip();
+
+    ctx.globalAlpha = 0.62;
+    ctx.fillStyle = '#8fc6d8';
+    ctx.fillRect(0, top, W, H - top);
+    ctx.globalAlpha = 1;
+
+    /* 横向波纹 */
+    for(var k = 0; k < 6; k++){
+      var yy = top + 3 + k * 5;
+      ctx.globalAlpha = 0.20 + 0.06 * Math.sin(clock * 0.002 + k);
+      ctx.fillStyle = '#eafaff';
+      for(var x = 0; x < W; x += 3){
+        if(((x + k * 5 + Math.floor(clock * 0.03)) % 23) < 9) ctx.fillRect(x, yy, 2, 1);
+      }
+    }
+    ctx.globalAlpha = 1;
+    ctx.restore();
+
+    /* 三人与水交界的水纹（贴着身体的亮环） */
+    for(var i = 0; i < CAST.length; i++){
+      var c = CAST[i];
+      var yy2 = POOL2.cy - POOL2.ry * 0.55;
+      ctx.globalAlpha = 0.85;
+      ctx.fillStyle = 'rgba(236,250,255,.9)';
+      for(var dx = -22; dx <= 22; dx += 1){
+        var wob = Math.sin(clock * 0.004 + dx * 0.5) * 1.2;
+        if(Math.abs(dx) > 16 && ((dx + 40) % 3)) continue;
+        ctx.fillRect(Math.round(c.cx + dx), Math.round(yy2 + wob), 1, 1);
+      }
+      ctx.globalAlpha = 0.45;
+      ctx.fillStyle = '#ffffff';
+      for(var d2 = -14; d2 <= 14; d2 += 2){
+        ctx.fillRect(Math.round(c.cx + d2), Math.round(yy2 + 2), 1, 1);
+      }
+      ctx.globalAlpha = 1;
+    }
+  }
+
   var clock = 0;
   function frame(ts){
     clock = ts || 0;
-    sky(); mountains(); bamboo(); inn(); fence(); pool(); steam(); people(); waterCover(); props(); vignette();
-    updatePlayer(); drawPlayer(); drawPrompt(); drawDialog(); hud();
+    sky(); mountains(); bamboo(); inn(); fence(); pool2(); steam(); people(); waterCover2(); props(); vignette();
+    drawPrompt(); drawDialog(); hud();
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
