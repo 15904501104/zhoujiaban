@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>原始立绘 · 对照</title>
+<style>
+  html,body{margin:0;background:#f3ead8;color:#2a2320;
+    font:14px/1.7 "Songti SC","SimSun",serif;}
+  .wrap{max-width:1100px;margin:0 auto;padding:28px 24px 60px}
+  h1{font-size:26px;margin:0 0 6px}
+  p.sub{margin:0 0 22px;color:#6b5c4a}
+  .row{display:flex;gap:26px;flex-wrap:wrap}
+  .card{background:#fffdf6;border:2px solid #2a2320;border-radius:6px;
+    padding:14px 14px 10px;box-shadow:4px 4px 0 rgba(42,35,32,.12)}
+  .card canvas{display:block;image-rendering:pixelated;
+    background:
+      linear-gradient(45deg,#e9e2d2 25%,transparent 25%,transparent 75%,#e9e2d2 75%) 0 0/16px 16px,
+      linear-gradient(45deg,#e9e2d2 25%,transparent 25%,transparent 75%,#e9e2d2 75%) 8px 8px/16px 16px,
+      #f7f1e3;
+    border:1px solid #c9b89f}
+  .nm{margin-top:8px;font-size:16px;letter-spacing:.06em}
+  .f{color:#8a775e;font-size:12px;font-family:monospace}
+  .note{margin-top:28px;padding:14px 16px;background:#fffdf6;border-left:4px solid #a01818}
+  code{background:#efe6d2;padding:1px 5px;border-radius:3px;font-size:13px}
+</style></head>
+<body><div class="wrap">
+  <h1>原始立绘 · 对照</h1>
+  <p class="sub">下面三张就是游戏里在用的原始模型，未做任何修改，放大 6 倍显示。</p>
+
+  <div class="row" id="row"></div>
+
+  <div class="note">
+    <p><b>要一张「张昊 · 赤膊」素材，最省事的路子：</b></p>
+    <p>1. 在下面任意一张图上右键 →「图片另存为」，得到 <code>96×120</code> 的 PNG；<br>
+       2. 用画图 / Aseprite / 任何像素工具，把张昊的黑 T 恤涂成肤色，头发、眼镜、脸都别动；<br>
+       3. 存成 <code>zhanghao-bare.png</code>，放进 <code>game4\sprites\</code> 文件夹；<br>
+       4. 跟我说一句「放好了」，我把它接进温泉那一幕。</p>
+    <p>这样脸和身材都是原汁原味的，不会再有我硬拼的接缝。</p>
+  </div>
+</div>
+<script>
+var LIST = [
+  { src:'sprites/zhanghao.png',  nm:'张昊' },
+  { src:'sprites/lvao.png',      nm:'吕奥' },
+  { src:'sprites/caoyuhuan.png', nm:'曹宇桓' }
+];
+var row = document.getElementById('row');
+LIST.forEach(function(it){
+  var card = document.createElement('div'); card.className = 'card';
+  var cv = document.createElement('canvas');
+  cv.width = 96*6; cv.height = 120*6;
+  var g = cv.getContext('2d'); g.imageSmoothingEnabled = false;
+  var img = new Image();
+  img.onload = function(){ g.drawImage(img, 0, 0, cv.width, cv.height); };
+  img.src = it.src + '?v=1';
+  var nm = document.createElement('div'); nm.className = 'nm'; nm.textContent = it.nm;
+  var f  = document.createElement('div'); f.className = 'f'; f.textContent = it.src + '  ·  96×120';
+  card.appendChild(cv); card.appendChild(nm); card.appendChild(f);
+  row.appendChild(card);
+});
+</script>
+</body></html>
