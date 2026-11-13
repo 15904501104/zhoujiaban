@@ -697,9 +697,9 @@ window.onerror = function (m, s, l, c, e) {
 
     /* 下半池的水：从水线颜色渐变到池底，和池水同色系，不是另一块色板 */
     var g = ctx.createLinearGradient(0, top, 0, POOL2.cy + POOL2.ry);
-    g.addColorStop(0, '#5b7b85');
-    g.addColorStop(0.55, '#3d5762');
-    g.addColorStop(1, '#2b414b');
+    g.addColorStop(0, '#93dbe4');
+    g.addColorStop(0.55, '#6cc2cd');
+    g.addColorStop(1, '#4ba7b6');
     ctx.fillStyle = g;
     ctx.fillRect(0, top, W, H - top);
 
@@ -715,8 +715,8 @@ window.onerror = function (m, s, l, c, e) {
     }
 
     /* 水面高光：靠近后沿的一条亮带 */
-    ctx.globalAlpha = 0.18;
-    ctx.fillStyle = '#f2fbff';
+    ctx.globalAlpha = 0.26;
+    ctx.fillStyle = '#f4fdff';
     ctx.beginPath();
     ctx.ellipse(POOL2.cx, top + 6, POOL2.rx * 0.72, 5, 0, 0, Math.PI * 2);
     ctx.fill();
@@ -749,7 +749,7 @@ window.onerror = function (m, s, l, c, e) {
 
   /* ---------- 雪中温泉（参考照片） ---------- */
   var SNOW = '#e8eef6', SNOW_D = '#c3d0de', SNOW_S = '#a9b8c9';
-  var WATER = '#3d5762', WATER_L = '#5b7b85';
+  var WATER = '#6cc2cd', WATER_L = '#93dbe4';
 
   function snowSky(){
     var g = ctx.createLinearGradient(0, 0, 0, 130);
@@ -846,7 +846,7 @@ window.onerror = function (m, s, l, c, e) {
     var g = ctx.createLinearGradient(0, POOL2.cy - POOL2.ry, 0, POOL2.cy + POOL2.ry);
     g.addColorStop(0, WATER_L);
     g.addColorStop(0.5, WATER);
-    g.addColorStop(1, '#2b414b');
+    g.addColorStop(1, '#4ba7b6');
     ctx.fillStyle = g;
     ctx.beginPath();
     ctx.ellipse(POOL2.cx, POOL2.cy, POOL2.rx, POOL2.ry, 0, 0, Math.PI * 2);
