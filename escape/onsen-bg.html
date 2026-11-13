@@ -503,7 +503,7 @@ window.onerror = function (m, s, l, c, e) {
   function drawOne(g, cx, gs){
     if(!(g.img.complete && g.img.naturalWidth)) return;
     var GW = g.img.naturalWidth, GH = g.img.naturalHeight;
-    var h2 = 62, w2 = Math.round(h2 * GW / GH);
+    var h2 = 70, w2 = Math.round(h2 * GW / GH);
     if(!g.cv || g.cv.width !== w2 || g.cv.height !== h2){
       g.cv = document.createElement('canvas');
       g.cv.width = w2; g.cv.height = h2;
@@ -514,7 +514,14 @@ window.onerror = function (m, s, l, c, e) {
     var gy = Math.round(gs - h2 * 0.75);
     var gx = Math.round(cx - w2/2);
     ctx.imageSmoothingEnabled = false;
+    /* 上半身：水面以上，不裁 */
     ctx.save();
+    ctx.beginPath(); ctx.rect(0, 0, W, gs); ctx.clip();
+    ctx.drawImage(g.cv, gx, gy, w2, h2);
+    ctx.restore();
+    /* 下半身：只允许出现在池子椭圆内，避免腿压到石头上 */
+    ctx.save();
+    ctx.beginPath(); ctx.rect(0, gs, W, H - gs); ctx.clip();
     ctx.beginPath();
     ctx.ellipse(POOL2.cx, POOL2.cy + 1, POOL2.rx, POOL2.ry, 0, 0, Math.PI * 2);
     ctx.clip();
