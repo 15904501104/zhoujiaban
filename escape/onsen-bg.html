@@ -535,10 +535,10 @@ window.onerror = function (m, s, l, c, e) {
     ctx.fillStyle = gr;
     ctx.fillRect(gx - 5, gs, w2 + 10, H - gs);
     /* 身体没入水面的渐变（6 行），避免硬边 */
-    for(var f2 = 0; f2 < 6; f2++){
-      ctx.globalAlpha = 0.10 + f2 * 0.10;
+    for(var f2 = 0; f2 < 10; f2++){
+      ctx.globalAlpha = 0.06 + f2 * 0.07;
       ctx.fillStyle = '#7fd0da';
-      ctx.fillRect(gx, gs - 6 + f2, w2, 1);
+      ctx.fillRect(gx - 2, gs - 10 + f2, w2 + 4, 1);
     }
     ctx.globalAlpha = 1;
     /* 水面与身体的过渡：5 行渐隐 + 贴身浅色水环，避免像贴图 */
@@ -570,6 +570,16 @@ window.onerror = function (m, s, l, c, e) {
         ctx.fillRect(Math.round(cx + d3), Math.round(gs + wob3 + r3 * 2), 1, 1);
       }
     }
+    /* 参考图：每人周围两圈同心涟漪 */
+    ctx.globalAlpha = 0.42; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1;
+    for(var e2 = 0; e2 < 3; e2++){
+      var rx2 = 15 + e2 * 8, ry2 = 4 + e2 * 2.2;
+      var ph2 = Math.sin(clock * 0.002 + e2) * 0.6;
+      ctx.beginPath();
+      ctx.ellipse(cx, gs + 1 + ph2, rx2, ry2, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
     ctx.globalAlpha = 1;
     ctx.restore();
   }
