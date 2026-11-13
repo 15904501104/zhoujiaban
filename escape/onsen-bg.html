@@ -431,9 +431,9 @@ window.onerror = function (m, s, l, c, e) {
       c.img.src = c.src + '?v=17';
     })(CAST[ci]);
   }
-  var GIRL = { img:new Image(), cx:205, name:'泳装少女' };
+  var GIRL = { img:new Image(), cx:205, gs:142, name:'泳装少女' };
   GIRL.img.src = 'girl-art.png?v=2';
-  var GIRL2 = { img:new Image(), cx:120, gs:138, name:'泳装少女·黑' };
+  var GIRL2 = { img:new Image(), cx:240, gs:138, name:'泳装少女·黑' };
   GIRL2.img.src = 'girl2-art.png?v=1';
   var PS = 0.5;
   /* 张昊的「第二形态」：只把上衣换成赤裸上身，其余像素不动。
@@ -551,8 +551,8 @@ window.onerror = function (m, s, l, c, e) {
     ctx.restore();
   }
   function drawGirl(){
-    drawOne(GIRL, 205, 142);
-    drawOne(GIRL2, 118, 150);
+    drawOne(GIRL, GIRL.cx, GIRL.gs);
+    drawOne(GIRL2, GIRL2.cx, GIRL2.gs);
     ctx.imageSmoothingEnabled = true;
   }
 
