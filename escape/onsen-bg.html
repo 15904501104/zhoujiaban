@@ -533,10 +533,26 @@ window.onerror = function (m, s, l, c, e) {
     gr.addColorStop(0.55, '#6cc2cd');
     gr.addColorStop(1, '#4ba7b6');
     ctx.fillStyle = gr;
-    ctx.fillRect(gx - 26, gs, w2 + 52, H - gs);
-    ctx.globalAlpha = 0.35;
-    ctx.fillStyle = '#93dbe4';
-    ctx.fillRect(gx, gs - 1, w2, 3);
+    ctx.fillRect(gx - 5, gs, w2 + 10, H - gs);
+    /* 身体没入水面的渐变（6 行），避免硬边 */
+    for(var f2 = 0; f2 < 6; f2++){
+      ctx.globalAlpha = 0.10 + f2 * 0.10;
+      ctx.fillStyle = '#7fd0da';
+      ctx.fillRect(gx, gs - 6 + f2, w2, 1);
+    }
+    ctx.globalAlpha = 1;
+    /* 水面与身体的过渡：5 行渐隐 + 贴身浅色水环，避免像贴图 */
+    for(var b2 = 0; b2 < 5; b2++){
+      ctx.globalAlpha = 0.10 + b2 * 0.07;
+      ctx.fillStyle = '#a9e6ee';
+      ctx.fillRect(gx - 1, gs - 2 + b2, w2 + 2, 1);
+    }
+    ctx.globalAlpha = 0.55;
+    ctx.fillStyle = '#f4fbff';
+    for(var bx = 0; bx < w2; bx++){
+      var bwob = Math.sin(clock * 0.003 + bx * 0.35) * 0.8;
+      ctx.fillRect(gx + bx, gs + bwob, 1, 1);
+    }
     ctx.globalAlpha = 1;
 
     ctx.globalAlpha = 0.55;
