@@ -431,7 +431,7 @@ window.onerror = function (m, s, l, c, e) {
       c.img.src = c.src + '?v=17';
     })(CAST[ci]);
   }
-  var PS = 0.55;
+  var PS = 0.5;
   /* 张昊的「第二形态」：只把上衣换成赤裸上身，其余像素不动。
      全程只用 drawImage + fillRect，不读像素（该环境下读像素会抛 SecurityError）。 */
   function bareCanvas(src){
@@ -470,7 +470,7 @@ window.onerror = function (m, s, l, c, e) {
   }
   function people(){
     var S = PS, sw = 96*S, sh = 120*S;
-    var top = POOL2.cy - sh * 0.83;
+    var top = POOL2.cy - sh * 0.78;
     ctx.imageSmoothingEnabled = false;         /* 整数倍缩放，保持像素锐利（平滑会把眼睛糊掉） */
     for(var i=0;i<CAST.length;i++){
       var c = CAST[i];
