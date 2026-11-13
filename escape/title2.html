@@ -132,17 +132,16 @@ const IMG={};
   const im=new Image(); im.src=src; IMG[src]=im;
 });
 const VID = document.createElement('video');
-/* 默认用静态海报（62KB，自带程序化青烟），不再整页解码视频；
-   想要动态版加 ?video=1。 */
-const USEVID = /[?&]video=1/.test(location.search);
-VID.src = USEVID ? 'sprites/mona-v9.mp4?v=1' : '';
+/* 默认就是动态视频；只有在很老的机器上才加 ?still=1 换成静态海报（62KB）。 */
+const USEVID = !/[?&]still=1/.test(location.search);
+VID.src = 'sprites/mona-v9.mp4?v=1';
 VID.muted = true; VID.defaultMuted = true; VID.loop = true;
 VID.playsInline = true; VID.autoplay = true;
 ['playsinline','webkit-playsinline'].forEach(function(a){ VID.setAttribute(a,'true'); });
 ['muted','autoplay'].forEach(function(a){ VID.setAttribute(a,''); });
-VID.setAttribute('preload', USEVID ? 'auto' : 'none');
+VID.setAttribute('preload', 'auto');
 VID.style.cssText='position:fixed;left:0;top:0;width:100%;height:100%;object-fit:cover;opacity:1;pointer-events:none;z-index:0;background:transparent';
-if(USEVID) document.body.appendChild(VID);
+document.body.appendChild(VID);
 function vidKick(){ if(!USEVID) return; try{ var p=VID.play(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
 ['loadeddata','canplay','canplaythrough','stalled','suspend'].forEach(function(ev){
   VID.addEventListener(ev, function(){ if(VID.paused) vidKick(); });
@@ -160,6 +159,28 @@ let VIDFAIL = !USEVID;
 function vidReady(){ return !VIDFAIL && !VID.error && VID.readyState >= 2 && VID.videoWidth > 0; }
 setTimeout(function(){ if(!vidReady()) VIDFAIL=true; }, 4000);
 VID.addEventListener('error', function(){ VIDFAIL=true; });
+
+/* 帧率探针：视频先播，1.6 秒内平均帧率低于 48 就自动关掉视频、退回静态海报，
+   保证「能看视频就播，跟不上就顺滑」，用户不用自己在两者之间取舍。 */
+(function(){
+  if(!USEVID) return;
+  var n = 0, t0 = 0;
+  function probe(ts){
+    if(!t0) t0 = ts;
+    n++;
+    if(ts - t0 < 1600){ requestAnimationFrame(probe); return; }
+    var fps = n * 1000 / (ts - t0);
+    if(fps < 24){
+      try{ VID.pause(); }catch(e){}
+      VID.style.display = 'none';
+      VIDFAIL = true;
+      document.documentElement.setAttribute('data-video', 'off');
+    }else{
+      document.documentElement.setAttribute('data-video', 'on');
+    }
+  }
+  requestAnimationFrame(probe);
+})();
 
 function drawMona(t){
   const fx=LAY.frame.fx, fy=LAY.frame.fy, fw=LAY.frame.fw, fh=LAY.frame.fh;
