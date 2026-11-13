@@ -388,8 +388,8 @@ window.onerror = function (m, s, l, c, e) {
     }
   }
   var CAST = [
-    { src:'sprites/zhanghao-bare.png?v=3', cx:108, name:'张昊', sink:0.74 },      /* 左：第二形态 */
-    { src:'sprites/lvao.png',      cx:152, name:'吕奥' },              /* 中 */
+    { src:'sprites/zhanghao-bare.png?v=3', cx:96, name:'张昊', sink:0.74 },      /* 左：第二形态 */
+    { src:'sprites/lvao.png',      cx:146, name:'吕奥' },              /* 中 */
     { src:'sprites/caoyuhuan.png', cx:196, name:'曹宇桓' }             /* 右 */
   ];
   /* 张昊 = 曹宇桓的身体（赤膊、有胸肌乳头、脖子齐全）横向压到 0.95
@@ -431,9 +431,9 @@ window.onerror = function (m, s, l, c, e) {
       c.img.src = c.src + '?v=17';
     })(CAST[ci]);
   }
-  var GIRL = { img:new Image(), cx:205, gs:142, name:'泳装少女' };
+  var GIRL = { img:new Image(), cx:236, gs:142, name:'泳装少女' };
   GIRL.img.src = 'girl-art.png?v=2';
-  var GIRL2 = { img:new Image(), cx:240, gs:138, name:'泳装少女·黑' };
+  var GIRL2 = { img:new Image(), cx:268, gs:140, name:'泳装少女·黑' };
   GIRL2.img.src = 'girl2-art.png?v=1';
   var PS = 0.5;
   /* 张昊的「第二形态」：只把上衣换成赤裸上身，其余像素不动。
@@ -748,7 +748,7 @@ window.onerror = function (m, s, l, c, e) {
 
 
   /* ---------- 新版汤池：石砌不规则池 + 浅蓝水 + 水线泡沫 ---------- */
-  var POOL2 = { cx: 160, cy: 122, rx: 116, ry: 30 };
+  var POOL2 = { cx: 160, cy: 124, rx: 140, ry: 36 };
 
   function poolEllipse(cx, cy, rx, ry, col){
     ctx.fillStyle = col;
