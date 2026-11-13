@@ -431,7 +431,7 @@ window.onerror = function (m, s, l, c, e) {
       c.img.src = c.src + '?v=17';
     })(CAST[ci]);
   }
-  var GIRL = { img:new Image(), cx:86, name:'泳装少女' };
+  var GIRL = { img:new Image(), cx:96, name:'泳装少女' };
   GIRL.img.src = 'girl-art.png?v=2';
   var PS = 0.5;
   /* 张昊的「第二形态」：只把上衣换成赤裸上身，其余像素不动。
@@ -499,7 +499,7 @@ window.onerror = function (m, s, l, c, e) {
       var h2 = 64, w2 = Math.round(h2 * GW / GH);
       var nav = 0.75;                       /* 原图里肚脐约在 75% 高处 */
       var waterY = POOL2.cy - POOL2.ry * 0.55;
-      var gy = Math.round(waterY - h2 * nav + 4);
+      var gy = Math.round(waterY - h2 * nav + 3);
       var gx = Math.round(GIRL.cx - w2/2);
       ctx.drawImage(GIRL.img, gx, gy, w2, h2);
     }
@@ -571,8 +571,10 @@ window.onerror = function (m, s, l, c, e) {
   cv.addEventListener('pointerleave', function(){ hoverX = -999; hoverY = -999; });
 
   function nearNpc(){
-    for(var i = 0; i < CAST.length; i++){
-      var c = CAST[i];
+    var RP = CAST.slice();
+    if(typeof GIRL !== 'undefined' && GIRL && GIRL.img && GIRL.img.complete) RP.push(GIRL);
+    for(var i = 0; i < RP.length; i++){
+      var c = RP[i];
       if(Math.abs(hoverX - c.cx) < 30 && hoverY > 60 && hoverY < 150) return c;
     }
     return null;
@@ -737,8 +739,10 @@ window.onerror = function (m, s, l, c, e) {
     ctx.restore();
 
     /* 三人和水交界：一圈贴身的细泡沫 + 两道涟漪 */
-    for(var i = 0; i < CAST.length; i++){
-      var c = CAST[i];
+    var RP = CAST.slice();
+    if(typeof GIRL !== 'undefined' && GIRL && GIRL.img && GIRL.img.complete) RP.push(GIRL);
+    for(var i = 0; i < RP.length; i++){
+      var c = RP[i];
       var yy2 = top;
       ctx.globalAlpha = 0.55;
       ctx.fillStyle = '#f4fbff';
