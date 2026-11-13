@@ -388,7 +388,7 @@ window.onerror = function (m, s, l, c, e) {
     }
   }
   var CAST = [
-    { src:'sprites/zhanghao-bare.png?v=3', cx:108, name:'张昊' },      /* 左：第二形态 */
+    { src:'sprites/zhanghao-bare.png?v=3', cx:108, name:'张昊', sink:0.74 },      /* 左：第二形态 */
     { src:'sprites/lvao.png',      cx:152, name:'吕奥' },              /* 中 */
     { src:'sprites/caoyuhuan.png', cx:196, name:'曹宇桓' }             /* 右 */
   ];
@@ -472,11 +472,12 @@ window.onerror = function (m, s, l, c, e) {
   }
   function people(){
     var S = PS, sw = 96*S, sh = 120*S;
-    var top = POOL2.cy - sh * 0.92;
+    var top = POOL2.cy - sh * 0.92;   /* 默认；张昊用 c.sink 单独下沉 */
     ctx.imageSmoothingEnabled = false;         /* 整数倍缩放，保持像素锐利（平滑会把眼睛糊掉） */
     for(var i=0;i<CAST.length;i++){
       var c = CAST[i];
-      var dx = Math.round(c.cx - sw/2), dy = Math.round(top);
+      var ty = POOL2.cy - sh * (c.sink || 0.92);
+      var dx = Math.round(c.cx - sw/2), dy = Math.round(ty);
       var W2 = Math.round(sw), H2 = Math.round(sh);
       var src = null;
       if(c.img.complete && c.img.naturalWidth){
@@ -512,31 +513,41 @@ window.onerror = function (m, s, l, c, e) {
     ctx.drawImage(GIRL.img, gx, gy, w2, h2);
     ctx.restore();
 
-    /* 身前那一小块水：同色渐变，从 gs 往下，裁在池子椭圆内 */
+    /* 身前那一小块水：沿用全局同一套渐变与波形，保证看不出分割 */
+    var top0 = POOL2.cy - POOL2.ry * 0.55;
     ctx.save();
     ctx.beginPath();
     ctx.ellipse(POOL2.cx, POOL2.cy + 1, POOL2.rx, POOL2.ry, 0, 0, Math.PI * 2);
     ctx.clip();
-    var g = ctx.createLinearGradient(0, gs, 0, POOL2.cy + POOL2.ry);
+    var g = ctx.createLinearGradient(0, top0, 0, POOL2.cy + POOL2.ry);
     g.addColorStop(0, '#93dbe4');
     g.addColorStop(0.55, '#6cc2cd');
     g.addColorStop(1, '#4ba7b6');
     ctx.fillStyle = g;
-    ctx.fillRect(gx - 40, gs, w2 + 80, H - gs);
+    ctx.fillRect(gx - 26, gs, w2 + 52, H - gs);
+    /* 水线处 2px 半透明过渡，避免身体被切成直角 */
+    ctx.globalAlpha = 0.35;
+    ctx.fillStyle = '#93dbe4';
+    ctx.fillRect(gx, gs - 1, w2, 3);
+    ctx.globalAlpha = 1;
 
-    /* 贴身的泡沫弧 + 一道涟漪 */
+    /* 与三位男生完全相同的泡沫 + 涟漪（同一公式、同一速度），只是水线在 gs */
     ctx.globalAlpha = 0.55;
     ctx.fillStyle = '#f4fbff';
-    var halfW = w2/2 + 3;
-    for(var t = -halfW; t <= halfW; t++){
-      var yy2 = gs + Math.sin((t + clock*0.03) * 0.5) * 1.0;
-      ctx.fillRect(Math.round(GIRL.cx + t), Math.round(yy2), 1, 1);
+    for(var dx2 = -13; dx2 <= 13; dx2 += 1){
+      var wob2 = Math.sin(clock * 0.003 + dx2 * 0.45) * 0.9;
+      ctx.fillRect(Math.round(GIRL.cx + dx2), Math.round(gs + wob2), 1, 1);
     }
     ctx.globalAlpha = 0.22;
-    for(var t2 = -halfW - 6; t2 <= halfW + 6; t2++){
-      var yy3 = gs + 5 + Math.sin((t2 + clock*0.03) * 0.25) * 1.4;
-      ctx.fillRect(Math.round(GIRL.cx + t2), Math.round(yy3), 1, 1);
+    for(var r3 = 1; r3 <= 3; r3++){
+      var span2 = 14 + r3 * 4;
+      for(var d3 = -span2; d3 <= span2; d3 += 2){
+        if(Math.abs(d3) < 10) continue;
+        var wob3 = Math.sin(clock * 0.0035 + d3 * 0.3 + r3) * (0.8 + r3 * 0.3);
+        ctx.fillRect(Math.round(GIRL.cx + d3), Math.round(gs + wob3 + r3 * 2), 1, 1);
+      }
     }
+    ctx.globalAlpha = 1;
     ctx.restore();
     ctx.imageSmoothingEnabled = true;
   }
