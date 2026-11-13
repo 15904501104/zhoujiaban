@@ -523,10 +523,123 @@ window.onerror = function (m, s, l, c, e) {
   }
 
 
+
+  /* ---------- PLAYER-BLOCK：可走动 + 靠近对话 ---------- */
+  var pl = { x: 160, y: 176, dir: 1, bob: 0, img: new Image() };
+  pl.img.src = 'sprites/zhanghuan.png?v=1';
+  var keys = {};
+  window.addEventListener('keydown', function(e){
+    var k = (e.key || '').toLowerCase();
+    keys[k] = 1;
+    if(k === 'e' && dlg === null){ tryTalk(); }
+    if(dlg !== null && (k === 'e' || k === ' ')){
+      dlgI++;
+      if(dlgI >= dlg.lines.length){ dlg = null; }
+      e.preventDefault();
+    }
+  });
+  window.addEventListener('keyup', function(e){
+    keys[(e.key || '').toLowerCase()] = 0;
+  });
+
+  var dlg = null, dlgI = 0;
+
+  function linesFor(name){
+    if(name === '吕奥') return ['……水挺烫。', '你站那么远干嘛，进来啊。'];
+    if(name === '曹宇桓') return ['嘘——别出声。', '我刚把手机掉池子里了。'];
+    return ['眼镜起雾了，什么都看不见。', '帮我看着点门口，行吗。'];
+  }
+
+  function nearNpc(){
+    for(var i=0;i<CAST.length;i++){
+      var c = CAST[i];
+      if(Math.abs(pl.x - c.cx) < 26) return c;
+    }
+    return null;
+  }
+  function tryTalk(){
+    var c = nearNpc();
+    if(!c) return;
+    dlg = { name: c.name, lines: linesFor(c.name) };
+    dlgI = 0;
+  }
+
+  function updatePlayer(){
+    if(dlg !== null) return;
+    var v = 0;
+    if(keys['a'] || keys['arrowleft']) v -= 1;
+    if(keys['d'] || keys['arrowright']) v += 1;
+    if(v){ pl.dir = v; pl.x += v * 1.4; pl.bob += 0.25; }
+    if(pl.x < 20) pl.x = 20;
+    if(pl.x > W - 20) pl.x = W - 20;
+  }
+
+  function drawPlayer(){
+    var S = 0.42, sw = 96 * S, sh = 120 * S;
+    var hop = (Math.abs(Math.sin(pl.bob)) * 1.2) | 0;
+    var x = Math.round(pl.x - sw / 2);
+    var y = Math.round(pl.y - sh) - hop;
+    ctx.imageSmoothingEnabled = false;
+    ctx.save();
+    if(pl.dir < 0){
+      ctx.translate(x + sw, 0); ctx.scale(-1, 1);
+      ctx.drawImage(pl.img, 0, 0, 96, 120, 0, y, sw, sh);
+    } else {
+      ctx.drawImage(pl.img, 0, 0, 96, 120, x, y, sw, sh);
+    }
+    ctx.restore();
+    /* 影子 */
+    ctx.globalAlpha = 0.25;
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.ellipse(pl.x, pl.y + 1, 11, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  function drawPrompt(){
+    if(dlg !== null) return;
+    var c = nearNpc();
+    if(!c) return;
+    var tw = 34, th = 12, tx = Math.round(c.cx - tw / 2), ty = POOL.y0 - 4;
+    ctx.fillStyle = 'rgba(20,16,14,.78)';
+    ctx.fillRect(tx, ty, tw, th);
+    ctx.strokeStyle = 'rgba(240,220,180,.8)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(tx + 0.5, ty + 0.5, tw - 1, th - 1);
+    ctx.fillStyle = '#f2e6cf';
+    ctx.font = '7px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('E 说话', c.cx, ty + 8.5);
+    ctx.textAlign = 'left';
+  }
+
+  function drawDialog(){
+    if(dlg === null) return;
+    var bx = 16, bw = W - 32, bh = 34, by = H - bh - 8;
+    ctx.fillStyle = 'rgba(18,15,13,.90)';
+    ctx.fillRect(bx, by, bw, bh);
+    ctx.strokeStyle = 'rgba(214,192,150,.85)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(bx + 0.5, by + 0.5, bw - 1, bh - 1);
+    ctx.fillStyle = '#e8c98a';
+    ctx.font = '7px monospace';
+    ctx.fillText(dlg.name, bx + 6, by + 10);
+    ctx.fillStyle = '#f4ecd8';
+    ctx.font = '8px monospace';
+    ctx.fillText(dlg.lines[dlgI] || '', bx + 6, by + 22);
+    ctx.fillStyle = 'rgba(220,205,180,.75)';
+    ctx.font = '6px monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText('E 继续', bx + bw - 5, by + bh - 4);
+    ctx.textAlign = 'left';
+  }
+
   var clock = 0;
   function frame(ts){
     clock = ts || 0;
-    sky(); mountains(); bamboo(); inn(); fence(); pool(); steam(); people(); waterCover(); props(); vignette(); hud();
+    sky(); mountains(); bamboo(); inn(); fence(); pool(); steam(); people(); waterCover(); props(); vignette();
+    updatePlayer(); drawPlayer(); drawPrompt(); drawDialog(); hud();
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
