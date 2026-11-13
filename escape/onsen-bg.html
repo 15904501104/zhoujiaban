@@ -687,7 +687,7 @@ window.onerror = function (m, s, l, c, e) {
     ctx.globalAlpha = 1;
   }
 
-  /* 水面：半透明 + 波纹 + 身体与水交界处的泡沫 */
+  /* 水面：接续池水的深青渐变 + 细波纹 + 贴身的泡沫 */
   function waterCover2(){
     var top = POOL2.cy - POOL2.ry * 0.55;
     ctx.save();
@@ -695,43 +695,57 @@ window.onerror = function (m, s, l, c, e) {
     ctx.ellipse(POOL2.cx, POOL2.cy + 1, POOL2.rx, POOL2.ry, 0, 0, Math.PI * 2);
     ctx.clip();
 
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = '#8fc6d8';
+    /* 下半池的水：从水线颜色渐变到池底，和池水同色系，不是另一块色板 */
+    var g = ctx.createLinearGradient(0, top, 0, POOL2.cy + POOL2.ry);
+    g.addColorStop(0, '#5b7b85');
+    g.addColorStop(0.55, '#3d5762');
+    g.addColorStop(1, '#2b414b');
+    ctx.fillStyle = g;
     ctx.fillRect(0, top, W, H - top);
-    ctx.globalAlpha = 1;
 
-    /* 横向波纹 */
-    for(var k = 0; k < 6; k++){
-      var yy = top + 3 + k * 5;
-      ctx.globalAlpha = 0.20 + 0.06 * Math.sin(clock * 0.002 + k);
+    /* 细波纹：一组长、淡、错相的横线，随水缓慢位移 */
+    for(var k = 0; k < 5; k++){
+      var yy = top + 5 + k * 6;
+      ctx.globalAlpha = 0.10 - k * 0.012;
       ctx.fillStyle = '#eafaff';
-      for(var x = 0; x < W; x += 3){
-        if(((x + k * 5 + Math.floor(clock * 0.03)) % 23) < 9) ctx.fillRect(x, yy, 2, 1);
+      for(var x = -20; x < W + 20; x += 1){
+        var wob = Math.sin((x + clock * 0.02) * 0.045 + k * 1.7) * 1.6;
+        ctx.fillRect(x, Math.round(yy + wob), 1, 1);
       }
     }
+
+    /* 水面高光：靠近后沿的一条亮带 */
+    ctx.globalAlpha = 0.18;
+    ctx.fillStyle = '#f2fbff';
+    ctx.beginPath();
+    ctx.ellipse(POOL2.cx, top + 6, POOL2.rx * 0.72, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
     ctx.globalAlpha = 1;
     ctx.restore();
 
-    /* 三人与水交界的水纹（贴着身体的亮环） */
+    /* 三人和水交界：一圈贴身的细泡沫 + 两道涟漪 */
     for(var i = 0; i < CAST.length; i++){
       var c = CAST[i];
-      var yy2 = POOL2.cy - POOL2.ry * 0.55;
-      ctx.globalAlpha = 0.85;
-      ctx.fillStyle = 'rgba(236,250,255,.9)';
-      for(var dx = -22; dx <= 22; dx += 1){
-        var wob = Math.sin(clock * 0.004 + dx * 0.5) * 1.2;
-        if(Math.abs(dx) > 16 && ((dx + 40) % 3)) continue;
-        ctx.fillRect(Math.round(c.cx + dx), Math.round(yy2 + wob), 1, 1);
+      var yy2 = top;
+      ctx.globalAlpha = 0.55;
+      ctx.fillStyle = '#f4fbff';
+      for(var dx = -13; dx <= 13; dx += 1){
+        var wob2 = Math.sin(clock * 0.003 + dx * 0.45) * 0.9;
+        ctx.fillRect(Math.round(c.cx + dx), Math.round(yy2 + wob2), 1, 1);
       }
-      ctx.globalAlpha = 0.45;
-      ctx.fillStyle = '#ffffff';
-      for(var d2 = -14; d2 <= 14; d2 += 2){
-        ctx.fillRect(Math.round(c.cx + d2), Math.round(yy2 + 2), 1, 1);
+      ctx.globalAlpha = 0.22;
+      for(var r2 = 1; r2 <= 3; r2++){
+        var span = 14 + r2 * 4;
+        for(var d2 = -span; d2 <= span; d2 += 2){
+          if(Math.abs(d2) < 10) continue;
+          var wob3 = Math.sin(clock * 0.0035 + d2 * 0.3 + r2) * (0.8 + r2 * 0.3);
+          ctx.fillRect(Math.round(c.cx + d2), Math.round(yy2 + wob3 + r2 * 2), 1, 1);
+        }
       }
       ctx.globalAlpha = 1;
     }
   }
-
 
   /* ---------- 雪中温泉（参考照片） ---------- */
   var SNOW = '#e8eef6', SNOW_D = '#c3d0de', SNOW_S = '#a9b8c9';
