@@ -501,16 +501,24 @@ window.onerror = function (m, s, l, c, e) {
   function drawGirl(){
     if(!(GIRL.img.complete && GIRL.img.naturalWidth)) return;
     var GW = GIRL.img.naturalWidth, GH = GIRL.img.naturalHeight;
-    var h2 = 58, w2 = Math.round(h2 * GW / GH);
+    var h2 = 62, w2 = 32;   /* 1240/62 = 20 倍整数降采样，像素边界干净 */
     var gs = 142;                                  /* 本地水线（近侧池沿，约 y=146） */
     var gy = Math.round(gs - h2 * 0.75);
     var gx = Math.round(GIRL.cx - w2/2);
+    /* 整数倍最近邻降采样到 32×62 缓存，再 1:1 贴上去：细节不糊、边缘不闪 */
+    if(!GIRL.cv || GIRL.cv.width !== w2 || GIRL.cv.height !== h2){
+      GIRL.cv = document.createElement('canvas');
+      GIRL.cv.width = w2; GIRL.cv.height = h2;
+      var g2 = GIRL.cv.getContext('2d');
+      g2.imageSmoothingEnabled = false;
+      g2.drawImage(GIRL.img, 0, 0, GW, GH, 0, 0, w2, h2);
+    }
     ctx.imageSmoothingEnabled = false;
     ctx.save();
     ctx.beginPath();
     ctx.ellipse(POOL2.cx, POOL2.cy + 1, POOL2.rx, POOL2.ry, 0, 0, Math.PI * 2);
     ctx.clip();
-    ctx.drawImage(GIRL.img, gx, gy, w2, h2);
+    ctx.drawImage(GIRL.cv, gx, gy, w2, h2);
     ctx.restore();
 
     /* 身前那一小块水：沿用全局同一套渐变与波形，保证看不出分割 */
@@ -648,6 +656,21 @@ window.onerror = function (m, s, l, c, e) {
     var hop = (Math.abs(Math.sin(pl.bob)) * 1.2) | 0;
     var x = Math.round(pl.x - sw / 2);
     var y = Math.round(pl.y - sh) - hop;
+    /* 先用高质量降采样缓存到目标尺寸，再 1:1 贴上去，保住露出水面的细节 */
+    if(!GIRL.cv || GIRL.cv.width !== w2 || GIRL.cv.height !== h2){
+      GIRL.cv = document.createElement('canvas');
+      GIRL.cv.width = w2; GIRL.cv.height = h2;
+      var g2 = GIRL.cv.getContext('2d');
+      g2.imageSmoothingEnabled = true;
+      g2.imageSmoothingQuality = 'high';
+      /* 先降一半再降一半，避免一次性大幅缩小糊成一片 */
+      var mid = document.createElement('canvas');
+      mid.width = Math.max(w2*2, GW/4|0); mid.height = Math.max(h2*2, GH/4|0);
+      var m2 = mid.getContext('2d');
+      m2.imageSmoothingEnabled = true; m2.imageSmoothingQuality = 'high';
+      m2.drawImage(GIRL.img, 0, 0, mid.width, mid.height);
+      g2.drawImage(mid, 0, 0, w2, h2);
+    }
     ctx.imageSmoothingEnabled = false;
     ctx.save();
     if(pl.dir < 0){
