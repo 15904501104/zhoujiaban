@@ -388,9 +388,9 @@ window.onerror = function (m, s, l, c, e) {
     }
   }
   var CAST = [
-    { src:'sprites/zhanghao-bare.png?v=3', cx:96, name:'张昊', sink:0.74 },      /* 左：第二形态 */
-    { src:'sprites/lvao.png',      cx:146, name:'吕奥' },              /* 中 */
-    { src:'sprites/caoyuhuan.png', cx:196, name:'曹宇桓' }             /* 右 */
+    { src:'sprites/zhanghao-bare.png?v=3', cx:92, name:'张昊', sink:0.74 },      /* 左：第二形态 */
+    { src:'sprites/lvao.png',      cx:140, name:'吕奥' },              /* 中 */
+    { src:'sprites/caoyuhuan.png', cx:188, name:'曹宇桓' }             /* 右 */
   ];
   /* 张昊 = 曹宇桓的身体（赤膊、有胸肌乳头、脖子齐全）横向压到 0.95
      + 张昊自己的头（只取到下巴 y=52，不带衣领）。
@@ -431,11 +431,11 @@ window.onerror = function (m, s, l, c, e) {
       c.img.src = c.src + '?v=17';
     })(CAST[ci]);
   }
-  var GIRL = { img:new Image(), cx:236, gs:124, name:'泳装少女' };
+  var GIRL = { img:new Image(), cx:198, gs:142, name:'泳装少女' };
   GIRL.img.src = 'girl-art.png?v=2';
-  var GIRL2 = { img:new Image(), cx:268, gs:122, name:'泳装少女·黑' };
+  var GIRL2 = { img:new Image(), cx:234, gs:146, name:'泳装少女·黑' };
   GIRL2.img.src = 'girl2-art.png?v=1';
-  var PS = 0.5;
+  var PS = 0.46;
   /* 张昊的「第二形态」：只把上衣换成赤裸上身，其余像素不动。
      全程只用 drawImage + fillRect，不读像素（该环境下读像素会抛 SecurityError）。 */
   function bareCanvas(src){
@@ -503,7 +503,7 @@ window.onerror = function (m, s, l, c, e) {
   function drawOne(g, cx, gs){
     if(!(g.img.complete && g.img.naturalWidth)) return;
     var GW = g.img.naturalWidth, GH = g.img.naturalHeight;
-    var h2 = 70, w2 = Math.round(h2 * GW / GH);
+    var h2 = 62, w2 = Math.round(h2 * GW / GH);
     if(!g.cv || g.cv.width !== w2 || g.cv.height !== h2){
       g.cv = document.createElement('canvas');
       g.cv.width = w2; g.cv.height = h2;
@@ -533,7 +533,11 @@ window.onerror = function (m, s, l, c, e) {
     gr.addColorStop(0.55, '#6cc2cd');
     gr.addColorStop(1, '#4ba7b6');
     ctx.fillStyle = gr;
-    ctx.fillRect(gx - 5, gs, w2 + 10, H - gs);
+    /* 水面用波动顶边盖住身体，避免一条直线切开 */
+    for(var wx2 = -6; wx2 < w2 + 6; wx2++){
+      var wv = Math.sin((gx + wx2) * 0.35 + clock * 0.004) * 1.2 + Math.sin((gx + wx2) * 0.13) * 0.8;
+      ctx.fillRect(gx + wx2, gs + wv, 1, H - gs);
+    }
     /* 身体没入水面的渐变（6 行），避免硬边 */
     for(var f2 = 0; f2 < 10; f2++){
       ctx.globalAlpha = 0.06 + f2 * 0.07;
@@ -547,11 +551,15 @@ window.onerror = function (m, s, l, c, e) {
       ctx.fillStyle = '#a9e6ee';
       ctx.fillRect(gx - 1, gs - 2 + b2, w2 + 2, 1);
     }
-    ctx.globalAlpha = 0.55;
-    ctx.fillStyle = '#f4fbff';
-    for(var bx = 0; bx < w2; bx++){
-      var bwob = Math.sin(clock * 0.003 + bx * 0.35) * 0.8;
-      ctx.fillRect(gx + bx, gs + bwob, 1, 1);
+    /* 身前弧形浪花：三层半椭圆，包住身体 */
+    for(var q = 0; q < 3; q++){
+      ctx.globalAlpha = 0.50 - q * 0.13;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.ellipse(cx, gs + Math.sin(clock * 0.002 + q) * 0.5,
+                  w2 * 0.62 + q * 7, 2.4 + q * 1.7, 0, Math.PI * 0.08, Math.PI * 0.92);
+      ctx.stroke();
     }
     ctx.globalAlpha = 1;
 
