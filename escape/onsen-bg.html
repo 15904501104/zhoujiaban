@@ -732,10 +732,143 @@ window.onerror = function (m, s, l, c, e) {
     }
   }
 
+
+  /* ---------- 雪中温泉（参考照片） ---------- */
+  var SNOW = '#e8eef6', SNOW_D = '#c3d0de', SNOW_S = '#a9b8c9';
+  var WATER = '#3d5762', WATER_L = '#5b7b85';
+
+  function snowSky(){
+    var g = ctx.createLinearGradient(0, 0, 0, 130);
+    g.addColorStop(0, '#1b2634');
+    g.addColorStop(0.55, '#33465a');
+    g.addColorStop(1, '#5d7288');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, 140);
+    /* 远处雪林剪影 */
+    for(var i = 0; i < 26; i++){
+      var x = i * 13 + 2, h = 16 + ((i * 37) % 20);
+      ctx.fillStyle = i % 2 ? '#26333f' : '#2e3d49';
+      ctx.beginPath();
+      ctx.moveTo(x, 96); ctx.lineTo(x + 6, 96 - h); ctx.lineTo(x + 12, 96);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = 'rgba(226,236,246,.55)';
+      ctx.fillRect(x + 3, 96 - h + 3, 6, 2);
+    }
+  }
+
+  function snowBank(){
+    r(0, 96, W, H - 96, SNOW);
+    r(0, 96, W, 5, '#f5f9ff');
+    r(0, 118, W, H - 118, SNOW_D);
+    for(var i = 0; i < 70; i++){
+      var x = (i * 37) % W, y = 100 + ((i * 23) % 70);
+      r(x, y, 3, 1, i % 3 ? '#ffffff' : SNOW_S);
+    }
+  }
+
+  function bushRow(){
+    for(var i = 0; i < 9; i++){
+      var cx = 8 + i * 38, cy = 104;
+      ctx.fillStyle = '#2c3a33';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, 20, 11, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#3a4b41';
+      ctx.beginPath();
+      ctx.ellipse(cx - 5, cy + 1, 11, 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+      /* 雪盖 */
+      ctx.fillStyle = SNOW;
+      ctx.beginPath();
+      ctx.ellipse(cx - 2, cy - 7, 17, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.ellipse(cx - 6, cy - 8, 9, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function lantern(){
+    /* 木架 */
+    var x = 54;
+    r(x + 8, 74, 4, 34, '#5a4634');
+    r(x + 7, 74, 1, 34, '#7a6046');
+    /* 顶 */
+    r(x, 66, 22, 3, '#6a523c');
+    r(x + 2, 62, 18, 4, '#7a6046');
+    r(x, 62, 22, 2, SNOW);
+    /* 灯箱 */
+    r(x + 4, 72, 14, 10, '#2a221c');
+    r(x + 5, 73, 12, 8, '#f2c96a');
+    r(x + 9, 73, 1, 8, '#8a6a2c');
+    r(x + 12, 73, 1, 8, '#8a6a2c');
+    /* 雪帽 */
+    r(x + 1, 70, 18, 2, SNOW);
+  }
+
+  function bigRock(){
+    ctx.fillStyle = '#6b5442';
+    ctx.beginPath();
+    ctx.ellipse(252, 104, 26, 16, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#7d6450';
+    ctx.beginPath();
+    ctx.ellipse(246, 100, 16, 11, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = SNOW;
+    ctx.beginPath();
+    ctx.ellipse(250, 92, 20, 6, 0, 0, Math.PI * 2); ctx.fill();
+  }
+
+  function poolSnow(){
+    /* 池沿石 + 雪 */
+    for(var i = 0; i < 44; i++){
+      var a = i / 44 * Math.PI * 2;
+      var bx = Math.round(POOL2.cx + Math.cos(a) * (POOL2.rx + 6));
+      var by = Math.round(POOL2.cy + Math.sin(a) * (POOL2.ry + 6));
+      var bw = 8 + (i % 3), bh = 6 + (i % 2);
+      r(bx - (bw >> 1), by - (bh >> 1), bw, bh, i % 4 ? '#7b7466' : '#8b8476');
+      r(bx - (bw >> 1), by - (bh >> 1), bw, 2, SNOW);
+    }
+    /* 水 */
+    var g = ctx.createLinearGradient(0, POOL2.cy - POOL2.ry, 0, POOL2.cy + POOL2.ry);
+    g.addColorStop(0, WATER_L);
+    g.addColorStop(0.5, WATER);
+    g.addColorStop(1, '#2b414b');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.ellipse(POOL2.cx, POOL2.cy, POOL2.rx, POOL2.ry, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function steamHeavy(){
+    for(var i = 0; i < 22; i++){
+      var ph = clock * 0.0006 + i * 1.7;
+      var x = POOL2.cx + Math.sin(ph * 1.3) * (60 + (i % 5) * 8);
+      var y = POOL2.cy - 6 - ((clock * 0.012 + i * 11) % 46);
+      var rr = 6 + (i % 4) * 3;
+      ctx.globalAlpha = 0.10 + 0.05 * Math.sin(ph * 2);
+      ctx.fillStyle = '#f2f7fb';
+      ctx.beginPath();
+      ctx.ellipse(x, y, rr, rr * 0.62, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function snowFall(){
+    for(var i = 0; i < 40; i++){
+      var x = (i * 53 + clock * 0.012 * (1 + i % 3)) % W;
+      var y = (i * 29 + clock * 0.02 * (1 + i % 4)) % 140;
+      ctx.globalAlpha = 0.5 + 0.3 * Math.sin(i + clock * 0.002);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(x | 0, y | 0, 1, 1);
+    }
+    ctx.globalAlpha = 1;
+  }
+
   var clock = 0;
   function frame(ts){
     clock = ts || 0;
-    sky(); mountains(); bamboo(); inn(); fence(); pool2(); steam(); people(); waterCover2(); props(); vignette();
+    snowSky(); snowBank(); bushRow(); lantern(); bigRock(); poolSnow(); steamHeavy(); people(); waterCover2(); snowFall(); vignette();
     drawPrompt(); drawDialog(); hud();
     requestAnimationFrame(frame);
   }
