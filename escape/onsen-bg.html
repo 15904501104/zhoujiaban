@@ -286,10 +286,210 @@ window.onerror = function (m, s, l, c, e) {
     ctx.fillStyle = v; ctx.fillRect(0,0,W,H);
   }
 
+  /* ---------- 新版：缩小的汤池 + 前景可走木台 ---------- */
+  var POOL = { x0: 34, y0: 112, w: 252, h: 30 };   /* 水面 */
+  function pool(){
+    /* 前景木台（人可以走的地方） */
+    r(0, 150, W, H-150, '#2b2521');
+    for(var yy=154; yy<H; yy+=8){
+      r(0, yy, W, 1, '#3a322c');
+      r(0, yy+1, W, 1, '#221d19');
+    }
+    for(var xx=8; xx<W; xx+=26) r(xx, 150, 1, H-150, '#332b25');
+    r(0, 148, W, 3, '#4a3e34');
+
+    /* 池子（左中，收小） */
+    stoneRow(POOL.x0-8, POOL.y0-4, POOL.w+16, 6);
+    r(POOL.x0, POOL.y0, POOL.w, POOL.h, P.water);
+    for(var i=0;i<POOL.h;i++){
+      var t = i/POOL.h;
+      r(POOL.x0, POOL.y0+i, POOL.w, 1, mix(P.water, P.water2, t));
+    }
+    for(var k=0;k<5;k++){
+      var ry = POOL.y0 + 3 + k*5;
+      for(var rx=POOL.x0+3; rx<POOL.x0+POOL.w-4; rx+=1){
+        if(((rx + k*7 + Math.floor(clock*0.02)) % 17) < 4){
+          ctx.globalAlpha = .45 - k*0.06;
+          r(rx, ry, 1, 1, P.ripple);
+        }
+      }
+    }
+    ctx.globalAlpha = 1;
+    for(var j=0;j<3;j++){
+      ctx.globalAlpha = .10 + 0.04*Math.sin(clock*0.004 + j);
+      r(POOL.x0+POOL.w-30+j*7, POOL.y0+5+j*4, 14, 1, P.reflect);
+    }
+    ctx.globalAlpha = 1;
+    /* 池壁与下沿 */
+    r(POOL.x0-10, POOL.y0-1, 4, POOL.h+6, P.stone2);
+    r(POOL.x0-10, POOL.y0-1, 1, POOL.h+6, P.stoneLit);
+    r(POOL.x0+POOL.w+6, POOL.y0-1, 4, POOL.h+6, P.stone2);
+    r(POOL.x0+POOL.w+6, POOL.y0-1, 1, POOL.h+6, P.stoneLit);
+    stoneRow(POOL.x0-8, POOL.y0+POOL.h+4, POOL.w+16, 5);
+  }
+
+  /* ---------- 三个人（吕奥 / 曹宇桓 / 张昊），半身泡在水里 ---------- */
+  function person(cx, o){
+    var x = cx - 11;
+    var skin = o.skin, dk = mix(skin, '#000000', .16);
+    /* 手臂搭在池沿 */
+    r(x-4, 90, 4, 11, skin); r(x-4, 90, 1, 11, dk);
+    r(x+19, 90, 4, 11, skin); r(x+22, 90, 1, 11, dk);
+    /* 胸 / 肩 */
+    r(x+1, 86, 20, 16, skin);
+    r(x+1, 86, 20, 1, mix(skin, '#ffffff', .12));
+    r(x+2, 90, 1, 10, mix(skin, '#ffffff', .10));      /* 胸肌高光 */
+    r(x+18, 90, 1, 10, mix(skin, '#ffffff', .10));
+    r(x+2, 98, 17, 1, dk); r(x+8, 98, 5, 1, mix(dk, '#000000', .3));
+    /* 脖子 */
+    r(x+8, 80, 6, 6, skin); r(x+8, 84, 6, 1, dk);
+    /* 头 */
+    r(x+4, 68, 14, 13, skin);
+    r(x+4, 68, 14, 1, mix(skin, '#ffffff', .10));
+    r(x+4, 80, 14, 1, dk);
+    r(x+2, 72, 2, 4, skin); r(x+18, 72, 2, 4, skin);   /* 耳 */
+    /* 五官 */
+    r(x+7, 74, 2, 2, '#2a211c'); r(x+13, 74, 2, 2, '#2a211c');
+    r(x+6, 73, 4, 1, mix(o.hair, '#000000', .25)); r(x+12, 73, 4, 1, mix(o.hair, '#000000', .25));
+    r(x+10, 76, 2, 2, dk);                              /* 鼻 */
+    r(x+8, 79, 3, 1, '#8a5348'); r(x+11, 79, 2, 1, '#8a5348');  /* 嘴 */
+    /* 发型 */
+    if(o.style === 'lvao'){
+      r(x+3, 66, 16, 4, o.hair);
+      r(x+3, 66, 16, 1, mix(o.hair, '#ffffff', .10));
+      r(x+2, 68, 3, 14, o.hair); r(x+17, 68, 3, 14, o.hair);   /* 鬓角 */
+      r(x+5, 69, 6, 2, o.hair);                                 /* 刘海斜分 */
+      r(x+11, 70, 3, 2, o.hair);
+      r(x+6, 68, 2, 1, mix(o.hair, '#ffffff', .18));
+    }
+    if(o.style === 'curly'){
+      for(var i=0;i<9;i++){
+        r(x+2+((i*5)%14), 62+(i%3)*3, 3, 3, o.hair);
+      }
+      r(x+3, 66, 16, 3, o.hair);
+      r(x+1, 68, 3, 6, o.hair); r(x+18, 68, 3, 6, o.hair);
+    }
+    if(o.style === 'glasses'){
+      for(var j=0;j<9;j++){ r(x+2+((j*7)%14), 62+(j%3)*3, 3, 3, o.hair); }
+      r(x+3, 66, 16, 3, o.hair);
+      r(x+1, 68, 3, 5, o.hair); r(x+18, 68, 3, 5, o.hair);
+      /* 黑框眼镜 */
+      r(x+6, 73, 4, 1, '#241d19'); r(x+12, 73, 4, 1, '#241d19');
+      r(x+6, 76, 4, 1, '#241d19'); r(x+12, 76, 4, 1, '#241d19');
+      r(x+6, 73, 1, 4, '#241d19'); r(x+9, 73, 1, 4, '#241d19');
+      r(x+12, 73, 1, 4, '#241d19'); r(x+15, 73, 1, 4, '#241d19');
+      r(x+10, 74, 2, 1, '#241d19');
+    }
+    /* 随身小物 */
+    if(o.cig){ r(x+12, 79, 7, 1, '#f4f2ec'); r(x+19, 79, 2, 1, '#e07b3a'); }
+    if(o.chain){
+      for(var c=0;c<7;c++) r(x+7+c*1, 87+Math.round(Math.sin(c/1.6)*1), 1, 1, '#d8dde3');
+      r(x+10, 90, 2, 2, '#e8edf2');
+    }
+  }
+  var CAST = [
+    { src:'sprites/zhanghao.png',  cx:126, name:'张昊', bare:true },   /* 左 */
+    { src:'sprites/lvao.png',      cx:160, name:'吕奥' },              /* 中 */
+    { src:'sprites/caoyuhuan.png', cx:194, name:'曹宇桓' }             /* 右 */
+  ];
+  /* 张昊 = 曹宇桓的身体（赤膊、有胸肌乳头、脖子齐全）横向压到 0.95
+     + 张昊自己的头（只取到下巴 y=52，不带衣领）。
+     0.95 之后身宽约 24..72：比吕奥(28..68)宽、比曹宇桓(22..74)窄。 */
+  function bareOf(head, body){
+    var c = document.createElement('canvas');
+    c.width = 96; c.height = 120;
+    var g = c.getContext('2d');
+    g.imageSmoothingEnabled = false;
+
+    var bw = 96 * 0.95, bx = 48 - bw / 2;
+
+    /* 1) 身体（含脖子、胸肌、乳头、手臂） */
+    g.drawImage(body, 0, 0, 96, 120, bx, 0, bw, 120);
+
+    /* 2) 头（张昊，到下巴） */
+    g.drawImage(head, 0, 0, 96, 52, 0, 0, 96, 52);
+
+    /* 3) 脖子两侧补肤色，保证下巴到肩之间不断 */
+    g.fillStyle = '#e9c6a4';
+    g.fillRect(41, 44, 14, 9);        /* 颈柱 */
+    g.fillRect(36, 50, 24, 4);        /* 颈根→斜方肌过渡 */
+    g.fillStyle = 'rgba(150,110,82,.40)';
+    g.fillRect(41, 52, 14, 1);        /* 颈下投影 */
+
+    return c;
+  }
+  /* 两张图都到齐再合成（之前就是没等第二张，才画出一块底板） */
+  function setBare(c){
+    if(!(c.img && c.img.complete && c.img.naturalWidth)) return;
+    if(!(c.bodyImg && c.bodyImg.complete && c.bodyImg.naturalWidth)) return;
+    try{ c.cv = bareOf(c.img, c.bodyImg); }catch(e){}
+  }
+  for(var ci=0; ci<CAST.length; ci++){
+    (function(c){
+      c.img = new Image();
+      c.img.onerror = function(){ c.fail = true; };
+      c.img.onload = function(){ if(c.bare) setBare(c); };
+      c.img.src = c.src + '?v=15';
+      if(c.bare){
+        c.bodyImg = new Image();
+        c.bodyImg.onerror = function(){ c.fail = true; };
+        c.bodyImg.onload = function(){ setBare(c); };
+        c.bodyImg.src = 'sprites/caoyuhuan.png?v=15';
+      }
+    })(CAST[ci]);
+  }
+  var PS = 0.62;
+  function people(){
+    var S = PS, sw = 96*S, sh = 120*S;
+    var top = POOL.y0 - sh*0.70;
+    ctx.imageSmoothingEnabled = true;          /* 缩小后要平滑，否则五官会碎 */
+    for(var i=0;i<CAST.length;i++){
+      var c = CAST[i];
+      var dx = Math.round(c.cx - sw/2), dy = Math.round(top);
+      var W2 = Math.round(sw), H2 = Math.round(sh);
+      var src = (c.img.complete && c.img.naturalWidth) ? c.img : null;
+      if(src){
+        ctx.drawImage(src, dx, dy, W2, H2);
+      } else {
+        r(dx, dy, W2, H2, '#ff00aa');
+      }
+    }
+    ctx.imageSmoothingEnabled = true;
+  }
+  function hud(){
+    var ok = 0;
+    for(var i=0;i<CAST.length;i++){
+      var c0 = CAST[i];
+      if(c0.bare ? !!c0.cv : (c0.img.complete && c0.img.naturalWidth)) ok++;
+    }
+    ctx.font = '6px monospace';
+    ctx.fillStyle = ok === CAST.length ? 'rgba(0,0,0,.45)' : '#c40000';
+    ctx.fillText('v16 人物 ' + ok + '/' + CAST.length + (ok===CAST.length?' OK':' 载入失败'), 4, H-4);
+  }
+  /* 把水面盖回下半身，只留上半身 */
+  function waterCover(){
+    /* 完全不透：水下的人一律不画出来（用户要求「看不见下半身」） */
+    for(var wy=0; wy<POOL.h; wy++){
+      r(POOL.x0, POOL.y0+wy, POOL.w, 1, mix(P.water, P.water2, wy/Math.max(1,POOL.h-1)));
+    }
+    r(POOL.x0, POOL.y0, POOL.w, 1, mix(P.water, '#ffffff', .30));
+    for(var k=0;k<4;k++){
+      var ry = POOL.y0 + 4 + k*5;
+      for(var rx=POOL.x0+2; rx<POOL.x0+POOL.w-3; rx+=1){
+        if(((rx + k*5 + Math.floor(clock*0.03)) % 15) < 3){
+          ctx.globalAlpha = .40 - k*0.07;
+          r(rx, ry, 1, 1, P.ripple);
+        }
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+
   var clock = 0;
   function frame(ts){
     clock = ts || 0;
-    sky(); mountains(); bamboo(); inn(); fence(); pool(); props(); steam(); vignette();
+    sky(); mountains(); bamboo(); inn(); fence(); pool(); people(); waterCover(); props(); steam(); vignette(); hud();
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
