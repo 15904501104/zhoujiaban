@@ -431,7 +431,7 @@ window.onerror = function (m, s, l, c, e) {
       c.img.src = c.src + '?v=17';
     })(CAST[ci]);
   }
-  var GIRL = { img:new Image(), cx:100, name:'泳装少女' };
+  var GIRL = { img:new Image(), cx:86, name:'泳装少女' };
   GIRL.img.src = 'girl-art.png?v=2';
   var PS = 0.5;
   /* 张昊的「第二形态」：只把上衣换成赤裸上身，其余像素不动。
@@ -472,7 +472,7 @@ window.onerror = function (m, s, l, c, e) {
   }
   function people(){
     var S = PS, sw = 96*S, sh = 120*S;
-    var top = POOL2.cy - sh * 0.78;
+    var top = POOL2.cy - sh * 0.92;
     ctx.imageSmoothingEnabled = false;         /* 整数倍缩放，保持像素锐利（平滑会把眼睛糊掉） */
     for(var i=0;i<CAST.length;i++){
       var c = CAST[i];
@@ -496,10 +496,10 @@ window.onerror = function (m, s, l, c, e) {
     /* 新人物：整张像素画，按「肚脐正好压在水面」定位 */
     if(GIRL.img.complete && GIRL.img.naturalWidth){
       var GW = GIRL.img.naturalWidth, GH = GIRL.img.naturalHeight;
-      var h2 = 60, w2 = Math.round(h2 * GW / GH);
+      var h2 = 64, w2 = Math.round(h2 * GW / GH);
       var nav = 0.75;                       /* 原图里肚脐约在 75% 高处 */
       var waterY = POOL2.cy - POOL2.ry * 0.55;
-      var gy = Math.round(waterY - h2 * nav + 9);
+      var gy = Math.round(waterY - h2 * nav + 4);
       var gx = Math.round(GIRL.cx - w2/2);
       ctx.drawImage(GIRL.img, gx, gy, w2, h2);
     }
