@@ -388,9 +388,9 @@ window.onerror = function (m, s, l, c, e) {
     }
   }
   var CAST = [
-    { src:'sprites/zhanghao-bare.png?v=3', cx:92, name:'张昊', sink:0.74 },      /* 左：第二形态 */
-    { src:'sprites/lvao.png',      cx:140, name:'吕奥' },              /* 中 */
-    { src:'sprites/caoyuhuan.png', cx:188, name:'曹宇桓' }             /* 右 */
+    { src:'sprites/zhanghao-bare.png?v=3', cx:96, name:'张昊', sink:0.78 },      /* 左：第二形态 */
+    { src:'sprites/lvao.png',      cx:146, name:'吕奥' },              /* 中 */
+    { src:'sprites/caoyuhuan.png', cx:196, name:'曹宇桓' }             /* 右 */
   ];
   /* 张昊 = 曹宇桓的身体（赤膊、有胸肌乳头、脖子齐全）横向压到 0.95
      + 张昊自己的头（只取到下巴 y=52，不带衣领）。
@@ -435,7 +435,7 @@ window.onerror = function (m, s, l, c, e) {
   GIRL.img.src = 'girl-art.png?v=2';
   var GIRL2 = { img:new Image(), cx:234, gs:146, name:'泳装少女·黑' };
   GIRL2.img.src = 'girl2-art.png?v=1';
-  var PS = 0.46;
+  var PS = 0.5;
   /* 张昊的「第二形态」：只把上衣换成赤裸上身，其余像素不动。
      全程只用 drawImage + fillRect，不读像素（该环境下读像素会抛 SecurityError）。 */
   function bareCanvas(src){
@@ -491,7 +491,16 @@ window.onerror = function (m, s, l, c, e) {
         }
       }
       if(src){
-        ctx.drawImage(src, dx, dy, W2, H2);
+        /* 先按目标尺寸做一次最近邻降采样缓存，再 1:1 贴：缩放比非整数也不会糊脸 */
+        if(!c.rz || c.rz.width !== W2 || c.rz.height !== H2 || c.rzSrc !== src){
+          c.rz = document.createElement('canvas');
+          c.rz.width = W2; c.rz.height = H2;
+          var rz = c.rz.getContext('2d');
+          rz.imageSmoothingEnabled = false;
+          rz.drawImage(src, 0, 0, src.width, src.height, 0, 0, W2, H2);
+          c.rzSrc = src;
+        }
+        ctx.drawImage(c.rz, dx, dy);
       } else {
         r(dx, dy, W2, H2, '#ff00aa');
       }
