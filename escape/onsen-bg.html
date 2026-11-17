@@ -15,7 +15,7 @@
 </head>
 <body>
 <div id="wrap"><canvas id="cv" width="640" height="360"></canvas></div>
-<div id="tag">温泉 · 320×180 → 放大预览（空格切换 黄昏 / 夜）</div>
+<div id="tag">温泉 · 320×180 → 放大预览（空格切换 黄昏 / 夜 · 点老太太的脸摘面膜）</div>
 <script>
 window.onerror = function (m, s, l, c, e) {
   var d = document.getElementById('tag');
@@ -388,7 +388,6 @@ window.onerror = function (m, s, l, c, e) {
     }
   }
   var CAST = [
-  { src:'sprites/granny.png?v=5', cx:64, name:'granny', sink:0.90 },
     { src:'sprites/zhanghao-bare.png?v=3', cx:112, name:'张昊', sink:0.78 },      /* 左：第二形态 */
     { src:'sprites/lvao.png',      cx:146, name:'吕奥' },              /* 中 */
     { src:'sprites/caoyuhuan.png', cx:196, name:'曹宇桓' }             /* 右 */
@@ -435,6 +434,23 @@ window.onerror = function (m, s, l, c, e) {
   var GIRL = { img:new Image(), cx:214, gs:142, name:'泳装少女' };
   GIRL.img.src = 'girl-art.png?v=2';
   var GIRL2 = { img:new Image(), cx:256, gs:146, name:'泳装少女·黑' };
+  /* 老太太：默认戴面膜，点她的脸把面膜摘掉（再点戴上） */
+  var GRANNY = { cx:96, gs:152, masked:true,
+                 imgMask:new Image(), imgBare:new Image(), img:null };
+  GRANNY.imgMask.src = 'sprites/granny-mask.png?v=4';
+  GRANNY.imgBare.src = 'sprites/granny.png?v=5';
+  GRANNY.img = GRANNY.imgMask;
+  if(/[?&]granny=bare/.test(location.search)){ GRANNY.masked = false; GRANNY.img = GRANNY.imgBare; }
+  function grannyHit(x, y){
+    var w2 = 50, h2 = 62;
+    var gx = GRANNY.cx - w2/2, gy = GRANNY.gs - h2*0.75;
+    return x > gx - 4 && x < gx + w2 + 4 && y > gy - 6 && y < gy + 34;
+  }
+  function drawGranny(){
+    drawOne(GRANNY, GRANNY.cx, GRANNY.gs);
+    ctx.imageSmoothingEnabled = true;
+
+  }
   GIRL2.img.src = 'girl2-art.png?v=1';
   var PS = 0.5;
   /* 张昊的「第二形态」：只把上衣换成赤裸上身，其余像素不动。
@@ -1017,7 +1033,7 @@ function drawGirl(){
   function frame(ts){
     clock = ts || 0;
     snowSky(); snowBank(); bushRow(); lantern(); bigRock(); poolSnow(); steamHeavy(); people(); waterCover2();
-  drawGirl(); snowFall(); vignette();
+  drawGirl(); drawGranny(); snowFall(); vignette();
     drawPrompt(); drawDialog(); hud();
     requestAnimationFrame(frame);
   }
@@ -1026,7 +1042,18 @@ function drawGirl(){
   window.addEventListener('keydown', function(e){
     if(e.key === ' ' || e.code === 'Space'){ night = !night; e.preventDefault(); }
   });
-  cv.addEventListener('pointerdown', function(){ night = !night; });
+  cv.addEventListener('pointerdown', function(e){
+    var r2 = cv.getBoundingClientRect();
+    var x = (e.clientX - r2.left) / r2.width * W;
+    var y = (e.clientY - r2.top) / r2.height * H;
+    if(grannyHit(x, y)){
+      GRANNY.masked = !GRANNY.masked;
+      GRANNY.img = GRANNY.masked ? GRANNY.imgMask : GRANNY.imgBare;
+      GRANNY.cv = null;                 /* 强制重建缩放缓存，否则还是旧图 */
+      return;
+    }
+    night = !night;
+  });
 })();
 </script>
 </body>
