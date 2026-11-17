@@ -14,7 +14,9 @@
 </style>
 </head>
 <body>
-<div id="wrap"><canvas id="cv" width="640" height="360"></canvas></div>
+<div id="wrap"><link rel="preload" as="image" href="girl-art-s.png?v=1">
+<link rel="preload" as="image" href="girl2-art-s.png?v=1">
+<canvas id="cv" width="640" height="360"></canvas></div>
 <div id="tag">温泉 · 320×180 → 放大预览（空格切换 黄昏 / 夜 · 点老太太的脸摘面膜）</div>
 <script>
 window.onerror = function (m, s, l, c, e) {
@@ -432,7 +434,7 @@ window.onerror = function (m, s, l, c, e) {
     })(CAST[ci]);
   }
   var GIRL = { img:new Image(), cx:214, gs:142, name:'泳装少女' };
-  GIRL.img.src = 'girl-art.png?v=2';
+  GIRL.img.src = 'girl-art-s.png?v=1';
   var GIRL2 = { img:new Image(), cx:256, gs:146, name:'泳装少女·黑' };
   /* 老太太：默认戴面膜，点她的脸把面膜摘掉（再点戴上） */
   var GRANNY = { cx:96, gs:152, masked:true,
@@ -451,7 +453,7 @@ window.onerror = function (m, s, l, c, e) {
     ctx.imageSmoothingEnabled = true;
 
   }
-  GIRL2.img.src = 'girl2-art.png?v=1';
+  GIRL2.img.src = 'girl2-art-s.png?v=1';
   var PS = 0.5;
   /* 张昊的「第二形态」：只把上衣换成赤裸上身，其余像素不动。
      全程只用 drawImage + fillRect，不读像素（该环境下读像素会抛 SecurityError）。 */
