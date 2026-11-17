@@ -388,7 +388,7 @@ window.onerror = function (m, s, l, c, e) {
     }
   }
   var CAST = [
-    { src:'sprites/zhanghao-bare.png?v=3', cx:96, name:'张昊', sink:0.78 },      /* 左：第二形态 */
+    { src:'sprites/zhanghao-bare.png?v=3', cx:110, name:'张昊', sink:0.78 },      /* 左：第二形态 */
     { src:'sprites/lvao.png',      cx:146, name:'吕奥' },              /* 中 */
     { src:'sprites/caoyuhuan.png', cx:196, name:'曹宇桓' }             /* 右 */
   ];
@@ -600,7 +600,42 @@ window.onerror = function (m, s, l, c, e) {
     ctx.globalAlpha = 1;
     ctx.restore();
   }
-  function drawGirl(){
+  var grannySoak = new Image();
+grannySoak.src = 'sprites/granny-soak.png';
+
+function soak(){
+    if(!grannySoak || !grannySoak.complete || !grannySoak.naturalWidth) return;
+    var gx = 4, gy = 74, gw = 96, gh = 68;
+    ctx.drawImage(grannySoak, gx, gy, gw, gh);
+    // 水下部分压一层水，制造半沉效果
+    var gr = ctx.createLinearGradient(0, 104, 0, 156);
+    gr.addColorStop(0, 'rgba(160,222,230,0.45)');
+    gr.addColorStop(0.5, 'rgba(120,196,210,0.78)');
+    gr.addColorStop(1, 'rgba(75,167,182,0.92)');
+    ctx.fillStyle = gr;
+    ctx.fillRect(gx + 30, 120, gw - 60, 32);
+    // 水面上的浮光
+    ctx.globalAlpha = 0.35;
+    ctx.strokeStyle = '#eaf9fd';
+    ctx.lineWidth = 1;
+    for (var q = 0; q < 3; q++){
+        var wy = 120 + q * 4 + Math.sin(clock * 0.003 + q) * 1.2;
+        ctx.beginPath();
+        ctx.moveTo(gx + 26, wy);
+        ctx.lineTo(gx + gw - 26, wy);
+        ctx.stroke();
+    }
+    // 胸口水线的泡沫
+    ctx.globalAlpha = 0.6;
+    ctx.strokeStyle = '#eaf9fd';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(gx + gw / 2, 121, gw * 0.30, 3.2, 0, Math.PI * 0.05, Math.PI * 0.95);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+}
+
+function drawGirl(){
     drawOne(GIRL, GIRL.cx, GIRL.gs);
     drawOne(GIRL2, GIRL2.cx, GIRL2.gs);
     ctx.imageSmoothingEnabled = true;
@@ -1014,7 +1049,8 @@ window.onerror = function (m, s, l, c, e) {
   var clock = 0;
   function frame(ts){
     clock = ts || 0;
-    snowSky(); snowBank(); bushRow(); lantern(); bigRock(); poolSnow(); steamHeavy(); people(); waterCover2(); drawGirl(); snowFall(); vignette();
+    snowSky(); snowBank(); bushRow(); lantern(); bigRock(); poolSnow(); steamHeavy(); people(); waterCover2();
+  soak(); drawGirl(); snowFall(); vignette();
     drawPrompt(); drawDialog(); hud();
     requestAnimationFrame(frame);
   }
