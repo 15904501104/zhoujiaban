@@ -437,8 +437,8 @@ window.onerror = function (m, s, l, c, e) {
   /* 老太太：默认戴面膜，点她的脸把面膜摘掉（再点戴上） */
   var GRANNY = { cx:96, gs:152, masked:true,
                  imgMask:new Image(), imgBare:new Image(), img:null };
-  GRANNY.imgMask.src = 'sprites/granny-mask.png?v=5';
-  GRANNY.imgBare.src = 'sprites/granny.png?v=5';
+  GRANNY.imgMask.src = 'sprites/granny-mask.png?v=6';
+  GRANNY.imgBare.src = 'sprites/granny.png?v=6';
   GRANNY.img = GRANNY.imgMask;
   if(/[?&]granny=bare/.test(location.search)){ GRANNY.masked = false; GRANNY.img = GRANNY.imgBare; }
   function grannyHit(x, y){
