@@ -26,6 +26,14 @@
   .bm button{background:#b8452f;color:#fff;border:0;border-radius:6px;
     padding:11px 30px;font-size:14px;letter-spacing:.2em;font-family:inherit;cursor:pointer}
   .bm button:active{transform:translateY(1px)}
+  #intro{position:fixed;inset:0;display:flex;align-items:flex-end;justify-content:center;
+    padding:0 4vw 6vh;box-sizing:border-box;z-index:8}
+  #intro.off{display:none}
+  .dlg{width:min(92vw,720px);background:rgba(20,24,33,.94);border:2px solid #c9a24a;
+    border-radius:10px;padding:16px 20px 14px;color:#eee5d2;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+  .dlg .who{color:#f0d79a;font-size:14px;letter-spacing:.18em;margin-bottom:8px}
+  .dlg .txt{font-size:17px;line-height:1.7;letter-spacing:.04em;min-height:3.4em}
+  .dlg .go{text-align:right;font-size:12px;opacity:.55;letter-spacing:.16em;margin-top:6px}
 </style>
 </head>
 <body>
@@ -33,6 +41,11 @@
 <link rel="preload" as="image" href="girl2-art-s.png?v=1">
 <canvas id="cv" width="640" height="360"></canvas></div>
 <div id="tag">温泉 · 320×180 → 放大预览（空格切换 黄昏 / 夜 · 点池边的纸箱（UFC 泳裤＋UFC 拳套）→ 点吕奥 · 点老太太摘面膜）</div>
+<div id="intro"><div class="dlg">
+  <div class="who" id="dlgWho">张昊</div>
+  <div class="txt" id="dlgTxt"></div>
+  <div class="go">点击继续 ▾</div>
+</div></div>
 <div id="boxModal"><div class="bm">
   <div class="bm-row">
     <div class="bm-item"><canvas id="bmShorts" width="26" height="20"></canvas>UFC 短裤</div>
@@ -583,6 +596,35 @@ window.onerror = function (m, s, l, c, e) {
     g2.fillRect(15, 8, 5, 5);
     g2.fillStyle = '#e9ecf1'; g2.fillRect(4, 12, 13, 4);
     g2.fillStyle = '#b9c0c9'; g2.fillRect(4, 15, 13, 1);
+  })();
+  var LINES = [
+    { who: '张昊',   txt: '老大，这温泉里漂亮小姑娘挺多，要不要去要个联系方式？' },
+    { who: '曹宇桓', txt: '歪比巴卜，咕噜咕噜哔哔啵啵，阿巴阿巴，%￥&*#@……' }
+  ];
+  var dlgI = 0, dlgOn = false;
+  function showLine(){
+    if(dlgI >= LINES.length){ hideIntro(); return; }
+    var w = document.getElementById('dlgWho'), t = document.getElementById('dlgTxt');
+    if(w) w.textContent = LINES[dlgI].who;
+    if(t) t.textContent = LINES[dlgI].txt;
+  }
+  function hideIntro(){
+    dlgOn = false;
+    var el = document.getElementById('intro');
+    if(el){ el.classList.add('off'); }
+  }
+  (function initIntro(){
+    var el = document.getElementById('intro');
+    if(!el) return;
+    if(/[?&](lv|box|granny)=/.test(location.search)){ el.classList.add('off'); return; }
+    var dm = location.search.match(/[?&]dlg=(\d+)/);
+    dlgOn = true; dlgI = dm ? Math.min(parseInt(dm[1], 10) - 1, LINES.length - 1) : 0; showLine();
+    el.addEventListener('pointerdown', function(ev){
+      ev.stopPropagation();
+      if(!dlgOn) return;
+      dlgI++;
+      if(dlgI >= LINES.length){ hideIntro(); } else { showLine(); }
+    });
   })();
   if(/[?&]box=1/.test(location.search)){ setTimeout(openBox, 60); }
   var bmBtn = document.getElementById('bmTake');
@@ -1252,6 +1294,7 @@ function drawGirl(){
     if(e.key === ' ' || e.code === 'Space'){ night = !night; e.preventDefault(); }
   });
   cv.addEventListener('pointerdown', function(e){
+    if(dlgOn) return;
     var bm = document.getElementById('boxModal');
     if(bm && bm.classList.contains('on')) return;
     var r2 = cv.getBoundingClientRect();
