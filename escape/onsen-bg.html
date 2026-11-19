@@ -453,6 +453,163 @@ window.onerror = function (m, s, l, c, e) {
     ctx.imageSmoothingEnabled = true;
 
   }
+
+  /* ===== 吕奥第二形态关卡 ===== */
+  var LV = { gloves:false, shorts:false, belt:false, steam:0, form:1, done:false, t0:0, tEnd:0 };
+  var ITEM = {
+    gloves: { x:24,  y:146, w:16, h:12, draw:function(){ glovesAt(this.x, this.y); } },
+    shorts: { x:118, y:150, w:18, h:18, draw:function(){ shortsAt(this.x, this.y); } },
+    belt:   { x:57,  y:63,  w:20, h:8,  draw:function(){ beltAt(this.x, this.y); } },
+    valve:  { x:290, y:146, w:14, h:14, draw:function(){ valveAt(this.x, this.y); } }
+  };
+  function glovesAt(x, y){
+    ctx.fillStyle = '#1b1d22';
+    ctx.fillRect(x, y, 13, 8);
+    ctx.fillRect(x + 1, y - 1, 11, 2);
+    ctx.fillStyle = '#3a3f47';
+    ctx.fillRect(x + 9, y + 2, 4, 5);
+    ctx.fillStyle = '#c9ccd2';
+    ctx.fillRect(x + 1, y + 6, 2, 2);
+  }
+  function railAt(x, y){
+    ctx.fillStyle = '#7a5232';
+    ctx.fillRect(x, y, 52, 5);
+    ctx.fillStyle = '#94663f';
+    ctx.fillRect(x, y, 52, 2);
+    ctx.fillStyle = '#5d3c24';
+    ctx.fillRect(x + 4, y + 5, 5, 16);
+    ctx.fillRect(x + 43, y + 5, 5, 16);
+    ctx.fillStyle = 'rgba(240,246,250,.55)';
+    ctx.fillRect(x, y - 2, 52, 2);
+  }
+  function shortsAt(x, y){
+    var bob = Math.round(Math.sin(clock * 0.004) * 1);
+    ctx.fillStyle = '#2f6f45';
+    ctx.fillRect(x, y + bob, 16, 7);
+    ctx.fillRect(x + 2, y + 7 + bob, 5, 6);
+    ctx.fillRect(x + 9, y + 7 + bob, 5, 6);
+    ctx.fillStyle = '#e9eee6';
+    ctx.fillRect(x + 3, y + 2 + bob, 4, 2);
+    ctx.fillStyle = '#1e4c2e';
+    ctx.fillRect(x, y + bob, 16, 1);
+  }
+  function beltAt(x, y){
+    ctx.fillStyle = '#d8b24a';
+    ctx.fillRect(x, y, 20, 4);
+    ctx.fillStyle = '#f4dd93';
+    ctx.fillRect(x, y, 20, 1);
+    ctx.fillStyle = '#8c6b22';
+    ctx.fillRect(x + 8, y + 1, 4, 3);
+  }
+  function valveAt(x, y){
+    ctx.fillStyle = '#9aa3ad';
+    ctx.fillRect(x + 4, y + 6, 6, 6);
+    ctx.fillStyle = '#c6ced8';
+    ctx.fillRect(x + 2, y + 3, 10, 3);
+    ctx.fillStyle = '#7b838d';
+    ctx.fillRect(x + 6, y, 2, 4);
+    if(LV.steam > 0){
+      ctx.fillStyle = 'rgba(240,250,255,.75)';
+      ctx.fillRect(x + 5, y - 3, 4, 2);
+    }
+  }
+  function itemHit(it, x, y){
+    return x > it.x - 4 && x < it.x + it.w + 4 && y > it.y - 4 && y < it.y + it.h + 4;
+  }
+  function castByName(n){
+    for(var i = 0; i < CAST.length; i++){ if(CAST[i].name === n) return CAST[i]; }
+    return null;
+  }
+  function lvaoHit(x, y){
+    var c = castByName('吕奥'); if(!c) return false;
+    var w2 = 48, h2 = 60;
+    var gx = c.cx - w2 / 2, gy = POOL2.cy - h2 * (c.sink || 0.92);
+    return x > gx - 4 && x < gx + w2 + 4 && y > gy - 8 && y < gy + 44;
+  }
+  function tryTransform(){
+    if(LV.form === 2 || LV.done) return;
+    if(!(LV.gloves && LV.shorts && LV.belt)) return;
+    var c = castByName('吕奥');
+    if(c){
+      c.img = new Image();
+      c.img.src = 'sprites/lvao-form2.png?v=1';
+      c.cv = null; c.rz = null;
+    }
+    LV.form = 2; LV.done = true; LV.tEnd = clock;
+    if(!LV.t0) LV.t0 = clock;
+  }
+  if(/[?&]lv=code/.test(location.search)){ LV.gloves = LV.shorts = LV.belt = true; }
+  var LVDBG_WIN = /[?&]lv=win/.test(location.search);
+  var LVDBG_NOCARD = /[?&]lv=pose/.test(location.search);
+  if(LVDBG_NOCARD){ LVDBG_WIN = true; }
+  if(LVDBG_WIN){ LV.gloves = LV.shorts = LV.belt = true; }
+  function lvReady(){ return LV.form === 1 && LV.gloves && LV.shorts && LV.belt; }
+  function drawItems(){
+    if(!LV.gloves) ITEM.gloves.draw();
+    railAt(110, 166);
+    if(!LV.shorts) ITEM.shorts.draw();
+    if(!LV.belt)   ITEM.belt.draw();
+    ITEM.valve.draw();
+    if(lvReady()){
+      var c = castByName('吕奥');
+      if(c){
+        var tx = c.cx - 16, ty = POOL2.cy - 60 * (c.sink || 0.92) - 8;
+        ctx.fillStyle = 'rgba(20,16,12,.72)';
+        ctx.fillRect(tx - 4, ty - 8, 44, 13);
+        ctx.fillStyle = '#ffd97a';
+        ctx.font = '7px monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText('E 上场', tx, ty + 1);
+      }
+    }
+  }
+  function drawHearts(){
+    if(!LV.done) return;
+    var k = (clock - LV.tEnd) / 1000;
+    if(k > 3.2) return;
+    var a = Math.max(0, 1 - k / 3.2);
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.fillStyle = '#ff5f8d';
+    var pairs = [[GIRL.cx, GIRL.gs], [GIRL2.cx, GIRL2.gs]];
+    for(var i = 0; i < pairs.length; i++){
+      var hx = pairs[i][0], hy = pairs[i][1] - 74 - k * 12;
+      ctx.fillRect(hx - 3, hy, 2, 2); ctx.fillRect(hx + 1, hy, 2, 2);
+      ctx.fillRect(hx - 4, hy + 2, 8, 2); ctx.fillRect(hx - 3, hy + 4, 6, 1);
+      ctx.fillRect(hx - 2, hy + 5, 4, 1); ctx.fillRect(hx - 1, hy + 6, 2, 1);
+    }
+    ctx.restore();
+  }
+  function drawWinCard(){
+    if(!LV.done || LVDBG_NOCARD) return;
+    var secs = Math.max(1, Math.round((LV.tEnd - LV.t0) / 1000));
+    var stars = secs <= 30 ? 3 : (secs <= 60 ? 2 : 1);
+    ctx.save();
+    ctx.fillStyle = 'rgba(14,12,10,.58)';
+    ctx.fillRect(0, 0, W, H);
+    var cw = 240, ch = 100, cx0 = (W - cw) / 2, cy0 = (H - ch) / 2;
+    ctx.fillStyle = 'rgba(20,18,16,.94)';
+    ctx.fillRect(cx0, cy0, cw, ch);
+    ctx.strokeStyle = 'rgba(255,214,120,.85)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(cx0 + 3.5, cy0 + 3.5, cw - 7, ch - 7);
+    ctx.fillStyle = '#ffd97a';
+    ctx.font = '9px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('过关', W / 2, cy0 + 22);
+    ctx.fillStyle = '#f3ece2';
+    ctx.font = '7px monospace';
+    ctx.fillText('吕奥亮出康纳的架势', W / 2, cy0 + 40);
+    ctx.fillText('两位女生看了过来', W / 2, cy0 + 52);
+    ctx.fillStyle = '#ffd97a';
+    ctx.font = '13px monospace';
+    ctx.fillText('★'.repeat(stars) + '☆'.repeat(3 - stars), W / 2, cy0 + 70);
+    ctx.fillStyle = '#cfc6ba';
+    ctx.font = '6px monospace';
+    ctx.fillText('用时 ' + secs + ' 秒 · 空格切换 黄昏 / 夜', W / 2, cy0 + 88);
+    ctx.restore();
+  }
+
   GIRL2.img.src = 'girl2-art-s.png?v=1';
   var PS = 0.5;
   /* 张昊的「第二形态」：只把上衣换成赤裸上身，其余像素不动。
@@ -1034,8 +1191,12 @@ function drawGirl(){
   var clock = 0;
   function frame(ts){
     clock = ts || 0;
+    if(LVDBG_WIN && !LV.done){
+      var _c = castByName('吕奥');
+      if(_c && _c.img && _c.img.complete){ LV.t0 = clock - 21000; tryTransform(); }
+    }
     snowSky(); snowBank(); bushRow(); lantern(); bigRock(); poolSnow(); steamHeavy(); people(); waterCover2();
-  drawGirl(); drawGranny(); snowFall(); vignette();
+  drawGirl(); drawGranny(); drawItems(); snowFall(); vignette(); drawHearts(); drawWinCard();
     drawPrompt(); drawDialog(); hud();
     requestAnimationFrame(frame);
   }
@@ -1048,6 +1209,17 @@ function drawGirl(){
     var r2 = cv.getBoundingClientRect();
     var x = (e.clientX - r2.left) / r2.width * W;
     var y = (e.clientY - r2.top) / r2.height * H;
+    if(!LV.gloves && itemHit(ITEM.gloves, x, y)){ LV.gloves = true; if(!LV.t0) LV.t0 = clock; return; }
+    if(!LV.shorts && itemHit(ITEM.shorts, x, y)){ LV.shorts = true; if(!LV.t0) LV.t0 = clock; return; }
+    if(!LV.belt   && itemHit(ITEM.belt,   x, y)){ LV.belt   = true; if(!LV.t0) LV.t0 = clock; return; }
+    if(itemHit(ITEM.valve, x, y)){
+      LV.steam = (LV.steam + 1) % 3;
+      return;
+    }
+    if(lvaoHit(x, y)){
+      tryTransform();
+      return;
+    }
     if(grannyHit(x, y)){
       GRANNY.masked = !GRANNY.masked;
       GRANNY.img = GRANNY.masked ? GRANNY.imgMask : GRANNY.imgBare;
