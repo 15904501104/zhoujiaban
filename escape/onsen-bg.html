@@ -11,7 +11,14 @@
   canvas{image-rendering:pixelated;image-rendering:crisp-edges;
     box-shadow:0 0 0 1px #2a2233,0 20px 60px rgba(0,0,0,.6)}
   #tag{position:fixed;left:16px;bottom:14px;font-size:12px;letter-spacing:.18em;opacity:.5}
-  #bub{position:fixed;display:none;z-index:7;pointer-events:none;transform:translate(-50%,-100%)}
+  #dlgBar{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);display:none;z-index:9;
+    width:min(76vw,760px);background:rgba(18,22,30,.92);border:2px solid #c9a24a;border-radius:10px;
+    padding:14px 18px 18px;color:#efe6d4;box-shadow:0 12px 34px rgba(0,0,0,.5)}
+  #dlgBar.on{display:block}
+  #dlgBar .n{font-size:13px;letter-spacing:.16em;color:#d9c08a;margin-bottom:6px}
+  #dlgBar .t{font-size:17px;line-height:1.65}
+  #dlgBar .g{position:absolute;right:14px;bottom:8px;font-size:12px;opacity:.55}
+  #bub{position:fixed;display:none;z-index:7;pointer-events:none}
   #bub.on{display:block}
   .bub-body{position:relative;background:#f8f2e2;border:2px solid #2a2118;border-radius:8px;
     padding:10px 14px 24px;max-width:min(52vw,380px);color:#241c14;
@@ -45,6 +52,7 @@
 <link rel="preload" as="image" href="girl2-art-s.png?v=1">
 <canvas id="cv" width="640" height="360"></canvas></div>
 <div id="tag">温泉 · 320×180 → 放大预览（空格切换 黄昏 / 夜 · 点池边的纸箱（UFC 泳裤＋UFC 拳套）→ 点吕奥 · 点老太太摘面膜）</div>
+<div id="dlgBar"><div class="n" id="dlgName"></div><div class="t" id="dlgText"></div><div class="g">点击继续 ▾</div></div>
 <div id="bub"><div class="bub-body">
   <div class="bub-name" id="bubName"></div>
   <div class="bub-text" id="bubText"></div>
@@ -495,6 +503,10 @@ window.onerror = function (m, s, l, c, e) {
 
   /* ===== 吕奥第二形态关卡 ===== */
   var LV = { gloves:false, shorts:false, belt:false, steam:0, form:1, done:false, t0:0, tEnd:0 };
+  var EVT = { on:false, done:false, bub:false, dropAt:0, t:0 };
+  var COURIER = new Image();
+  COURIER.src = 'sprites/courier.png?v=1';
+  if(/[?&]evt=drop/.test(location.search)){ EVT.done = true; EVT.dropAt = 0; }
   var ITEM = {
     shorts: { x:22, y:147, w:28, h:20, draw:function(){ shortsAt(this.x, this.y); } }
   };
@@ -603,7 +615,7 @@ window.onerror = function (m, s, l, c, e) {
   })();
   var INTRO = { on: true, step: 0, t0: 0 };
   var INTRO_DBG = (function(){
-    if(/[?&](lv|box|granny)=/.test(location.search)){ INTRO.on = false; return 0; }
+    if(/[?&](lv|box|granny|evt)=/.test(location.search)){ INTRO.on = false; return 0; }
     var m = location.search.match(/[?&]dlg=(\d+)/);
     return m ? parseInt(m[1], 10) : 0;
   })();
@@ -616,7 +628,7 @@ window.onerror = function (m, s, l, c, e) {
   }
   function lvReady(){ return LV.form === 1 && LV.shorts; }
   function drawItems(){
-    if(!LV.shorts) ITEM.shorts.draw();
+    if(EVT.done && !LV.shorts) ITEM.shorts.draw();
 
     if(lvReady()){
       var c = castByName('吕奥');
@@ -980,6 +992,28 @@ function drawGirl(){
     ctx.globalAlpha = 1;
   }
 
+  function drawCourier(){
+    if(!EVT.on || EVT.done) return;
+    if(!(COURIER.complete && COURIER.naturalWidth)) return;
+    var h2 = 62, w2 = Math.round(h2 * COURIER.naturalWidth / COURIER.naturalHeight);
+    if(!drawCourier.cv){
+      drawCourier.cv = document.createElement('canvas');
+      drawCourier.cv.width = w2; drawCourier.cv.height = h2;
+      var g2 = drawCourier.cv.getContext('2d');
+      g2.imageSmoothingEnabled = false;
+      g2.drawImage(COURIER, 0, 0, COURIER.naturalWidth, COURIER.naturalHeight, 0, 0, w2, h2);
+    }
+    var cx = 273, gs = 170;
+    ctx.drawImage(drawCourier.cv, Math.round(cx - w2 / 2), Math.round(gs - h2));
+  }
+  function showCourierBub(){
+    var el = document.getElementById('dlgBar');
+    if(!el) return;
+    document.getElementById('dlgName').textContent = '快递员';
+    document.getElementById('dlgText').textContent = '有一份来自爱尔兰的快递，是谁的？';
+    el.classList.add('on');
+    EVT.bub = true;
+  }
   function drawPrompt(){
     if(dlg !== null) return;
     var c = nearNpc();
@@ -1269,8 +1303,11 @@ function drawGirl(){
     var el = document.getElementById('bub');
     if(!el) return;
     var r = cv.getBoundingClientRect();
-    el.style.left = (r.left + cx / W * r.width) + 'px';
-    el.style.top = (r.top + mouthY / H * r.height - 6) + 'px';
+    var px = r.left + cx / W * r.width;
+    var py = r.top + mouthY / H * r.height;
+    var w = el.offsetWidth || 240, h = el.offsetHeight || 80;
+    el.style.left = Math.round(px - w / 2) + 'px';
+    el.style.top = Math.round(py - h) + 'px';
   }
   function showBub(){
     var el = document.getElementById('bub');
@@ -1303,6 +1340,9 @@ function drawGirl(){
       if(_c && _c.img && _c.img.complete){ LV.t0 = clock - 21000; tryTransform(); }
     }
     snowSky(); snowBank(); bushRow(); lantern(); bigRock(); poolSnow(); steamHeavy(); people(); waterCover2();
+  if(!EVT.done && !EVT.on && !INTRO.on && clock > 15000){ EVT.on = true; EVT.t = clock; showCourierBub(); }
+  if(/[?&]evt=1/.test(location.search) && !EVT.done && !EVT.on){ EVT.on = true; EVT.t = clock; showCourierBub(); }
+  drawCourier();
   drawGirl(); drawGranny(); drawItems(); snowFall(); vignette(); drawHearts(); drawWinCard();
     drawPrompt(); drawDialog(); hud();
     requestAnimationFrame(frame);
@@ -1314,6 +1354,12 @@ function drawGirl(){
   });
   cv.addEventListener('pointerdown', function(e){
     if(INTRO.on){ advanceIntro(); return; }
+    if(EVT.bub){
+      EVT.bub = false; EVT.done = true; EVT.on = false; EVT.dropAt = clock;
+      var _b = document.getElementById('dlgBar');
+      if(_b) _b.classList.remove('on');
+      return;
+    }
     var bm = document.getElementById('boxModal');
     if(bm && bm.classList.contains('on')) return;
     var r2 = cv.getBoundingClientRect();
