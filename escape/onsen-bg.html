@@ -12,15 +12,19 @@
     box-shadow:0 0 0 1px #2a2233,0 20px 60px rgba(0,0,0,.6)}
   #tag{position:fixed;left:16px;bottom:14px;font-size:12px;letter-spacing:.18em;opacity:.5}
   #dlgBar{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);display:none;z-index:9;
-    width:min(76vw,760px);background:rgba(18,22,30,.92);border:2px solid #c9a24a;border-radius:10px;
-    padding:14px 18px 18px;color:#efe6d4;box-shadow:0 12px 34px rgba(0,0,0,.5)}
-  #dlgBar.on{display:block}
-  #dlgBar .n{font-size:13px;letter-spacing:.16em;color:#d9c08a;margin-bottom:6px}
-  #dlgBar .t{font-size:17px;line-height:1.65}
-  #dlgBar .g{position:absolute;right:14px;bottom:8px;font-size:12px;opacity:.55}
+    width:min(78vw,820px);background:#ffffff;border:2px solid #d9cfb8;border-radius:12px;
+    padding:14px 18px 20px;color:#2b2b2b;box-shadow:0 14px 36px rgba(0,0,0,.34)}
+  #dlgBar.on{display:flex;align-items:center;gap:16px}
+  #dlgBar .av{flex:0 0 68px;width:68px;height:68px;background:#f6f4ef;border:1px solid #e3dbc9;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;overflow:hidden}
+  #dlgBar .av img{width:64px;height:64px;image-rendering:pixelated}
+  #dlgBar .bd{flex:1;min-width:0}
+  #dlgBar .n{font-size:13px;letter-spacing:.16em;color:#8a6a3a;margin-bottom:6px}
+  #dlgBar .t{font-size:17px;line-height:1.65;color:#2b2b2b}
+  #dlgBar .g{position:absolute;right:16px;bottom:8px;font-size:12px;color:#9a9a9a}
   #bub{position:fixed;display:none;z-index:7;pointer-events:none}
   #bub.on{display:block}
-  .bub-body{position:relative;background:#f8f2e2;border:2px solid #2a2118;border-radius:8px;
+  .bub-body{position:relative;background:#ffffff;border:2px solid #2a2118;border-radius:8px;
     padding:10px 14px 24px;max-width:min(52vw,380px);color:#241c14;
     box-shadow:0 6px 18px rgba(0,0,0,.28)}
   .bub-name{font-size:12px;letter-spacing:.16em;color:#8a6a3a;margin-bottom:4px}
@@ -52,7 +56,7 @@
 <link rel="preload" as="image" href="girl2-art-s.png?v=1">
 <canvas id="cv" width="640" height="360"></canvas></div>
 <div id="tag">温泉 · 320×180 → 放大预览（空格切换 黄昏 / 夜 · 点池边的纸箱（UFC 泳裤＋UFC 拳套）→ 点吕奥 · 点老太太摘面膜）</div>
-<div id="dlgBar"><div class="n" id="dlgName"></div><div class="t" id="dlgText"></div><div class="g">点击继续 ▾</div></div>
+<div id="dlgBar"><div class="av"><img id="dlgAv" src="sprites/av-courier.png?v=1" alt=""></div><div class="bd"><div class="n" id="dlgName"></div><div class="t" id="dlgText"></div></div><div class="g">点击继续 ▾</div></div>
 <div id="bub"><div class="bub-body">
   <div class="bub-name" id="bubName"></div>
   <div class="bub-text" id="bubText"></div>
