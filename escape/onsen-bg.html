@@ -22,6 +22,12 @@
   #dlgBar .n{font-size:13px;letter-spacing:.16em;color:#8a6a3a;margin-bottom:6px}
   #dlgBar .t{font-size:17px;line-height:1.65;color:#2b2b2b}
   #dlgBar .g{position:absolute;right:16px;bottom:8px;font-size:12px;color:#9a9a9a}
+  #dlgBar #dlgOk{position:absolute;right:14px;bottom:22px;display:none}
+  #dlgBar.has-btn #dlgOk{display:inline-block}
+  #dlgBar.has-btn .g{display:none}
+  #dlgOk{font:inherit;font-size:14px;padding:7px 16px;border-radius:8px;border:1px solid #d9cfb8;
+    background:#c0392b;color:#fff;cursor:pointer;letter-spacing:.1em}
+  #dlgOk:hover{background:#a93226}
   #bub{position:fixed;display:none;z-index:7;pointer-events:none}
   #bub.on{display:block}
   .bub-body{position:relative;background:#ffffff;border:2px solid #2a2118;border-radius:8px;
@@ -56,7 +62,7 @@
 <link rel="preload" as="image" href="girl2-art-s.png?v=1">
 <canvas id="cv" width="640" height="360"></canvas></div>
 <div id="tag">温泉 · 320×180 → 放大预览（空格切换 黄昏 / 夜 · 点池边的纸箱（UFC 泳裤＋UFC 拳套）→ 点吕奥 · 点老太太摘面膜）</div>
-<div id="dlgBar"><div class="av"><img id="dlgAv" src="sprites/av-courier.png?v=1" alt=""></div><div class="bd"><div class="n" id="dlgName"></div><div class="t" id="dlgText"></div></div><div class="g">点击继续 ▾</div></div>
+<div id="dlgBar"><div class="av"><img id="dlgAv" src="sprites/av-courier.png?v=1" alt=""></div><div class="bd"><div class="n" id="dlgName"></div><div class="t" id="dlgText"></div></div><div class="g">点击继续 ▾</div><button id="dlgOk">知道了</button></div>
 <div id="bub"><div class="bub-body">
   <div class="bub-name" id="bubName"></div>
   <div class="bub-text" id="bubText"></div>
@@ -624,6 +630,13 @@ window.onerror = function (m, s, l, c, e) {
     return m ? parseInt(m[1], 10) : 0;
   })();
   if(/[?&]box=1/.test(location.search)){ setTimeout(openBox, 60); }
+  (function(){
+    var ok = document.getElementById('dlgOk');
+    if(ok) ok.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      if(EVT.bub) closeCourierDlg();
+    });
+  })();
   var bmBtn = document.getElementById('bmTake');
   if(bmBtn){
     bmBtn.addEventListener('click', function(){
@@ -1007,7 +1020,7 @@ function drawGirl(){
       g2.imageSmoothingEnabled = false;
       g2.drawImage(COURIER, 0, 0, COURIER.naturalWidth, COURIER.naturalHeight, 0, 0, w2, h2);
     }
-    var cx = 273, gs = 170;
+    var cx = 46, gs = 170;
     ctx.drawImage(drawCourier.cv, Math.round(cx - w2 / 2), Math.round(gs - h2));
   }
   function showCourierBub(){
@@ -1015,7 +1028,7 @@ function drawGirl(){
     if(!el) return;
     document.getElementById('dlgName').textContent = '快递员';
     document.getElementById('dlgText').textContent = '有一份来自爱尔兰的快递，是谁的？';
-    el.classList.add('on');
+    el.classList.add('on','has-btn');
     EVT.bub = true;
   }
   function drawPrompt(){
@@ -1344,7 +1357,7 @@ function drawGirl(){
       if(_c && _c.img && _c.img.complete){ LV.t0 = clock - 21000; tryTransform(); }
     }
     snowSky(); snowBank(); bushRow(); lantern(); bigRock(); poolSnow(); steamHeavy(); people(); waterCover2();
-  if(!EVT.done && !EVT.on && !INTRO.on && clock > 15000){ EVT.on = true; EVT.t = clock; showCourierBub(); }
+  if(!EVT.done && !EVT.on && !INTRO.on && clock > 10000){ EVT.on = true; EVT.t = clock; showCourierBub(); }
   if(/[?&]evt=1/.test(location.search) && !EVT.done && !EVT.on){ EVT.on = true; EVT.t = clock; showCourierBub(); }
   drawCourier();
   drawGirl(); drawGranny(); drawItems(); snowFall(); vignette(); drawHearts(); drawWinCard();
@@ -1356,14 +1369,15 @@ function drawGirl(){
   window.addEventListener('keydown', function(e){
     if(e.key === ' ' || e.code === 'Space'){ night = !night; e.preventDefault(); }
   });
+  function closeCourierDlg(){
+    EVT.bub = false; EVT.done = true; EVT.on = false; EVT.dropAt = clock;
+    var _b = document.getElementById('dlgBar');
+    if(_b) _b.classList.remove('on', 'has-btn');
+  }
+  window.closeCourierDlg = closeCourierDlg;
   cv.addEventListener('pointerdown', function(e){
     if(INTRO.on){ advanceIntro(); return; }
-    if(EVT.bub){
-      EVT.bub = false; EVT.done = true; EVT.on = false; EVT.dropAt = clock;
-      var _b = document.getElementById('dlgBar');
-      if(_b) _b.classList.remove('on');
-      return;
-    }
+    if(EVT.bub){ closeCourierDlg(); return; }
     var bm = document.getElementById('boxModal');
     if(bm && bm.classList.contains('on')) return;
     var r2 = cv.getBoundingClientRect();
