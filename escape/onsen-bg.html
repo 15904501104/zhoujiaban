@@ -457,7 +457,7 @@ window.onerror = function (m, s, l, c, e) {
   /* ===== 吕奥第二形态关卡 ===== */
   var LV = { gloves:false, shorts:false, belt:false, steam:0, form:1, done:false, t0:0, tEnd:0 };
   var ITEM = {
-    shorts: { x:34, y:150, w:26, h:17, draw:function(){ shortsAt(this.x, this.y); } }
+    shorts: { x:26, y:149, w:20, h:13, draw:function(){ shortsAt(this.x, this.y); } }
   };
   function railAt(x, y){
     ctx.fillStyle = '#7a5232';
@@ -471,29 +471,26 @@ window.onerror = function (m, s, l, c, e) {
     ctx.fillRect(x, y - 2, 52, 2);
   }
   function shortsAt(x, y){
-    // 平摊在雪地上的一条泳裤（静止）：腰头 + 两条裤腿，中间留空能看见雪
+    // 岸边平摊的小泳裤（静止）
     ctx.save();
-    ctx.globalAlpha = 0.16;
-    ctx.fillStyle = '#1b2a33';
-    ctx.beginPath(); ctx.ellipse(x + 13, y + 16, 15, 3, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 0.20;
+    ctx.fillStyle = '#16242c';
+    ctx.beginPath(); ctx.ellipse(x + 10, y + 13, 11, 2.5, 0, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
 
-    var OUT = '#173d25', G1 = '#2f6f45', G2 = '#3d8a58';
-    // 腰头
-    ctx.fillStyle = OUT; ctx.fillRect(x, y, 26, 5);
-    ctx.fillStyle = G2;  ctx.fillRect(x + 1, y + 1, 24, 2);
-    ctx.fillStyle = G1;  ctx.fillRect(x + 1, y + 3, 24, 1);
-    // 左腿
-    ctx.fillStyle = OUT; ctx.fillRect(x, y + 5, 12, 12);
-    ctx.fillStyle = G1;  ctx.fillRect(x + 1, y + 6, 10, 10);
-    // 右腿
-    ctx.fillStyle = OUT; ctx.fillRect(x + 14, y + 5, 12, 12);
-    ctx.fillStyle = G1;  ctx.fillRect(x + 15, y + 6, 10, 10);
-    // 抽绳（一小段白绳）
-    ctx.fillStyle = '#f2f5ef';
-    ctx.fillRect(x + 11, y + 2, 4, 1);
-    ctx.fillRect(x + 11, y + 3, 1, 1);
-    ctx.fillRect(x + 14, y + 3, 1, 1);
+    var OUT = '#153a23', G1 = '#2f6f45', G2 = '#43a06a', W = '#eef3ec';
+    ctx.fillStyle = OUT;  ctx.fillRect(x, y, 20, 13);
+    ctx.fillStyle = G2;   ctx.fillRect(x + 1, y + 1, 18, 2);
+    ctx.fillStyle = G1;   ctx.fillRect(x + 1, y + 3, 18, 2);
+    ctx.fillStyle = G1;   ctx.fillRect(x + 1, y + 5, 8, 6);
+    ctx.fillStyle = G1;   ctx.fillRect(x + 11, y + 5, 8, 6);
+    ctx.fillStyle = 'rgba(255,255,255,.09)';
+    ctx.fillRect(x + 1, y + 5, 8, 1);
+    ctx.fillRect(x + 11, y + 5, 8, 1);
+    ctx.fillStyle = OUT;  ctx.fillRect(x + 9, y + 5, 1, 6);
+    ctx.fillStyle = G2;   ctx.fillRect(x + 1, y + 10, 8, 1);
+    ctx.fillStyle = G2;   ctx.fillRect(x + 11, y + 10, 8, 1);
+    ctx.fillStyle = W;    ctx.fillRect(x + 9, y + 1, 2, 1);
   }
   function itemHit(it, x, y){
     return x > it.x - 4 && x < it.x + it.w + 4 && y > it.y - 4 && y < it.y + it.h + 4;
