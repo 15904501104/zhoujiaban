@@ -533,16 +533,18 @@ window.onerror = function (m, s, l, c, e) {
     var gx = c.cx - w2 / 2, gy = POOL2.cy - h2 * (c.sink || 0.92);
     return x > gx - 4 && x < gx + w2 + 4 && y > gy - 8 && y < gy + 44;
   }
+  var FORM2 = new Image();
+  FORM2.src = 'sprites/lvao-form2.png?v=1';
   function tryTransform(){
     if(LV.form === 2 || LV.done) return;
     if(!(LV.gloves && LV.shorts && LV.belt)) return;
+    if(!FORM2.complete || !FORM2.naturalWidth){ LV.pending = true; return; }
     var c = castByName('吕奥');
     if(c){
-      c.img = new Image();
-      c.img.src = 'sprites/lvao-form2.png?v=1';
+      c.img = FORM2;
       c.cv = null; c.rz = null;
     }
-    LV.form = 2; LV.done = true; LV.tEnd = clock;
+    LV.form = 2; LV.done = true; LV.pending = false; LV.tEnd = clock;
     if(!LV.t0) LV.t0 = clock;
   }
   if(/[?&]lv=code/.test(location.search)){ LV.gloves = LV.shorts = LV.belt = true; }
@@ -1198,6 +1200,7 @@ function drawGirl(){
   var clock = 0;
   function frame(ts){
     clock = ts || 0;
+    if(LV.pending) tryTransform();
     if(LVDBG_WIN && !LV.done){
       var _c = castByName('吕奥');
       if(_c && _c.img && _c.img.complete){ LV.t0 = clock - 21000; tryTransform(); }
