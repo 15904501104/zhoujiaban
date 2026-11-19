@@ -17,7 +17,7 @@
 <div id="wrap"><link rel="preload" as="image" href="girl-art-s.png?v=1">
 <link rel="preload" as="image" href="girl2-art-s.png?v=1">
 <canvas id="cv" width="640" height="360"></canvas></div>
-<div id="tag">温泉 · 320×180 → 放大预览（空格切换 黄昏 / 夜 · 点木栏上挂着的绿短裤 → 点吕奥 · 点老太太摘面膜）</div>
+<div id="tag">温泉 · 320×180 → 放大预览（空格切换 黄昏 / 夜 · 点池边的纸箱（内有绿泳裤＋黑拳套）→ 点吕奥 · 点老太太摘面膜）</div>
 <script>
 window.onerror = function (m, s, l, c, e) {
   var d = document.getElementById('tag');
@@ -457,7 +457,7 @@ window.onerror = function (m, s, l, c, e) {
   /* ===== 吕奥第二形态关卡 ===== */
   var LV = { gloves:false, shorts:false, belt:false, steam:0, form:1, done:false, t0:0, tEnd:0 };
   var ITEM = {
-    shorts: { x:26, y:149, w:20, h:13, draw:function(){ shortsAt(this.x, this.y); } }
+    shorts: { x:22, y:147, w:28, h:20, draw:function(){ shortsAt(this.x, this.y); } }
   };
   function railAt(x, y){
     ctx.fillStyle = '#7a5232';
@@ -471,26 +471,37 @@ window.onerror = function (m, s, l, c, e) {
     ctx.fillRect(x, y - 2, 52, 2);
   }
   function shortsAt(x, y){
-    // 岸边平摊的小泳裤（静止）
+    // 岸边一只纸箱：里面放着绿泳裤 + 黑色拳套，箱侧印爱尔兰国旗
     ctx.save();
     ctx.globalAlpha = 0.20;
     ctx.fillStyle = '#16242c';
-    ctx.beginPath(); ctx.ellipse(x + 10, y + 13, 11, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + 14, y + 20, 15, 3, 0, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
 
-    var OUT = '#153a23', G1 = '#2f6f45', G2 = '#43a06a', W = '#eef3ec';
-    ctx.fillStyle = OUT;  ctx.fillRect(x, y, 20, 13);
-    ctx.fillStyle = G2;   ctx.fillRect(x + 1, y + 1, 18, 2);
-    ctx.fillStyle = G1;   ctx.fillRect(x + 1, y + 3, 18, 2);
-    ctx.fillStyle = G1;   ctx.fillRect(x + 1, y + 5, 8, 6);
-    ctx.fillStyle = G1;   ctx.fillRect(x + 11, y + 5, 8, 6);
-    ctx.fillStyle = 'rgba(255,255,255,.09)';
-    ctx.fillRect(x + 1, y + 5, 8, 1);
-    ctx.fillRect(x + 11, y + 5, 8, 1);
-    ctx.fillStyle = OUT;  ctx.fillRect(x + 9, y + 5, 1, 6);
-    ctx.fillStyle = G2;   ctx.fillRect(x + 1, y + 10, 8, 1);
-    ctx.fillStyle = G2;   ctx.fillRect(x + 11, y + 10, 8, 1);
-    ctx.fillStyle = W;    ctx.fillRect(x + 9, y + 1, 2, 1);
+    var CARD = '#b98552', CARD_D = '#96683c', CARD_L = '#d3a271', IN = '#4a3320';
+    // 箱体
+    ctx.fillStyle = CARD_D; ctx.fillRect(x, y + 7, 28, 13);
+    ctx.fillStyle = CARD;   ctx.fillRect(x + 1, y + 8, 26, 11);
+    ctx.fillStyle = CARD_L; ctx.fillRect(x + 1, y + 8, 26, 1);
+    // 打开的箱口（左右两片翻盖）
+    ctx.fillStyle = CARD_L; ctx.fillRect(x, y + 5, 12, 3);
+    ctx.fillStyle = CARD;   ctx.fillRect(x + 16, y + 5, 12, 3);
+    ctx.fillStyle = IN;     ctx.fillRect(x + 3, y + 3, 22, 5);
+
+    // 箱内：绿泳裤（左）+ 黑拳套（右）
+    ctx.fillStyle = '#2f6f45'; ctx.fillRect(x + 5, y + 3, 9, 4);
+    ctx.fillStyle = '#43a06a'; ctx.fillRect(x + 5, y + 3, 9, 1);
+    ctx.fillStyle = '#1b1d22'; ctx.fillRect(x + 17, y + 2, 7, 5);
+    ctx.fillStyle = '#3a3f47'; ctx.fillRect(x + 17, y + 2, 7, 2);
+    ctx.fillStyle = '#c9ccd2'; ctx.fillRect(x + 18, y + 5, 2, 2);
+
+    // 箱侧爱尔兰国旗（绿白橙三竖条）
+    ctx.fillStyle = '#f4f6f2'; ctx.fillRect(x + 4, y + 11, 12, 6);
+    ctx.fillStyle = '#169b62'; ctx.fillRect(x + 4, y + 11, 4, 6);
+    ctx.fillStyle = '#ff883e'; ctx.fillRect(x + 12, y + 11, 4, 6);
+    // 箱盖压痕
+    ctx.fillStyle = 'rgba(120,84,48,.55)';
+    ctx.fillRect(x + 1, y + 9, 26, 1);
   }
   function itemHit(it, x, y){
     return x > it.x - 4 && x < it.x + it.w + 4 && y > it.y - 4 && y < it.y + it.h + 4;
