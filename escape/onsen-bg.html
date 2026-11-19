@@ -458,7 +458,7 @@ window.onerror = function (m, s, l, c, e) {
   var LV = { gloves:false, shorts:false, belt:false, steam:0, form:1, done:false, t0:0, tEnd:0 };
   var ITEM = {
     gloves: { x:24,  y:146, w:16, h:12, draw:function(){ glovesAt(this.x, this.y); } },
-    shorts: { x:118, y:150, w:18, h:18, draw:function(){ shortsAt(this.x, this.y); } },
+    shorts: { x:118, y:154, w:18, h:18, draw:function(){ shortsAt(this.x, this.y); } },
     belt:   { x:57,  y:63,  w:20, h:8,  draw:function(){ beltAt(this.x, this.y); } },
     valve:  { x:290, y:146, w:14, h:14, draw:function(){ valveAt(this.x, this.y); } }
   };
@@ -502,6 +502,13 @@ window.onerror = function (m, s, l, c, e) {
     ctx.fillRect(x + 8, y + 1, 4, 3);
   }
   function valveAt(x, y){
+    ctx.fillStyle = '#8d939c';
+    ctx.fillRect(x + 6, y, 3, 7);
+    ctx.strokeStyle = '#b8452f'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(x + 7, y + 9, 5, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = '#b8452f';
+    ctx.fillRect(x + 2, y + 8, 11, 2);
+    ctx.fillRect(x + 6, y + 4, 3, 11);
     ctx.fillStyle = '#9aa3ad';
     ctx.fillRect(x + 4, y + 6, 6, 6);
     ctx.fillStyle = '#c6ced8';
