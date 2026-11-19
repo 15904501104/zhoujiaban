@@ -17,7 +17,7 @@
 <div id="wrap"><link rel="preload" as="image" href="girl-art-s.png?v=1">
 <link rel="preload" as="image" href="girl2-art-s.png?v=1">
 <canvas id="cv" width="640" height="360"></canvas></div>
-<div id="tag">温泉 · 320×180 → 放大预览（空格切换 黄昏 / 夜 · 点拳套 / 挂着的绿短裤 / 灯箱顶的金腰带 · 集齐后点吕奥 · 点老太太摘面膜）</div>
+<div id="tag">温泉 · 320×180 → 放大预览（空格切换 黄昏 / 夜 · 点木栏上挂着的绿短裤 → 点吕奥 · 点老太太摘面膜）</div>
 <script>
 window.onerror = function (m, s, l, c, e) {
   var d = document.getElementById('tag');
@@ -457,20 +457,8 @@ window.onerror = function (m, s, l, c, e) {
   /* ===== 吕奥第二形态关卡 ===== */
   var LV = { gloves:false, shorts:false, belt:false, steam:0, form:1, done:false, t0:0, tEnd:0 };
   var ITEM = {
-    gloves: { x:24,  y:146, w:16, h:12, draw:function(){ glovesAt(this.x, this.y); } },
-    shorts: { x:118, y:154, w:18, h:18, draw:function(){ shortsAt(this.x, this.y); } },
-    belt:   { x:57,  y:63,  w:20, h:8,  draw:function(){ beltAt(this.x, this.y); } },
-    valve:  { x:290, y:146, w:14, h:14, draw:function(){ valveAt(this.x, this.y); } }
+    shorts: { x:118, y:154, w:18, h:18, draw:function(){ shortsAt(this.x, this.y); } }
   };
-  function glovesAt(x, y){
-    ctx.fillStyle = '#1b1d22';
-    ctx.fillRect(x, y, 13, 8);
-    ctx.fillRect(x + 1, y - 1, 11, 2);
-    ctx.fillStyle = '#3a3f47';
-    ctx.fillRect(x + 9, y + 2, 4, 5);
-    ctx.fillStyle = '#c9ccd2';
-    ctx.fillRect(x + 1, y + 6, 2, 2);
-  }
   function railAt(x, y){
     ctx.fillStyle = '#7a5232';
     ctx.fillRect(x, y, 52, 5);
@@ -493,33 +481,6 @@ window.onerror = function (m, s, l, c, e) {
     ctx.fillStyle = '#1e4c2e';
     ctx.fillRect(x, y + bob, 16, 1);
   }
-  function beltAt(x, y){
-    ctx.fillStyle = '#d8b24a';
-    ctx.fillRect(x, y, 20, 4);
-    ctx.fillStyle = '#f4dd93';
-    ctx.fillRect(x, y, 20, 1);
-    ctx.fillStyle = '#8c6b22';
-    ctx.fillRect(x + 8, y + 1, 4, 3);
-  }
-  function valveAt(x, y){
-    ctx.fillStyle = '#8d939c';
-    ctx.fillRect(x + 6, y, 3, 7);
-    ctx.strokeStyle = '#b8452f'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(x + 7, y + 9, 5, 0, Math.PI * 2); ctx.stroke();
-    ctx.fillStyle = '#b8452f';
-    ctx.fillRect(x + 2, y + 8, 11, 2);
-    ctx.fillRect(x + 6, y + 4, 3, 11);
-    ctx.fillStyle = '#9aa3ad';
-    ctx.fillRect(x + 4, y + 6, 6, 6);
-    ctx.fillStyle = '#c6ced8';
-    ctx.fillRect(x + 2, y + 3, 10, 3);
-    ctx.fillStyle = '#7b838d';
-    ctx.fillRect(x + 6, y, 2, 4);
-    if(LV.steam > 0){
-      ctx.fillStyle = 'rgba(240,250,255,.75)';
-      ctx.fillRect(x + 5, y - 3, 4, 2);
-    }
-  }
   function itemHit(it, x, y){
     return x > it.x - 4 && x < it.x + it.w + 4 && y > it.y - 4 && y < it.y + it.h + 4;
   }
@@ -537,7 +498,7 @@ window.onerror = function (m, s, l, c, e) {
   FORM2.src = 'sprites/lvao-form2.png?v=1';
   function tryTransform(){
     if(LV.form === 2 || LV.done) return;
-    if(!(LV.gloves && LV.shorts && LV.belt)) return;
+    if(!LV.shorts) return;
     if(!FORM2.complete || !FORM2.naturalWidth){ LV.pending = true; return; }
     var c = castByName('吕奥');
     if(c){
@@ -547,18 +508,16 @@ window.onerror = function (m, s, l, c, e) {
     LV.form = 2; LV.done = true; LV.pending = false; LV.tEnd = clock;
     if(!LV.t0) LV.t0 = clock;
   }
-  if(/[?&]lv=code/.test(location.search)){ LV.gloves = LV.shorts = LV.belt = true; }
+  if(/[?&]lv=code/.test(location.search)){ LV.shorts = true; }
   var LVDBG_WIN = /[?&]lv=win/.test(location.search);
   var LVDBG_NOCARD = /[?&]lv=pose/.test(location.search);
   if(LVDBG_NOCARD){ LVDBG_WIN = true; }
-  if(LVDBG_WIN){ LV.gloves = LV.shorts = LV.belt = true; }
-  function lvReady(){ return LV.form === 1 && LV.gloves && LV.shorts && LV.belt; }
+  if(LVDBG_WIN){ LV.shorts = true; }
+  function lvReady(){ return LV.form === 1 && LV.shorts; }
   function drawItems(){
-    if(!LV.gloves) ITEM.gloves.draw();
     railAt(110, 166);
     if(!LV.shorts) ITEM.shorts.draw();
-    if(!LV.belt)   ITEM.belt.draw();
-    ITEM.valve.draw();
+
     if(lvReady()){
       var c = castByName('吕奥');
       if(c){
@@ -1219,13 +1178,7 @@ function drawGirl(){
     var r2 = cv.getBoundingClientRect();
     var x = (e.clientX - r2.left) / r2.width * W;
     var y = (e.clientY - r2.top) / r2.height * H;
-    if(!LV.gloves && itemHit(ITEM.gloves, x, y)){ LV.gloves = true; if(!LV.t0) LV.t0 = clock; return; }
     if(!LV.shorts && itemHit(ITEM.shorts, x, y)){ LV.shorts = true; if(!LV.t0) LV.t0 = clock; return; }
-    if(!LV.belt   && itemHit(ITEM.belt,   x, y)){ LV.belt   = true; if(!LV.t0) LV.t0 = clock; return; }
-    if(itemHit(ITEM.valve, x, y)){
-      LV.steam = (LV.steam + 1) % 3;
-      return;
-    }
     if(lvaoHit(x, y)){
       tryTransform();
       return;
