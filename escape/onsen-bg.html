@@ -11,6 +11,18 @@
   canvas{image-rendering:pixelated;image-rendering:crisp-edges;
     box-shadow:0 0 0 1px #2a2233,0 20px 60px rgba(0,0,0,.6)}
   #tag{position:fixed;left:16px;bottom:14px;font-size:12px;letter-spacing:.18em;opacity:.5}
+  #bub{position:fixed;display:none;z-index:7;pointer-events:none;transform:translate(-50%,-100%)}
+  #bub.on{display:block}
+  .bub-body{position:relative;background:#f8f2e2;border:2px solid #2a2118;border-radius:8px;
+    padding:10px 14px 24px;max-width:min(52vw,380px);color:#241c14;
+    box-shadow:0 6px 18px rgba(0,0,0,.28)}
+  .bub-name{font-size:12px;letter-spacing:.16em;color:#8a6a3a;margin-bottom:4px}
+  .bub-text{font-size:16px;line-height:1.6;letter-spacing:.02em}
+  .bub-tail{position:absolute;left:50%;bottom:-11px;width:0;height:0;margin-left:-8px;
+    border-left:8px solid transparent;border-right:8px solid transparent;border-top:11px solid #2a2118}
+  .bub-tail::after{content:'';position:absolute;left:-6px;top:-12px;width:0;height:0;
+    border-left:6px solid transparent;border-right:6px solid transparent;border-top:9px solid #f8f2e2}
+  .bub-go{position:absolute;right:12px;bottom:6px;font-size:11px;opacity:.55}
   #boxModal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
     background:rgba(8,10,14,.62);z-index:9}
   #boxModal.on{display:flex}
@@ -26,14 +38,6 @@
   .bm button{background:#b8452f;color:#fff;border:0;border-radius:6px;
     padding:11px 30px;font-size:14px;letter-spacing:.2em;font-family:inherit;cursor:pointer}
   .bm button:active{transform:translateY(1px)}
-  #intro{position:fixed;inset:0;display:flex;align-items:flex-end;justify-content:center;
-    padding:0 4vw 6vh;box-sizing:border-box;z-index:8}
-  #intro.off{display:none}
-  .dlg{width:min(92vw,720px);background:rgba(20,24,33,.94);border:2px solid #c9a24a;
-    border-radius:10px;padding:16px 20px 14px;color:#eee5d2;box-shadow:0 14px 40px rgba(0,0,0,.5)}
-  .dlg .who{color:#f0d79a;font-size:14px;letter-spacing:.18em;margin-bottom:8px}
-  .dlg .txt{font-size:17px;line-height:1.7;letter-spacing:.04em;min-height:3.4em}
-  .dlg .go{text-align:right;font-size:12px;opacity:.55;letter-spacing:.16em;margin-top:6px}
 </style>
 </head>
 <body>
@@ -41,11 +45,11 @@
 <link rel="preload" as="image" href="girl2-art-s.png?v=1">
 <canvas id="cv" width="640" height="360"></canvas></div>
 <div id="tag">温泉 · 320×180 → 放大预览（空格切换 黄昏 / 夜 · 点池边的纸箱（UFC 泳裤＋UFC 拳套）→ 点吕奥 · 点老太太摘面膜）</div>
-<div id="intro"><div class="dlg">
-  <div class="who" id="dlgWho">张昊</div>
-  <div class="txt" id="dlgTxt"></div>
-  <div class="go">点击继续 ▾</div>
-</div></div>
+<div id="bub"><div class="bub-body">
+  <div class="bub-name" id="bubName"></div>
+  <div class="bub-text" id="bubText"></div>
+  <div class="bub-go">点击继续 ▾</div>
+</div><div class="bub-tail"></div></div>
 <div id="boxModal"><div class="bm">
   <div class="bm-row">
     <div class="bm-item"><canvas id="bmShorts" width="26" height="20"></canvas>UFC 短裤</div>
@@ -597,34 +601,11 @@ window.onerror = function (m, s, l, c, e) {
     g2.fillStyle = '#e9ecf1'; g2.fillRect(4, 12, 13, 4);
     g2.fillStyle = '#b9c0c9'; g2.fillRect(4, 15, 13, 1);
   })();
-  var LINES = [
-    { who: '张昊',   txt: '老大，这温泉里漂亮小姑娘挺多，要不要去要个联系方式？' },
-    { who: '曹宇桓', txt: '歪比巴卜，咕噜咕噜哔哔啵啵，阿巴阿巴，%￥&*#@……' }
-  ];
-  var dlgI = 0, dlgOn = false;
-  function showLine(){
-    if(dlgI >= LINES.length){ hideIntro(); return; }
-    var w = document.getElementById('dlgWho'), t = document.getElementById('dlgTxt');
-    if(w) w.textContent = LINES[dlgI].who;
-    if(t) t.textContent = LINES[dlgI].txt;
-  }
-  function hideIntro(){
-    dlgOn = false;
-    var el = document.getElementById('intro');
-    if(el){ el.classList.add('off'); }
-  }
-  (function initIntro(){
-    var el = document.getElementById('intro');
-    if(!el) return;
-    if(/[?&](lv|box|granny)=/.test(location.search)){ el.classList.add('off'); return; }
-    var dm = location.search.match(/[?&]dlg=(\d+)/);
-    dlgOn = true; dlgI = dm ? Math.min(parseInt(dm[1], 10) - 1, LINES.length - 1) : 0; showLine();
-    el.addEventListener('pointerdown', function(ev){
-      ev.stopPropagation();
-      if(!dlgOn) return;
-      dlgI++;
-      if(dlgI >= LINES.length){ hideIntro(); } else { showLine(); }
-    });
+  var INTRO = { on: true, step: 0, t0: 0 };
+  var INTRO_DBG = (function(){
+    if(/[?&](lv|box|granny)=/.test(location.search)){ INTRO.on = false; return 0; }
+    var m = location.search.match(/[?&]dlg=(\d+)/);
+    return m ? parseInt(m[1], 10) : 0;
   })();
   if(/[?&]box=1/.test(location.search)){ setTimeout(openBox, 60); }
   var bmBtn = document.getElementById('bmTake');
@@ -1276,6 +1257,43 @@ function drawGirl(){
   }
 
   var clock = 0;
+  var INTRO_LINES = [
+    { who: '张昊', cx: 112, cy: 84,
+      lines: ['老大，这温泉里漂亮小姑娘挺多，', '要不要去要个联系方式？'] },
+    { who: '曹宇桓', cx: 196, cy: 76,
+      lines: ['歪比巴卜，咕噜咕噜哔哔啵啵，', '阿巴阿巴，%￥&*#@……'] }
+  ];
+  function drawIntro(){}
+  function bubAt(cx, mouthY){
+    var el = document.getElementById('bub');
+    if(!el) return;
+    var r = cv.getBoundingClientRect();
+    el.style.left = (r.left + cx / W * r.width) + 'px';
+    el.style.top = (r.top + mouthY / H * r.height - 6) + 'px';
+  }
+  function showBub(){
+    var el = document.getElementById('bub');
+    var L = INTRO_LINES[INTRO.step];
+    if(!el || !L){ if(el) el.classList.remove('on'); return; }
+    document.getElementById('bubName').textContent = L.who;
+    document.getElementById('bubText').innerHTML = L.lines.join('<br>');
+    el.classList.add('on');
+    bubAt(L.cx, L.cy);
+  }
+  function advanceIntro(){
+    INTRO.step++;
+    if(INTRO.step >= INTRO_LINES.length){
+      INTRO.on = false;
+      var el = document.getElementById('bub');
+      if(el) el.classList.remove('on');
+    } else { showBub(); }
+  }
+  window.addEventListener('resize', function(){ if(INTRO.on) showBub(); });
+  setTimeout(function(){
+    if(!INTRO.on) return;
+    if(INTRO_DBG) INTRO.step = Math.min(INTRO_DBG - 1, INTRO_LINES.length - 1);
+    showBub();
+  }, 60);
   function frame(ts){
     clock = ts || 0;
     if(LV.pending) tryTransform();
@@ -1294,7 +1312,7 @@ function drawGirl(){
     if(e.key === ' ' || e.code === 'Space'){ night = !night; e.preventDefault(); }
   });
   cv.addEventListener('pointerdown', function(e){
-    if(dlgOn) return;
+    if(INTRO.on){ advanceIntro(); return; }
     var bm = document.getElementById('boxModal');
     if(bm && bm.classList.contains('on')) return;
     var r2 = cv.getBoundingClientRect();
