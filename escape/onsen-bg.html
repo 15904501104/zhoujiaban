@@ -11,13 +11,37 @@
   canvas{image-rendering:pixelated;image-rendering:crisp-edges;
     box-shadow:0 0 0 1px #2a2233,0 20px 60px rgba(0,0,0,.6)}
   #tag{position:fixed;left:16px;bottom:14px;font-size:12px;letter-spacing:.18em;opacity:.5}
+  #boxModal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(8,10,14,.62);z-index:9}
+  #boxModal.on{display:flex}
+  .bm{width:min(86vw,420px);background:#141821;border:2px solid #c9a24a;border-radius:10px;
+    padding:22px 22px 18px;color:#e8dfcc;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.55)}
+  .bm h3{margin:0 0 4px;font-size:20px;letter-spacing:.16em;color:#f0d79a;font-weight:400}
+  .bm p{margin:0 0 16px;font-size:12px;opacity:.6;letter-spacing:.1em}
+  .bm-row{display:flex;gap:14px;justify-content:center;margin-bottom:18px}
+  .bm-item{flex:1;background:#1b2130;border:1px solid #33405a;border-radius:8px;
+    padding:12px 8px 10px;font-size:13px;letter-spacing:.08em}
+  .bm-item canvas{width:100%;height:auto;display:block;margin:0 auto 8px;
+    image-rendering:pixelated;box-shadow:none}
+  .bm button{background:#b8452f;color:#fff;border:0;border-radius:6px;
+    padding:11px 30px;font-size:14px;letter-spacing:.2em;font-family:inherit;cursor:pointer}
+  .bm button:active{transform:translateY(1px)}
 </style>
 </head>
 <body>
 <div id="wrap"><link rel="preload" as="image" href="girl-art-s.png?v=1">
 <link rel="preload" as="image" href="girl2-art-s.png?v=1">
 <canvas id="cv" width="640" height="360"></canvas></div>
-<div id="tag">温泉 · 320×180 → 放大预览（空格切换 黄昏 / 夜 · 点池边的纸箱（内有绿泳裤＋黑拳套）→ 点吕奥 · 点老太太摘面膜）</div>
+<div id="tag">温泉 · 320×180 → 放大预览（空格切换 黄昏 / 夜 · 点池边的纸箱（UFC 泳裤＋UFC 拳套）→ 点吕奥 · 点老太太摘面膜）</div>
+<div id="boxModal"><div class="bm">
+  <h3>纸 箱 里</h3>
+  <p>UFC 泳裤 · UFC 拳套</p>
+  <div class="bm-row">
+    <div class="bm-item"><canvas id="bmShorts" width="26" height="20"></canvas>UFC 泳裤</div>
+    <div class="bm-item"><canvas id="bmGlove" width="26" height="20"></canvas>UFC 拳套</div>
+  </div>
+  <button id="bmTake">收 下</button>
+</div></div>
 <script>
 window.onerror = function (m, s, l, c, e) {
   var d = document.getElementById('tag');
@@ -478,10 +502,13 @@ window.onerror = function (m, s, l, c, e) {
     ctx.beginPath(); ctx.ellipse(x + 14, y + 20, 15, 3, 0, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
 
-    var CARD = '#b98552', CARD_D = '#96683c', CARD_L = '#d3a271', IN = '#4a3320';
-    // 箱体
+    var CARD = '#f4f6f2', CARD_D = '#b8c2bb', CARD_L = '#ffffff', IN = '#2a2118';
+    var IE_G = '#169b62', IE_O = '#ff883e';
+    // 箱体：整面刷成爱尔兰三色（绿/白/橙）
     ctx.fillStyle = CARD_D; ctx.fillRect(x, y + 7, 28, 13);
-    ctx.fillStyle = CARD;   ctx.fillRect(x + 1, y + 8, 26, 11);
+    ctx.fillStyle = IE_G;   ctx.fillRect(x + 1, y + 8, 9, 11);
+    ctx.fillStyle = CARD;   ctx.fillRect(x + 10, y + 8, 8, 11);
+    ctx.fillStyle = IE_O;   ctx.fillRect(x + 18, y + 8, 9, 11);
     ctx.fillStyle = CARD_L; ctx.fillRect(x + 1, y + 8, 26, 1);
     // 打开的箱口（左右两片翻盖）
     ctx.fillStyle = CARD_L; ctx.fillRect(x, y + 5, 12, 3);
@@ -495,10 +522,6 @@ window.onerror = function (m, s, l, c, e) {
     ctx.fillStyle = '#3a3f47'; ctx.fillRect(x + 17, y + 2, 7, 2);
     ctx.fillStyle = '#c9ccd2'; ctx.fillRect(x + 18, y + 5, 2, 2);
 
-    // 箱侧爱尔兰国旗（绿白橙三竖条）
-    ctx.fillStyle = '#f4f6f2'; ctx.fillRect(x + 4, y + 11, 12, 6);
-    ctx.fillStyle = '#169b62'; ctx.fillRect(x + 4, y + 11, 4, 6);
-    ctx.fillStyle = '#ff883e'; ctx.fillRect(x + 12, y + 11, 4, 6);
     // 箱盖压痕
     ctx.fillStyle = 'rgba(120,84,48,.55)';
     ctx.fillRect(x + 1, y + 9, 26, 1);
@@ -535,6 +558,41 @@ window.onerror = function (m, s, l, c, e) {
   var LVDBG_NOCARD = /[?&]lv=pose/.test(location.search);
   if(LVDBG_NOCARD){ LVDBG_WIN = true; }
   if(LVDBG_WIN){ LV.shorts = true; }
+  function openBox(){
+    var m = document.getElementById('boxModal');
+    if(m) m.classList.add('on');
+  }
+  function closeBox(){
+    var m = document.getElementById('boxModal');
+    if(m) m.classList.remove('on');
+  }
+  (function boxIcons(){
+    var a = document.getElementById('bmShorts'), b = document.getElementById('bmGlove');
+    if(!a || !b) return;
+    var g1 = a.getContext('2d');
+    g1.fillStyle = '#153a23'; g1.fillRect(4, 6, 18, 11);
+    g1.fillStyle = '#43a06a'; g1.fillRect(5, 7, 16, 2);
+    g1.fillStyle = '#2f6f45'; g1.fillRect(5, 9, 7, 7); g1.fillRect(13, 9, 8, 7);
+    g1.fillStyle = '#153a23'; g1.fillRect(12, 9, 1, 7);
+    g1.fillStyle = '#eef3ec'; g1.fillRect(12, 7, 2, 1);
+    var g2 = b.getContext('2d');
+    // 拳套：指节四段 + 拇指 + 白色腕带
+    g2.fillStyle = '#0f1116'; g2.fillRect(4, 3, 13, 11);
+    g2.fillStyle = '#1b1d22'; g2.fillRect(5, 4, 11, 9);
+    g2.fillStyle = '#2b2f36'; g2.fillRect(5, 4, 11, 2);
+    g2.fillStyle = '#0f1116';
+    for(var i = 0; i < 4; i++){ g2.fillRect(5 + i * 3, 3, 1, 3); }
+    g2.fillRect(15, 8, 5, 5);
+    g2.fillStyle = '#e9ecf1'; g2.fillRect(4, 12, 13, 4);
+    g2.fillStyle = '#b9c0c9'; g2.fillRect(4, 15, 13, 1);
+  })();
+  if(/[?&]box=1/.test(location.search)){ setTimeout(openBox, 60); }
+  var bmBtn = document.getElementById('bmTake');
+  if(bmBtn){
+    bmBtn.addEventListener('click', function(){
+      LV.shorts = true; if(!LV.t0) LV.t0 = clock; closeBox();
+    });
+  }
   function lvReady(){ return LV.form === 1 && LV.shorts; }
   function drawItems(){
     if(!LV.shorts) ITEM.shorts.draw();
@@ -1196,10 +1254,12 @@ function drawGirl(){
     if(e.key === ' ' || e.code === 'Space'){ night = !night; e.preventDefault(); }
   });
   cv.addEventListener('pointerdown', function(e){
+    var bm = document.getElementById('boxModal');
+    if(bm && bm.classList.contains('on')) return;
     var r2 = cv.getBoundingClientRect();
     var x = (e.clientX - r2.left) / r2.width * W;
     var y = (e.clientY - r2.top) / r2.height * H;
-    if(!LV.shorts && itemHit(ITEM.shorts, x, y)){ LV.shorts = true; if(!LV.t0) LV.t0 = clock; return; }
+    if(!LV.shorts && itemHit(ITEM.shorts, x, y)){ openBox(); return; }
     if(lvaoHit(x, y)){
       tryTransform();
       return;
